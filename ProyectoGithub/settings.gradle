@@ -1,0 +1,2 @@
+rootProject.name='UltraHome'
+include ':app'
