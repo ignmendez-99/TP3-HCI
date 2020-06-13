@@ -22,4 +22,10 @@
         android:name="com.example.ultrahome.ui.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_notifications" />
+
+    <fragment
+        android:id="@+id/navigation_favorites"
+        android:name="com.example.ultrahome.ui.favorites.FavoritesFragment"
+        android:label="Favorites"
+        tools:layout="@layout/fragment_favorites"/>
 </navigation>
