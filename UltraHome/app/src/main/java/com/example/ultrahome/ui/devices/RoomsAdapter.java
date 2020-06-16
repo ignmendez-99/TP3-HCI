@@ -9,6 +9,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.ultrahome.R;
@@ -39,8 +41,9 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.RoomsViewHol
         holder.roomsConstraintLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // we navigate to the Rooms screen of this Particular Home
-                Toast.makeText(context, "Clicked on " + roomsNames.get(position), Toast.LENGTH_SHORT).show();
+                // we navigate to the Devices screen of this particular Room
+                final NavController navController =  Navigation.findNavController(view);
+                navController.navigate(R.id.devicesFragment);
             }
         });
     }

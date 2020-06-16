@@ -4,4 +4,5 @@
     <string name="title_profile">Profile</string>
     <string name="title_routines">Routines</string>
     <string name="roomsFragment">Rooms</string>
+    <string name="devicesListFragment">devicesListFragment</string>
 </resources>

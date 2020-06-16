@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".ui.devices.LightsControllerActivity"/>
+        <activity android:name=".ui.devices.LightsControllerFragment"/>
 
         <activity
             android:name=".MainActivity"

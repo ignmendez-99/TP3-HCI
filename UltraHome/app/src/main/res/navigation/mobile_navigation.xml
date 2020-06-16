@@ -19,7 +19,17 @@
         android:id="@+id/roomsFragment"
         android:name="com.example.ultrahome.ui.devices.RoomsFragment"
         android:label="@string/roomsFragment"
-        tools:layout="@layout/fragment_rooms"/>
+        tools:layout="@layout/fragment_rooms">
+        <action
+            android:id="@+id/action_nav_roomsFragment_to_DevicesListFragment"
+            app:destination="@+id/devicesFragment"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/devicesFragment"
+        android:name="com.example.ultrahome.ui.devices.DevicesListFragment"
+        android:label="@string/devicesListFragment"
+        tools:layout="@layout/fragment_devices_list"/>
 
     <fragment
         android:id="@+id/navigation_profile"
