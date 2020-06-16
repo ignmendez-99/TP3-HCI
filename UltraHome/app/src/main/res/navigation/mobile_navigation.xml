@@ -3,29 +3,33 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_home">
+    app:startDestination="@+id/navigation_devices">
 
     <fragment
-        android:id="@+id/navigation_home"
-        android:name="com.example.ultrahome.ui.home.HomeFragment"
-        android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        android:id="@+id/navigation_devices"
+        android:name="com.example.ultrahome.ui.devices.DevicesFragment"
+        android:label="@string/title_devices"
+        tools:layout="@layout/fragment_devices">
+        <action
+            android:id="@+id/action_nav_devicesFragment_to_RoomsFragment"
+            app:destination="@+id/roomsFragment"/>
+    </fragment>
 
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="com.example.ultrahome.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        android:id="@+id/roomsFragment"
+        android:name="com.example.ultrahome.ui.devices.RoomsFragment"
+        android:label="@string/roomsFragment"
+        tools:layout="@layout/fragment_rooms"/>
 
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.example.ultrahome.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        android:id="@+id/navigation_profile"
+        android:name="com.example.ultrahome.ui.profile.ProfileFragment"
+        android:label="@string/title_profile"
+        tools:layout="@layout/fragment_profile" />
 
     <fragment
-        android:id="@+id/navigation_favorites"
-        android:name="com.example.ultrahome.ui.favorites.FavoritesFragment"
-        android:label="Favorites"
-        tools:layout="@layout/fragment_favorites"/>
+        android:id="@+id/navigation_routines"
+        android:name="com.example.ultrahome.ui.routines.RoutinesFragment"
+        android:label="@string/title_routines"
+        tools:layout="@layout/fragment_routines"/>
 </navigation>

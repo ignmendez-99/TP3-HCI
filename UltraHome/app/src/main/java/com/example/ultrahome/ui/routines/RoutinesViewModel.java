@@ -1,15 +1,15 @@
-package com.example.ultrahome.ui.favorites;
+package com.example.ultrahome.ui.routines;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class FavoritesViewModel extends ViewModel {
+public class RoutinesViewModel extends ViewModel {
     private MutableLiveData<String> mText;
 
-    public FavoritesViewModel() {
+    public RoutinesViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is favorites fragment");
+        mText.setValue("This is routines fragment");
     }
 
     public LiveData<String> getText() {
