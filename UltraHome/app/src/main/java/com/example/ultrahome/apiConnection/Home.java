@@ -5,7 +5,7 @@ import androidx.annotation.NonNull;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Room {
+public class Home {
 
     @SerializedName("id")
     @Expose
@@ -15,17 +15,17 @@ public class Room {
     private String name;
     @SerializedName("meta")
     @Expose
-    private RoomMeta meta;
+    private HomeMeta meta;
 
-    public Room() {
+    public Home() {
     }
 
-    public Room(String name, RoomMeta meta) {
+    public Home(String name, HomeMeta meta) {
         this.name = name;
         this.meta = meta;
     }
 
-    public Room(String id, String name, RoomMeta meta) {
+    public Home(String id, String name, HomeMeta meta) {
         this.id = id;
         this.name = name;
         this.meta = meta;
@@ -38,7 +38,7 @@ public class Room {
     public String getName() {
         return name;
     }
-    public RoomMeta getMeta() {
+    public HomeMeta getMeta() {
         return meta;
     }
 
@@ -49,7 +49,7 @@ public class Room {
     public void setName(String name) {
         this.name = name;
     }
-    public void setMeta(RoomMeta meta) {
+    public void setMeta(HomeMeta meta) {
         this.meta = meta;
     }
 
@@ -69,6 +69,30 @@ public class Room {
                 return String.format("%s - %s", this.getName(), this.getMeta());
             else
                 return this.getName();
+        }
+    }
+
+    public static class HomeMeta {
+
+        @SerializedName("size")
+        @Expose
+        private String size;
+
+        public HomeMeta(String size) {
+            this.size = size;
+        }
+
+        public void setSize(String size) {
+            this.size = size;
+        }
+
+        public String getSize() {
+            return this.size;
+        }
+
+        @Override
+        public String toString() {
+            return this.getSize();
         }
     }
 }

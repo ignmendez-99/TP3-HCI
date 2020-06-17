@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.List;
 
-import kotlin.Result;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -45,6 +44,28 @@ public class ApiClient {
             return null;
         }
     }
+
+    ////////////// HOME CALLS ////////////////////
+
+    public Call<Result<Home>> addHome(Home home, Callback<Result<Home>> callback) {
+        Call<Result<Home>> call = this.service.addHome(home);
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<List<Home>>> getHomes(Callback<Result<List<Home>>> callback) {
+        Call<Result<List<Home>>> call = this.service.getHomes();
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<Boolean>> deleteHome(String homeId, Callback<Result<Boolean>> callback) {
+        Call<Result<Boolean>> call = this.service.deleteHome(homeId);
+        call.enqueue(callback);
+        return call;
+    }
+
+    ////////////// ROOM CALLS ////////////////////
 
     public Call<Result<Room>> addRoom(Room room, Callback<Result<Room>> callback) {
         Call<Result<Room>> call = this.service.addRoom(room);
