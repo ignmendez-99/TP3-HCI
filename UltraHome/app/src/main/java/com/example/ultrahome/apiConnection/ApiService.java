@@ -13,7 +13,8 @@ import retrofit2.http.Path;
 
 public interface ApiService {
 
-    // HOME CONTROLS
+    ////////////// HOME CONTROLS ////////////////////
+
     @POST("homes")
     @Headers("Content-Type: application/json")
     Call<Result<Home>> addHome(@Body Home home);
@@ -31,7 +32,8 @@ public interface ApiService {
     @GET("homes")
     Call<Result<List<Home>>> getHomes();
 
-    // ROOM CONTROLS
+    ////////////// ROOM CONTROLS ////////////////////
+
     @POST("rooms")
     @Headers("Content-Type: application/json")
     Call<Result<Room>> addRoom(@Body Room room);
@@ -48,4 +50,13 @@ public interface ApiService {
 
     @GET("rooms")
     Call<Result<List<Room>>> getRooms();
+
+    ////////////// HOME-ROOM CONTROLS ////////////////////
+
+    @GET("homes/{homeId}/rooms")
+    Call<Result<List<Room>>> getRoomsInThisHome(@Path("homeId") String homeId);
+
+    @POST("homes/{homeId}/rooms/{roomId}")
+    @Headers("Content-Type: application/json")
+    Call<Result<Boolean>> linkRoomWithHome(@Path("homeId") String homeId, @Path("roomId") String roomId);
 }

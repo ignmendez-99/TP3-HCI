@@ -12,6 +12,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,7 +23,10 @@ import java.util.List;
 
 public class HomesAdapter extends RecyclerView.Adapter<HomesAdapter.HomesViewHolder> {
     private List<String> homesNames;
-    private Context context;  // useful for doing TOAST
+    private List<String> homesIds;
+    private Context context;
+    private DevicesViewModel model;
+    private DevicesFragment currentFragment;
 
     @NonNull
     @Override
@@ -32,21 +36,24 @@ public class HomesAdapter extends RecyclerView.Adapter<HomesAdapter.HomesViewHol
         return new HomesViewHolder(v);
     }
 
-    public HomesAdapter(Context context, List<String> list) {
+    public HomesAdapter(Context context, List<String> namesList, List<String> idList,
+                        DevicesFragment currentFragment) {
         this.context = context;
-        homesNames = list;
+        homesNames = namesList;
+        homesIds = idList;
+        this.currentFragment = currentFragment;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull HomesViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull HomesViewHolder holder, int position) {
         holder.homeName.setText(homesNames.get(position));
-        holder.homesConstraintLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // we navigate to the Rooms screen of this Particular Home
-                final NavController navController =  Navigation.findNavController(view);
-                navController.navigate(R.id.roomsFragment);
-            }
+        holder.homesConstraintLayout.setOnClickListener(view -> {
+            // we send the homeId to the RoomsFragment, so that the correct Rooms are loaded
+            String idOfHomeClicked = homesIds.get(0);  // TODO: HARDCODEADO -> SIEMPRE AGARRA LA PRIMERA HOME
+            model = new ViewModelProvider(currentFragment.requireActivity()).get(DevicesViewModel.class);
+            model.select(idOfHomeClicked);
+            // we navigate to the Rooms screen of this Particular Home
+            currentFragment.navigateToRoomsFragment(view);
         });
     }
 

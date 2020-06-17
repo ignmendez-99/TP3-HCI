@@ -12,8 +12,8 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiClient {
-    private Retrofit retrofit = null;
-    private ApiService service = null;
+    private Retrofit retrofit;
+    private ApiService service;
     private static ApiClient instance = null;
     // Use IP 10.0.2.2 instead of 127.0.0.1 when running Android emulator in the
     // same computer that runs the API.
@@ -93,6 +93,20 @@ public class ApiClient {
 
     public Call<Result<List<Room>>> getRooms(Callback<Result<List<Room>>> callback) {
         Call<Result<List<Room>>> call = this.service.getRooms();
+        call.enqueue(callback);
+        return call;
+    }
+
+    ////////////// HOME-ROOM CALLS ////////////////////
+
+    public Call<Result<List<Room>>> getRoomsInThisHome(String homeId, Callback<Result<List<Room>>> callback) {
+        Call<Result<List<Room>>> call = this.service.getRoomsInThisHome(homeId);
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<Boolean>> linkRoomWithHome(String homeId, String roomId, Callback<Result<Boolean>> callback) {
+        Call<Result<Boolean>> call = this.service.linkRoomWithHome(homeId, roomId);
         call.enqueue(callback);
         return call;
     }

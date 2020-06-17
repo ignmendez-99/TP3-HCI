@@ -6,14 +6,15 @@ import androidx.lifecycle.ViewModel;
 
 public class DevicesViewModel extends ViewModel {
 
-    private MutableLiveData<String> mText;
+    private MutableLiveData<String> mText = new MutableLiveData<>();
 
-    public DevicesViewModel() {
-        mText = new MutableLiveData<>();
-        mText.setValue("This is devices fragment");
-    }
-
+    // used to get the "parameter"
     public LiveData<String> getText() {
         return mText;
+    }
+
+    // used to "set" the "parameter"
+    public void select(String item) {
+        mText.setValue(item);
     }
 }

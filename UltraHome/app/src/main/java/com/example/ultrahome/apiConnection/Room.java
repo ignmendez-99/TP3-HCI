@@ -15,20 +15,10 @@ public class Room {
     private String name;
     @SerializedName("meta")
     @Expose
-    private RoomMeta meta;
+    private Object meta = new Object();
 
-    public Room() {
-    }
-
-    public Room(String name, RoomMeta meta) {
+    public Room(String name) {
         this.name = name;
-        this.meta = meta;
-    }
-
-    public Room(String id, String name, RoomMeta meta) {
-        this.id = id;
-        this.name = name;
-        this.meta = meta;
     }
 
     // GETTERS
@@ -38,9 +28,6 @@ public class Room {
     public String getName() {
         return name;
     }
-    public RoomMeta getMeta() {
-        return meta;
-    }
 
     // SETTERS
     public void setId(String id) {
@@ -49,26 +36,13 @@ public class Room {
     public void setName(String name) {
         this.name = name;
     }
-    public void setMeta(RoomMeta meta) {
-        this.meta = meta;
-    }
 
     @NonNull
     @Override
     public String toString() {
         if (this.getId() != null)
-        {
-            if (this.getMeta() != null)
-                return String.format("%s - %s - %s", this.getId(), this.getName(), this.getMeta());
-            else
-                return String.format("%s - %s", this.getId(), this.getName());
-        }
+            return String.format("%s - %s", this.getId(), this.getName());
         else
-        {
-            if (this.getMeta() != null)
-                return String.format("%s - %s", this.getName(), this.getMeta());
-            else
-                return this.getName();
-        }
+            return this.getName();
     }
 }

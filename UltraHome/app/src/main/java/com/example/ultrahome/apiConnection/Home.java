@@ -15,20 +15,10 @@ public class Home {
     private String name;
     @SerializedName("meta")
     @Expose
-    private HomeMeta meta;
+    private Object meta = new Object();
 
-    public Home() {
-    }
-
-    public Home(String name, HomeMeta meta) {
+    public Home(String name) {
         this.name = name;
-        this.meta = meta;
-    }
-
-    public Home(String id, String name, HomeMeta meta) {
-        this.id = id;
-        this.name = name;
-        this.meta = meta;
     }
 
     // GETTERS
@@ -38,9 +28,6 @@ public class Home {
     public String getName() {
         return name;
     }
-    public HomeMeta getMeta() {
-        return meta;
-    }
 
     // SETTERS
     public void setId(String id) {
@@ -49,50 +36,13 @@ public class Home {
     public void setName(String name) {
         this.name = name;
     }
-    public void setMeta(HomeMeta meta) {
-        this.meta = meta;
-    }
 
     @NonNull
     @Override
     public String toString() {
         if (this.getId() != null)
-        {
-            if (this.getMeta() != null)
-                return String.format("%s - %s - %s", this.getId(), this.getName(), this.getMeta());
-            else
-                return String.format("%s - %s", this.getId(), this.getName());
-        }
+            return String.format("%s - %s", this.getId(), this.getName());
         else
-        {
-            if (this.getMeta() != null)
-                return String.format("%s - %s", this.getName(), this.getMeta());
-            else
-                return this.getName();
-        }
-    }
-
-    public static class HomeMeta {
-
-        @SerializedName("size")
-        @Expose
-        private String size;
-
-        public HomeMeta(String size) {
-            this.size = size;
-        }
-
-        public void setSize(String size) {
-            this.size = size;
-        }
-
-        public String getSize() {
-            return this.size;
-        }
-
-        @Override
-        public String toString() {
-            return this.getSize();
-        }
+            return this.getName();
     }
 }
