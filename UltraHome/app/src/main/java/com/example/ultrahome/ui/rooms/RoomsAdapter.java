@@ -1,30 +1,42 @@
-package com.example.ultrahome.ui.devices;
+package com.example.ultrahome.ui.rooms;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.ultrahome.R;
+import com.example.ultrahome.ui.homes.HomeToRoomViewModel;
 
 import java.util.List;
 
 public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.RoomsViewHolder> {
 
     private List<String> roomsNames;
-    private Context context;  // useful for doing TOAST
+    private Context context;
+    private RoomsFragment currentFragment;
+    private RoomToDeviceViewModel model;
 
-    public RoomsAdapter(Context context, List<String> roomsList) {
+    public RoomsAdapter(Context context, List<String> namesList, RoomsFragment currentFragment) {
         this.context = context;
-        roomsNames = roomsList;
+        roomsNames = namesList;
+        this.currentFragment = currentFragment;
+    }
+
+    public Context getContext() {
+        return currentFragment.getContext();
+    }
+
+    public void deleteItem(int position) {
+        currentFragment.deleteRoom(currentFragment.getView(), position);
     }
 
     @NonNull
@@ -38,13 +50,16 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.RoomsViewHol
     @Override
     public void onBindViewHolder(@NonNull RoomsViewHolder holder, final int position) {
         holder.roomName.setText(roomsNames.get(position));
-        holder.roomsConstraintLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // we navigate to the Devices screen of this particular Room
-                final NavController navController =  Navigation.findNavController(view);
-                navController.navigate(R.id.devicesFragment);
-            }
+        holder.roomsConstraintLayout.setOnClickListener(view -> {
+
+            // we send the roomId to the DevicesFragment, so that the correct Devices are loaded
+            List<String> idList = currentFragment.getIdList();
+            String idOfRoomClicked = idList.get(position);
+            model = new ViewModelProvider(currentFragment.requireActivity()).get(RoomToDeviceViewModel.class);
+            model.storeRoomId(idOfRoomClicked);
+
+            // we navigate to the Devices screen of this particular Room
+            currentFragment.navigateToDevicesFragment(view);
         });
     }
 

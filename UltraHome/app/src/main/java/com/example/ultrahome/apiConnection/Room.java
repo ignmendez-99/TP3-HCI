@@ -16,6 +16,9 @@ public class Room {
     @SerializedName("meta")
     @Expose
     private Object meta = new Object();
+    @SerializedName("home")
+    @Expose
+    private Home home;
 
     public Room(String name) {
         this.name = name;
@@ -27,6 +30,9 @@ public class Room {
     }
     public String getName() {
         return name;
+    }
+    public Home getHome() {
+        return home;
     }
 
     // SETTERS

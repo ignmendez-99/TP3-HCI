@@ -1,4 +1,4 @@
-package com.example.ultrahome.ui.devices;
+package com.example.ultrahome.ui.rooms;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -6,25 +6,28 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.ultrahome.R;
 import com.example.ultrahome.apiConnection.ApiClient;
-import com.example.ultrahome.apiConnection.Home;
 import com.example.ultrahome.apiConnection.Result;
 import com.example.ultrahome.apiConnection.Room;
+import com.example.ultrahome.ui.homes.HomeToRoomViewModel;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -40,6 +43,7 @@ public class RoomsFragment extends Fragment {
     private List<String> roomIds;
     private List<String> roomNamesBackupBeforeDeleting;
     private Snackbar deletingRoomSnackbar;
+    private Integer positionToDelete;
     private LinearLayoutManager layoutManager;
     private RoomsAdapter adapter;
     private ApiClient api;
@@ -57,28 +61,40 @@ public class RoomsFragment extends Fragment {
         api = ApiClient.getInstance();
 
         // we grab the "parameter" that DevicesFragment left us
-        DevicesViewModel model = new ViewModelProvider(requireActivity()).get(DevicesViewModel.class);
-        homeId = model.getText().getValue();
+        HomeToRoomViewModel model = new ViewModelProvider(requireActivity()).get(HomeToRoomViewModel.class);
+        homeId = model.getHomeId().getValue();
 
-        // loads on screen all rooms
+        // Displays in screen all Rooms -->  todo: FALTA CACHE, ya que sino puede ser mucha carga?
         getAllRoomsOfThisHome(view);
 
         addNewRoomButton = view.findViewById(R.id.button_add_room);
         addNewRoomButton.setOnClickListener(this::addNewRoom);
 
-        removeRoomButton = view.findViewById(R.id.button_remove_room);
-        removeRoomButton.setOnClickListener(this::deleteRoom);
-
         recyclerView = view.findViewById(R.id.rooms_recycler_view);
         layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
 
-        adapter = new RoomsAdapter(getContext(), roomNames);
+        adapter = new RoomsAdapter(getContext(), roomNames, this);
         recyclerView.setAdapter(adapter);
+
+        // Swipe to delete functionality is assigned here
+        // recyclerView.setAdapter(adapter);
+        // recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteRoomCallback(adapter));
+        itemTouchHelper.attachToRecyclerView(recyclerView);
+    }
+
+    List<String> getIdList() {
+        return roomIds;
+    }
+
+    void navigateToDevicesFragment(View view) {
+        final NavController navController =  Navigation.findNavController(view);
+        navController.navigate(R.id.devicesFragment);
     }
 
     private void addNewRoom(View v) {
-        String name = "Cocina de Nacho"; // TODO: HARDCODEADO -> EL USUARIO DEBE ELEGIR EL NOMBRE
+        String name = "Cocina de Nacho 2 " + new Random().nextInt(10000); // TODO: HARDCODEADO -> EL USUARIO DEBE ELEGIR EL NOMBRE
         Room newRoom = new Room(name);
         api.addRoom(newRoom, new Callback<Result<Room>>() {
             @Override
@@ -126,25 +142,24 @@ public class RoomsFragment extends Fragment {
     }
 
     private void deleteRoom(View view) {
-        if(roomNames.size() != 0) {  /* ESTE IF DESPUES HAY QUE SACARLO, YA QUE EN LA REALIDAD,
-                                        EL BOTON DE ELIMINAR ROOMS ESTA SOLAMENTE SI EXISTEN ROOMS */
+        String roomNameToRemove = roomNames.get(positionToDelete);
+        roomNamesBackupBeforeDeleting.add(roomNameToRemove);
+        roomNames.remove(positionToDelete.intValue());
+        adapter.notifyItemRemoved(positionToDelete);
 
-            // TODO: este bloque tambien esta hardcodeado, ya que siempre saca de pantalla la ultima ROOM creada
-            int positionLastRoom = roomNames.size() - 1;
-            String roomNameToRemove = roomNames.get(positionLastRoom);
-            roomNamesBackupBeforeDeleting.add(roomNameToRemove);
-            roomNames.remove(positionLastRoom);
-            adapter.notifyItemRemoved(positionLastRoom);
+        deletingRoomSnackbar = Snackbar.make(view, "Room deleted!", Snackbar.LENGTH_SHORT);
+        deletingRoomSnackbar.setAction("UNDO", new UndoDeleteRoomListener());
+        deletingRoomSnackbar.addCallback(new DeleteRoomSnackbarTimeout(view));
+        deletingRoomSnackbar.show();
+    }
 
-            deletingRoomSnackbar = Snackbar.make(view, "Room deleted!", Snackbar.LENGTH_SHORT);
-            deletingRoomSnackbar.setAction("UNDO", new UndoDeleteRoomListener());
-            deletingRoomSnackbar.addCallback(new DeleteRoomSnackbarTimeout(view));
-            deletingRoomSnackbar.show();
-        }
+    void deleteRoom(View v, int position) {
+        positionToDelete = position;
+        deleteRoom(v);
     }
 
     private void getAllRoomsOfThisHome(View v) {
-        api.getRoomsInThisHome(homeId, new Callback<Result<List<Room>>>() {
+        api.getRooms(new Callback<Result<List<Room>>>() {
             @Override
             public void onResponse(@NonNull Call<Result<List<Room>>> call, @NonNull Response<Result<List<Room>>> response) {
                 if(response.isSuccessful()) {
@@ -152,10 +167,17 @@ public class RoomsFragment extends Fragment {
                     if(result != null) {
                         List<Room> roomList = result.getResult();
                         if(roomList.size() != 0) {
-                            for (Room h : roomList) {
-                                roomIds.add(h.getId());
-                                roomNames.add(h.getName());
-                                adapter.notifyItemInserted(roomNames.size() - 1);
+                            for (Room room : roomList) {
+                                if(room.getHome() == null) {
+                                    // The Home containing this room was deleted! We must delete this Room
+                                    deleteUselessRoom(room, v);
+                                } else {
+                                    if(room.getHome().getId().equals(homeId)) {
+                                        roomIds.add(room.getId());
+                                        roomNames.add(room.getName());
+                                        adapter.notifyItemInserted(roomNames.size() - 1);
+                                    }
+                                }
                             }
                         }
                     } else
@@ -170,25 +192,47 @@ public class RoomsFragment extends Fragment {
         });
     }
 
+    /* this method deletes a Room which has no Home, therefore its useless in our App */
+    private void deleteUselessRoom(Room r, View v) {
+        api.deleteRoom(r.getId(), new Callback<Result<Boolean>>() {
+            @Override
+            public void onResponse(@NonNull Call<Result<Boolean>> call, @NonNull Response<Result<Boolean>> response) {
+                if(response.isSuccessful()) {
+                    Result<Boolean> result = response.body();
+                    if(result == null || !result.getResult())
+                        Snackbar.make(v, "No se pudo eliminar una Room sin padre", Snackbar.LENGTH_LONG).show();
+                } else
+                    Snackbar.make(v, "No se pudo eliminar una Room sin padre", Snackbar.LENGTH_LONG).show();
+            }
+            @Override
+            public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
+                Snackbar.make(v, "No se pudo eliminar una Room sin padre", Snackbar.LENGTH_LONG).show();
+                handleUnexpectedError(t);
+            }
+        });
+    }
+
     private void handleUnexpectedError(@NonNull Throwable t) {
         String LOG_TAG = "com.example.ultrahome";
         Log.e(LOG_TAG, t.toString());
     }
 
-    
+
+    /* The only thing that the UNDO action does, is closing the Snackbar and putting the
+       room on screen again */
     private class UndoDeleteRoomListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
-            // TODO: HARDCODEADO, YA QUE SIEMPRE AGARRA LA PRIMERA POSITION
             String roomToRetrieve = roomNamesBackupBeforeDeleting.get(0);
             roomNamesBackupBeforeDeleting.remove(0);
-            roomNames.add(roomToRetrieve);
-            adapter.notifyItemInserted(0);
+            roomNames.add(positionToDelete, roomToRetrieve);
+            adapter.notifyItemInserted(positionToDelete);
             deletingRoomSnackbar.dismiss();
         }
     }
 
 
+    /* In the moment that the delete-room-snackbar disappears, the Room is deleted from DataBase */
     private class DeleteRoomSnackbarTimeout extends BaseTransientBottomBar.BaseCallback<Snackbar> {
         private View view;
 
@@ -198,24 +242,21 @@ public class RoomsFragment extends Fragment {
 
         @Override
         public void onDismissed(Snackbar transientBottomBar, int event) {
-            if(event == DISMISS_EVENT_TIMEOUT) {
+            if(event == DISMISS_EVENT_TIMEOUT || event == DISMISS_EVENT_CONSECUTIVE) {
                 super.onDismissed(transientBottomBar, event);
-                int positionOfLastRoom = roomIds.size() - 1; // TODO: HARDCODED, AS IT ALWAYS DELETES THE LAST ROOM IN THE LIST
-
-                api.deleteRoom(roomIds.get(positionOfLastRoom), new Callback<Result<Boolean>>() {
+                api.deleteRoom(roomIds.get(positionToDelete), new Callback<Result<Boolean>>() {
                     @Override
                     public void onResponse(@NonNull Call<Result<Boolean>> call, @NonNull Response<Result<Boolean>> response) {
                         if (response.isSuccessful()) {
                             Result<Boolean> result = response.body();
                             if (result != null && result.getResult()) {
-                                roomIds.remove(positionOfLastRoom);
-                                roomNamesBackupBeforeDeleting.remove(positionOfLastRoom);
+                                roomIds.remove(positionToDelete.intValue());
+                                roomNamesBackupBeforeDeleting.remove(0);
                             } else
                                 Snackbar.make(view, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
                         } else
                             Snackbar.make(view, "ERROR tipo 2", Snackbar.LENGTH_LONG).show();
                     }
-
                     @Override
                     public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
                         Snackbar.make(view, "ERROR tipo 3", Snackbar.LENGTH_LONG).show();
