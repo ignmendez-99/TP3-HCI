@@ -36,4 +36,7 @@ public abstract class Device {
     public String getName() {
         return name;
     }
+    public DeviceType getType() {
+        return type;
+    }
 }

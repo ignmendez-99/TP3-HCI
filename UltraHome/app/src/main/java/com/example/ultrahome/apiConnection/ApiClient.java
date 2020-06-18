@@ -1,6 +1,7 @@
 package com.example.ultrahome.apiConnection;
 
-import com.example.ultrahome.apiConnection.entities.deviceEntities.Lights;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.Device;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.lights.Lights;
 import com.example.ultrahome.apiConnection.entities.Error;
 import com.example.ultrahome.apiConnection.entities.ErrorResult;
 import com.example.ultrahome.apiConnection.entities.Home;
@@ -106,14 +107,14 @@ public class ApiClient {
 
     ////////////// DEVICE GENERAL CALLS ////////////////////
 
-    public Call<Result<Lights>> addDevice(Lights device, Callback<Result<Lights>> callback) {
-        Call<Result<Lights>> call = this.service.addDevice(device);
+    public Call<Result<Device>> addDevice(Device device, Callback<Result<Device>> callback) {
+        Call<Result<Device>> call = this.service.addDevice(device);
         call.enqueue(callback);
         return call;
     }
 
-    public Call<Result<List<Lights>>> getDevices(Callback<Result<List<Lights>>> callback) {
-        Call<Result<List<Lights>>> call = this.service.getDevices();
+    public Call<Result<List<Device>>> getDevices(Callback<Result<List<Device>>> callback) {
+        Call<Result<List<Device>>> call = this.service.getDevices();
         call.enqueue(callback);
         return call;
     }
@@ -140,8 +141,8 @@ public class ApiClient {
 
     ////////////// ROOM-DEVICE CALLS ////////////////////
 
-    public Call<Result<List<Lights>>> getDevicesInThisRoom(String roomId, Callback<Result<List<Lights>>> callback) {
-        Call<Result<List<Lights>>> call = this.service.getDevicesInThisRoom(roomId);
+    public Call<Result<List<Device>>> getDevicesInThisRoom(String roomId, Callback<Result<List<Device>>> callback) {
+        Call<Result<List<Device>>> call = this.service.getDevicesInThisRoom(roomId);
         call.enqueue(callback);
         return call;
     }

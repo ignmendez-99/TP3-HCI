@@ -25,4 +25,9 @@ public class DeviceType {
     public DeviceType(String id) {
         this.id = id;
     }
+
+    // GETTERS
+    public String getId() {
+        return id;
+    }
 }

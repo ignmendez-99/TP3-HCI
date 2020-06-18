@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.ultrahome.R;
 import com.example.ultrahome.apiConnection.ApiClient;
+import com.example.ultrahome.apiConnection.entities.Error;
 import com.example.ultrahome.apiConnection.entities.Home;
 import com.example.ultrahome.apiConnection.entities.Result;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
@@ -99,16 +101,17 @@ public class HomesFragment extends Fragment {
                     } else
                         Snackbar.make(v, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
                 } else
-                    Snackbar.make(v, "ERROR tipo 2", Snackbar.LENGTH_LONG).show();
+                    handleError(response);
             }
             @Override
             public void onFailure(@NonNull Call<Result<Home>> call, @NonNull Throwable t) {
-                Snackbar.make(v, "ERROR tipo 3", Snackbar.LENGTH_LONG).show();
+                handleUnexpectedError(t);
             }
         });
     }
 
     private void deleteHome(View v) {
+        // remove the Home Card from screen
         String homeNameToRemove = homeNames.get(positionToDelete);
         homeNamesBackupBeforeDeleting.add(homeNameToRemove);
         homeNames.remove(positionToDelete.intValue());
@@ -141,7 +144,7 @@ public class HomesFragment extends Fragment {
                     } else
                         Snackbar.make(v, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
                 } else
-                    Snackbar.make(v, "ERROR tipo 2", Snackbar.LENGTH_LONG).show();
+                    handleError(response);
             }
 
             @Override
@@ -149,6 +152,12 @@ public class HomesFragment extends Fragment {
                 handleUnexpectedError(t);
             }
         });
+    }
+
+    private <T> void handleError(@NonNull Response<T> response) {
+        Error error = ApiClient.getInstance().getError(response.errorBody());
+        String text = "ERROR" + error.getDescription().get(0) + error.getCode();
+        Toast.makeText(getContext(), text, Toast.LENGTH_LONG).show();
     }
 
     private static void handleUnexpectedError(@NonNull Throwable t) {
@@ -194,11 +203,11 @@ public class HomesFragment extends Fragment {
                             } else
                                 Snackbar.make(view, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
                         } else
-                            Snackbar.make(view, "ERROR tipo 2", Snackbar.LENGTH_LONG).show();
+                            handleError(response);
                     }
                     @Override
                     public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
-                        Snackbar.make(view, "ERROR tipo 3", Snackbar.LENGTH_LONG).show();
+                        handleUnexpectedError(t);
                     }
                 });
             }

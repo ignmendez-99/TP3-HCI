@@ -1,9 +1,10 @@
-package com.example.ultrahome.ui.devices;
+package com.example.ultrahome.ui.devices.controllers;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.Switch;
@@ -15,6 +16,7 @@ import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 
 import com.example.ultrahome.R;
+import com.example.ultrahome.ui.devices.DevicesListFragment;
 
 public class LightsControllerFragment extends Fragment {
 
@@ -23,10 +25,12 @@ public class LightsControllerFragment extends Fragment {
     private SeekBar brightnessSeekBar;
     private CardView colorSelector;
     private int[] colorRGB;
+    private Button buttonDeleteDevice;
+    private String deviceId;
+    private int positionInRecyclerView;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_lights_controller, container, false);
-        return root;
+        return inflater.inflate(R.layout.fragment_lights_controller, container, false);
     }
 
     @Override
@@ -37,6 +41,11 @@ public class LightsControllerFragment extends Fragment {
         onOffText = view.findViewById(R.id.lights_state_text);
         brightnessSeekBar = view.findViewById(R.id.brightness_seekbar);
         colorSelector = view.findViewById(R.id.lights_color_selector);
+
+        readBundle(getArguments());
+
+        buttonDeleteDevice = view.findViewById(R.id.button_delete_lights);
+        buttonDeleteDevice.setOnClickListener(this::deleteDevice);
 
         // todo: this should look for data in the DataBase !!!!!
         updateState();
@@ -75,5 +84,30 @@ public class LightsControllerFragment extends Fragment {
         } else {
             onOffText.setText("OFF");
         }
+    }
+
+    private void deleteDevice(View view) {
+        DevicesListFragment containerFragment = (DevicesListFragment) getParentFragment();
+        assert containerFragment != null;
+        containerFragment.deleteDevice(view, positionInRecyclerView);
+    }
+
+    private void readBundle(Bundle bundle) {
+        if (bundle != null) {
+            deviceId = bundle.getString("deviceId");
+            positionInRecyclerView = bundle.getInt("positionInRecyclerView");
+        }
+    }
+
+    @NonNull
+    public static LightsControllerFragment newInstance(String deviceId, int positionInRecyclerView) {
+        Bundle bundle = new Bundle();
+        bundle.putString("deviceId", deviceId);
+        bundle.putInt("positionInRecyclerView", positionInRecyclerView);
+
+        LightsControllerFragment fragment = new LightsControllerFragment();
+        fragment.setArguments(bundle);
+
+        return fragment;
     }
 }

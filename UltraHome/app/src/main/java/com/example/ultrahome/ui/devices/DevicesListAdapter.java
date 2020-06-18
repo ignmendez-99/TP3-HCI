@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -20,19 +19,13 @@ public class DevicesListAdapter extends RecyclerView.Adapter<DevicesListAdapter.
     private List<String> devicesNames;
     private Context context;
     private DevicesListFragment currentFragment;
+    private View view;
 
-    public DevicesListAdapter(Context context, List<String> list, DevicesListFragment currentFragment) {
+    public DevicesListAdapter(Context context, List<String> list, @NonNull DevicesListFragment currentFragment) {
         this.context = context;
         devicesNames = list;
         this.currentFragment = currentFragment;
-    }
-
-    public Context getContext() {
-        return currentFragment.getContext();
-    }
-
-    public void deleteItem(int position) {
-        currentFragment.deleteDevice(currentFragment.getView(), position);
+        view = currentFragment.getView();
     }
 
     @NonNull
@@ -47,7 +40,11 @@ public class DevicesListAdapter extends RecyclerView.Adapter<DevicesListAdapter.
     public void onBindViewHolder(@NonNull DevicesListViewHolder holder, final int position) {
         holder.deviceName.setText(devicesNames.get(position));
         holder.devicesConstraintLayout.setOnClickListener(view -> {
-            Toast.makeText(context, "FALTA HACER ALGO", Toast.LENGTH_SHORT).show();
+            List<String> deviceTypeIds = currentFragment.getDeviceTypeIds();
+            List<String> deviceIds = currentFragment.getIdList();
+            String clickedDeviceTypeId = deviceTypeIds.get(position);
+            String clickedDeviceId = deviceIds.get(position);
+            currentFragment.insertNestedFragment(clickedDeviceTypeId, clickedDeviceId, view, position);
         });
     }
 

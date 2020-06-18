@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.ultrahome.R;
 import com.example.ultrahome.apiConnection.ApiClient;
+import com.example.ultrahome.apiConnection.entities.Error;
 import com.example.ultrahome.apiConnection.entities.Result;
 import com.example.ultrahome.apiConnection.entities.Room;
 import com.example.ultrahome.ui.homes.HomeToRoomViewModel;
@@ -104,7 +106,7 @@ public class RoomsFragment extends Fragment {
                     } else
                         Snackbar.make(v, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
                 } else
-                    Snackbar.make(v, "ERROR tipo 2", Snackbar.LENGTH_LONG).show();
+                    handleError(response);
             }
             @Override
             public void onFailure(@NonNull Call<Result<Room>> call, @NonNull Throwable t) {
@@ -127,7 +129,7 @@ public class RoomsFragment extends Fragment {
                     } else
                         Snackbar.make(v, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
                 } else
-                    Snackbar.make(v, "ERROR tipo 2", Snackbar.LENGTH_LONG).show();
+                    handleError(response);
             }
 
             @Override
@@ -139,6 +141,7 @@ public class RoomsFragment extends Fragment {
     }
 
     private void deleteRoom(View view) {
+        // remove the Room Card from screen
         String roomNameToRemove = roomNames.get(positionToDelete);
         roomNamesBackupBeforeDeleting.add(roomNameToRemove);
         roomNames.remove(positionToDelete.intValue());
@@ -180,7 +183,7 @@ public class RoomsFragment extends Fragment {
                     } else
                         Snackbar.make(v, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
                 } else
-                    Snackbar.make(v, "ERROR tipo 2", Snackbar.LENGTH_LONG).show();
+                    handleError(response);
             }
             @Override
             public void onFailure(@NonNull Call<Result<List<Room>>> call, @NonNull Throwable t) {
@@ -190,7 +193,7 @@ public class RoomsFragment extends Fragment {
     }
 
     /* this method deletes a Room which has no Home, therefore its useless in our App */
-    private void deleteUselessRoom(Room r, View v) {
+    private void deleteUselessRoom(@NonNull Room r, View v) {
         api.deleteRoom(r.getId(), new Callback<Result<Boolean>>() {
             @Override
             public void onResponse(@NonNull Call<Result<Boolean>> call, @NonNull Response<Result<Boolean>> response) {
@@ -199,14 +202,19 @@ public class RoomsFragment extends Fragment {
                     if(result == null || !result.getResult())
                         Snackbar.make(v, "No se pudo eliminar una Room sin padre", Snackbar.LENGTH_LONG).show();
                 } else
-                    Snackbar.make(v, "No se pudo eliminar una Room sin padre", Snackbar.LENGTH_LONG).show();
+                    handleError(response);
             }
             @Override
             public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
-                Snackbar.make(v, "No se pudo eliminar una Room sin padre", Snackbar.LENGTH_LONG).show();
                 handleUnexpectedError(t);
             }
         });
+    }
+
+    private <T> void handleError(@NonNull Response<T> response) {
+        Error error = ApiClient.getInstance().getError(response.errorBody());
+        String text = "ERROR" + error.getDescription().get(0) + error.getCode();
+        Toast.makeText(getContext(), text, Toast.LENGTH_LONG).show();
     }
 
     private void handleUnexpectedError(@NonNull Throwable t) {
@@ -252,11 +260,11 @@ public class RoomsFragment extends Fragment {
                             } else
                                 Snackbar.make(view, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
                         } else
-                            Snackbar.make(view, "ERROR tipo 2", Snackbar.LENGTH_LONG).show();
+                            handleError(response);
                     }
                     @Override
                     public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
-                        Snackbar.make(view, "ERROR tipo 3", Snackbar.LENGTH_LONG).show();
+                        handleUnexpectedError(t);
                     }
                 });
             }

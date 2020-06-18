@@ -18,16 +18,26 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.ultrahome.R;
 import com.example.ultrahome.apiConnection.ApiClient;
-import com.example.ultrahome.apiConnection.entities.deviceEntities.Lights;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.Device;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.lights.Lights;
 import com.example.ultrahome.apiConnection.entities.Error;
 import com.example.ultrahome.apiConnection.entities.Result;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.DeviceType;
+import com.example.ultrahome.ui.devices.controllers.BlindsControllerFragment;
+import com.example.ultrahome.ui.devices.controllers.DoorControllerFragment;
+import com.example.ultrahome.ui.devices.controllers.FaucetControllerFragment;
+import com.example.ultrahome.ui.devices.controllers.LightsControllerFragment;
+import com.example.ultrahome.ui.devices.controllers.RefrigeratorControllerFragment;
+import com.example.ultrahome.ui.devices.controllers.SpeakerControllerFragment;
+import com.example.ultrahome.ui.devices.controllers.VacuumControllerFragment;
 import com.example.ultrahome.ui.rooms.RoomToDeviceViewModel;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import retrofit2.Call;
@@ -36,18 +46,26 @@ import retrofit2.Response;
 
 public class DevicesListFragment extends Fragment {
 
+    private Map<String, Integer> supportedDeviceTypeIds;
+
+    // screen controls
     private Button button_add_lights;
-    private Button button_remove_lights;
+
+    // variables for dealing with the RecyclerView
     private RecyclerView recyclerView;
+    private LinearLayoutManager layoutManager;
+    private DevicesListAdapter adapter;
+    private Integer positionToDelete;
+
     private List<String> devicesNames;
     private List<String> devicesIds;
     private List<String> deviceNamesBackupBeforeDeleting;
+    private List<String> deviceTypeIds;
+
     private String roomId;   // this is the room that contains all devices displayed in this screen
-    private Integer positionToDelete;
     private Snackbar deletingDeviceSnackbar;
-    private LinearLayoutManager layoutManager;
-    private DevicesListAdapter adapter;
     private ApiClient api;
+    private Fragment childFragment;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_devices_list, container, false);
@@ -59,6 +77,7 @@ public class DevicesListFragment extends Fragment {
         devicesNames = new ArrayList<>();
         devicesIds = new ArrayList<>();
         deviceNamesBackupBeforeDeleting = new ArrayList<>();
+        deviceTypeIds = new ArrayList<>();
         api = ApiClient.getInstance();
 
         // we grab the "parameter" that RoomsFragment left us
@@ -68,11 +87,8 @@ public class DevicesListFragment extends Fragment {
         // Displays in screen all Devices -->  todo: FALTA CACHE, ya que sino puede ser mucha carga?
         getAllDevicesOfThisRoom(view);
 
-        button_add_lights = view.findViewById(R.id.button_add_lights);
-        button_add_lights.setOnClickListener(this::addNewLight);
-
-        button_remove_lights = view.findViewById(R.id.button_delete_lights);
-        button_remove_lights.setOnClickListener(this::deleteDevice);
+        button_add_lights = view.findViewById(R.id.button_add_device);
+        button_add_lights.setOnClickListener(this::addNewDevice);
 
         recyclerView = view.findViewById(R.id.horizontal_devices_recycler_view);
         layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL,false);
@@ -81,43 +97,60 @@ public class DevicesListFragment extends Fragment {
         adapter = new DevicesListAdapter(getContext(), devicesNames, this);
         recyclerView.setAdapter(adapter);
 
-        insertNestedFragment();
+        initDeviceTypeIdMap();
     }
 
-    // todo: hardcoded as it always add a LIGHT
-    private void addNewLight(View view) {
+    // todo: esto quizas se puede llevar a otra Clase, ya que sino esta clase hace demasiado
+    private void initDeviceTypeIdMap() {
+        supportedDeviceTypeIds = new HashMap<>();
+        // SPEAKER
+        supportedDeviceTypeIds.put("c89b94e8581855bc", R.layout.fragment_speaker_controller);
+        // FAUCET
+        supportedDeviceTypeIds.put("dbrlsh7o5sn8ur4i", R.layout.fragment_faucet_controller);
+        // BLINDS
+        supportedDeviceTypeIds.put("eu0v2xgprrhhg41g", R.layout.fragment_blinds_controller);
+        // LIGHTS
+        supportedDeviceTypeIds.put("go46xmbqeomjrsjr", R.layout.fragment_lights_controller);
+        // DOOR
+        supportedDeviceTypeIds.put("lsf78ly0eqrjbz91", R.layout.fragment_door_controller);
+        // VACUUM
+        supportedDeviceTypeIds.put("ofglvd9gqx8yfl3l", R.layout.fragment_vacuum_controller);
+        // REFRIGERATOR
+        supportedDeviceTypeIds.put("rnizejqr2di0okho", R.layout.fragment_refrigerator_controller);
+    }
+
+    private void addNewDevice(View view) {
+
         String name = "Luz de Nacho " + new Random().nextInt(10000); // TODO: HARDCODEADO -> EL USUARIO DEBE ELEGIR EL NOMBRE
-        Lights device = new Lights(name, new DeviceType("go46xmbqeomjrsjr"));  // TODO: HARDCODEADO -> SE ELIGE EL TIPO "LAMP" SIEMPRE
-        api.addDevice(device, new Callback<Result<Lights>>() {
+
+        int random = new Random().nextInt(6); //todo: hardcodeado ya que se elige de manera random el tipo de dispositivo a agregar
+        String[] a = {"", "", "", "", "", "", ""};
+        supportedDeviceTypeIds.keySet().toArray(a);
+        String randomTypeId = a[random];
+
+        // todo: hardcodeado (es siempre una Lights) --> faltaria un switch para elegir bien el tipo de objeto a instanciar
+        Device device = new Lights(name, new DeviceType(randomTypeId));
+        api.addDevice(device, new Callback<Result<Device>>() {
             @Override
-            public void onResponse(@NonNull Call<Result<Lights>> call, @NonNull Response<Result<Lights>> response) {
+            public void onResponse(@NonNull Call<Result<Device>> call, @NonNull Response<Result<Device>> response) {
                 if(response.isSuccessful()) {
-                    Result<Lights> result = response.body();
+                    Result<Device> result = response.body();
                     if(result != null) {
                         String temporalId = result.getResult().getId();
-                        linkNewDeviceWithThisRoom(view, name, temporalId);
+                        linkNewDeviceWithThisRoom(view, name, temporalId, randomTypeId);
                     } else
                         Snackbar.make(view, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
                 } else
                     handleError(response);
-                    //Snackbar.make(view, "ERROR tipo 2", Snackbar.LENGTH_LONG).show();
             }
             @Override
-            public void onFailure(@NonNull Call<Result<Lights>> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<Result<Device>> call, @NonNull Throwable t) {
                 handleUnexpectedError(t);
             }
         });
     }
 
-    ////////////////////////////////////
-    private <T> void handleError(Response<T> response) {
-        Error error = ApiClient.getInstance().getError(response.errorBody());
-        String text = "ERROR" + error.getDescription().get(0) + error.getCode();
-        Toast.makeText(getContext(), text, Toast.LENGTH_LONG).show();
-    }
-    //////////////////////////////////
-
-    private void linkNewDeviceWithThisRoom(View view, String newDeviceName, String newDeviceId) {
+    private void linkNewDeviceWithThisRoom(View view, String newDeviceName, String newDeviceId, String deviceTypeId) {
         api.linkDeviceWithRoom(roomId, newDeviceId, new Callback<Result<Boolean>>() {
             @Override
             public void onResponse(@NonNull Call<Result<Boolean>> call, @NonNull Response<Result<Boolean>> response) {
@@ -126,17 +159,17 @@ public class DevicesListFragment extends Fragment {
                     if(result != null && result.getResult()) {
                         devicesNames.add(newDeviceName);
                         devicesIds.add(newDeviceId);
+                        deviceTypeIds.add(deviceTypeId);
                         adapter.notifyItemInserted(devicesNames.size() - 1);
-                        Snackbar.make(view, "Room Added!", Snackbar.LENGTH_SHORT).show();
+                        Snackbar.make(view, "Device Added!", Snackbar.LENGTH_SHORT).show();
                     } else
                         Snackbar.make(view, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
                 } else
-                    Snackbar.make(view, "ERROR tipo 2", Snackbar.LENGTH_LONG).show();
+                    handleError(response);
             }
 
             @Override
             public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
-                Snackbar.make(view, "ERROR tipo 3", Snackbar.LENGTH_LONG).show();
                 handleUnexpectedError(t);
                 // todo: faltaria eliminar el Device ya creado, ya que hubo error al linkearlo con la Room
             }
@@ -144,53 +177,44 @@ public class DevicesListFragment extends Fragment {
     }
 
     private void deleteDevice(View v) {
+        // detach the Device fragment from screen
+        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+        transaction.detach(childFragment).commit();
 
-        // todo: DEJO ESTO PREPARADO PARA CUANDO PUEDAS ELIMINAR EL DEVICE QUE QUIERAS
-        /*String roomNameToRemove = devicesNames.get(positionToDelete);
+        // remove the Device Card from screen
+        String roomNameToRemove = devicesNames.get(positionToDelete);
         deviceNamesBackupBeforeDeleting.add(roomNameToRemove);
         devicesNames.remove(positionToDelete.intValue());
         adapter.notifyItemRemoved(positionToDelete);
 
-        deletingDeviceSnackbar = Snackbar.make(v, "Room deleted!", Snackbar.LENGTH_SHORT);
+        deletingDeviceSnackbar = Snackbar.make(v, "Device deleted!", Snackbar.LENGTH_SHORT);
         deletingDeviceSnackbar.setAction("UNDO", new UndoDeleteDeviceListener());
         deletingDeviceSnackbar.addCallback(new DeleteDeviceSnackbarTimeout(v));
-        deletingDeviceSnackbar.show();*/
-
-        if(devicesNames.size() != 0) {
-            String roomNameToRemove = devicesNames.get(0);
-            deviceNamesBackupBeforeDeleting.add(roomNameToRemove);
-            devicesNames.remove(0);
-            adapter.notifyItemRemoved(0);
-
-            deletingDeviceSnackbar = Snackbar.make(v, "Room deleted!", Snackbar.LENGTH_SHORT);
-            deletingDeviceSnackbar.setAction("UNDO", new UndoDeleteDeviceListener());
-            deletingDeviceSnackbar.addCallback(new DeleteDeviceSnackbarTimeout(v));
-            deletingDeviceSnackbar.show();
-        }
-
+        deletingDeviceSnackbar.show();
     }
 
-    void deleteDevice(View v, int position) {
+    public void deleteDevice(View v, int position) {
         positionToDelete = position;
         deleteDevice(v);
     }
 
     private void getAllDevicesOfThisRoom(View view) {
-        api.getDevices(new Callback<Result<List<Lights>>>() {
+        api.getDevices(new Callback<Result<List<Device>>>() {
             @Override
-            public void onResponse(@NonNull Call<Result<List<Lights>>> call, @NonNull Response<Result<List<Lights>>> response) {
+            public void onResponse(@NonNull Call<Result<List<Device>>> call, @NonNull Response<Result<List<Device>>> response) {
                 if(response.isSuccessful()) {
-                    Result<List<Lights>> result = response.body();
+                    Result<List<Device>> result = response.body();
                     if(result != null) {
-                        List<Lights> deviceList = result.getResult();
+                        List<Device> deviceList = result.getResult();
                         if(deviceList.size() != 0) {
-                            for(Lights device : deviceList) {
+                            for(Device device : deviceList) {
                                 if(device.getRoom() == null) {
                                     // The Room containing this device was deleted! We must delete this Device
                                     deleteUselessDevice(device, view);
                                 } else {
                                     if(device.getRoom().getId().equals(roomId)) {
                                         devicesIds.add(device.getId());
+                                        deviceTypeIds.add(device.getType().getId());
                                         devicesNames.add(device.getName());
                                         adapter.notifyItemInserted(devicesNames.size() - 1);
                                     }
@@ -200,18 +224,18 @@ public class DevicesListFragment extends Fragment {
                     } else
                         Snackbar.make(view, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
                 } else
-                    Snackbar.make(view, "ERROR tipo 2", Snackbar.LENGTH_LONG).show();
+                    handleError(response);
             }
 
             @Override
-            public void onFailure(@NonNull Call<Result<List<Lights>>> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<Result<List<Device>>> call, @NonNull Throwable t) {
                 handleUnexpectedError(t);
             }
         });
     }
 
     /* this method deletes a Device which has no Room, therefore its useless in our App */
-    private void deleteUselessDevice(Lights d, View v) {
+    private void deleteUselessDevice(@NonNull Device d, View v) {
         api.deleteDevice(d.getId(), new Callback<Result<Boolean>>() {
             @Override
             public void onResponse(@NonNull Call<Result<Boolean>> call, @NonNull Response<Result<Boolean>> response) {
@@ -220,11 +244,10 @@ public class DevicesListFragment extends Fragment {
                     if(result == null || !result.getResult())
                         Snackbar.make(v, "No se pudo eliminar un Device sin padre", Snackbar.LENGTH_LONG).show();
                 } else
-                    Snackbar.make(v, "No se pudo eliminar un Device sin padre", Snackbar.LENGTH_LONG).show();
+                    handleError(response);
             }
             @Override
             public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
-                Snackbar.make(v, "No se pudo eliminar un Device sin padre", Snackbar.LENGTH_LONG).show();
                 handleUnexpectedError(t);
             }
         });
@@ -234,10 +257,49 @@ public class DevicesListFragment extends Fragment {
         return devicesIds;
     }
 
-    private void insertNestedFragment() {
-        Fragment childFragment = new LightsControllerFragment();
-        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-        transaction.replace(R.id.device_control_container, childFragment).commit();
+    List<String> getDeviceTypeIds() {
+        return deviceTypeIds;
+    }
+
+    void insertNestedFragment(String deviceTypeId, String deviceId, View v, int positionInRecyclerView) {
+        Integer layoutToChoose = supportedDeviceTypeIds.get(deviceTypeId);
+        if(layoutToChoose != null) {
+            switch(layoutToChoose) {
+                case R.layout.fragment_lights_controller:
+                    childFragment = LightsControllerFragment.newInstance(deviceId, positionInRecyclerView);
+                    break;
+                case R.layout.fragment_blinds_controller:
+                    childFragment = BlindsControllerFragment.newInstance(deviceId, positionInRecyclerView);
+                    break;
+                case R.layout.fragment_door_controller:
+                    childFragment = DoorControllerFragment.newInstance(deviceId, positionInRecyclerView);
+                    break;
+                case R.layout.fragment_faucet_controller:
+                    childFragment = FaucetControllerFragment.newInstance(deviceId, positionInRecyclerView);
+                    break;
+                case R.layout.fragment_refrigerator_controller:
+                    childFragment = RefrigeratorControllerFragment.newInstance(deviceId, positionInRecyclerView);
+                    break;
+                case R.layout.fragment_speaker_controller:
+                    childFragment = SpeakerControllerFragment.newInstance(deviceId, positionInRecyclerView);
+                    break;
+                case R.layout.fragment_vacuum_controller:
+                    childFragment = VacuumControllerFragment.newInstance(deviceId, positionInRecyclerView);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + layoutToChoose);
+            }
+            FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+            transaction.replace(R.id.device_control_container, childFragment).commit();
+        } else {
+            Snackbar.make(v, "Could not load device", Snackbar.LENGTH_SHORT);
+        }
+    }
+
+    private <T> void handleError(@NonNull Response<T> response) {
+        Error error = ApiClient.getInstance().getError(response.errorBody());
+        String text = "ERROR" + error.getDescription().get(0) + error.getCode();
+        Toast.makeText(getContext(), text, Toast.LENGTH_LONG).show();
     }
 
     private void handleUnexpectedError(@NonNull Throwable t) {
@@ -251,17 +313,10 @@ public class DevicesListFragment extends Fragment {
     private class UndoDeleteDeviceListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
-            // todo: DEJO ESTO PREPARADO PARA CUANDO PUEDAS ELIMINAR EL DEVICE QUE QUIERAS
-            /*String deviceToRetrieve = deviceNamesBackupBeforeDeleting.get(0);
+            String deviceToRetrieve = deviceNamesBackupBeforeDeleting.get(0);
             deviceNamesBackupBeforeDeleting.remove(0);
             devicesNames.add(positionToDelete, deviceToRetrieve);
             adapter.notifyItemInserted(positionToDelete);
-            deletingDeviceSnackbar.dismiss();*/
-
-            String deviceToRetrieve = deviceNamesBackupBeforeDeleting.get(0);
-            deviceNamesBackupBeforeDeleting.remove(0);
-            devicesNames.add(0, deviceToRetrieve);
-            adapter.notifyItemInserted(0);
             deletingDeviceSnackbar.dismiss();
         }
     }
@@ -279,27 +334,23 @@ public class DevicesListFragment extends Fragment {
         public void onDismissed(Snackbar transientBottomBar, int event) {
             if(event == DISMISS_EVENT_TIMEOUT || event == DISMISS_EVENT_CONSECUTIVE) {
                 super.onDismissed(transientBottomBar, event);
-                // todo: DEJO ESTO PREPARADO PARA CUANDO PUEDAS ELIMINAR EL DEVICE QUE QUIERAS
-                //api.deleteDevice(devicesIds.get(positionToDelete), new Callback<Result<Boolean>>() {
-                api.deleteDevice(devicesIds.get(0), new Callback<Result<Boolean>>() {
+                api.deleteDevice(devicesIds.get(positionToDelete), new Callback<Result<Boolean>>() {
                     @Override
                     public void onResponse(@NonNull Call<Result<Boolean>> call, @NonNull Response<Result<Boolean>> response) {
                         if (response.isSuccessful()) {
                             Result<Boolean> result = response.body();
                             if (result != null && result.getResult()) {
-                                // todo: DEJO ESTO PREPARADO PARA CUANDO PUEDAS ELIMINAR EL DEVICE QUE QUIERAS
-                                /*devicesIds.remove(positionToDelete.intValue());
-                                deviceNamesBackupBeforeDeleting.remove(0);*/
-                                devicesIds.remove(0);
+                                devicesIds.remove(positionToDelete.intValue());
+                                deviceTypeIds.remove(positionToDelete.intValue());
                                 deviceNamesBackupBeforeDeleting.remove(0);
                             } else
                                 Snackbar.make(view, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
                         } else
-                            Snackbar.make(view, "ERROR tipo 2", Snackbar.LENGTH_LONG).show();
+                            handleError(response);
                     }
                     @Override
                     public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
-                        Snackbar.make(view, "ERROR tipo 3", Snackbar.LENGTH_LONG).show();
+                        handleUnexpectedError(t);
                     }
                 });
             }

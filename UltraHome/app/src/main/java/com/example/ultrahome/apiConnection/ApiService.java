@@ -1,9 +1,9 @@
 package com.example.ultrahome.apiConnection;
 
-import com.example.ultrahome.apiConnection.entities.deviceEntities.Lights;
 import com.example.ultrahome.apiConnection.entities.Home;
 import com.example.ultrahome.apiConnection.entities.Result;
 import com.example.ultrahome.apiConnection.entities.Room;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.Device;
 
 import java.util.List;
 
@@ -60,10 +60,10 @@ public interface ApiService {
 
     @POST("devices")
     @Headers("Content-Type: application/json")
-    Call<Result<Lights>> addDevice(@Body Lights device);
+    Call<Result<Device>> addDevice(@Body Device device);
 
     @GET("devices")
-    Call<Result<List<Lights>>> getDevices();
+    Call<Result<List<Device>>> getDevices();
 
     @DELETE("devices/{deviceId}")
     Call<Result<Boolean>> deleteDevice(@Path("deviceId") String deviceId);
@@ -80,7 +80,7 @@ public interface ApiService {
     ////////////// ROOM-DEVICE CONTROLS ////////////////////
 
     @GET("rooms/{roomId}/devices")
-    Call<Result<List<Lights>>> getDevicesInThisRoom(@Path("roomId") String roomId);
+    Call<Result<List<Device>>> getDevicesInThisRoom(@Path("roomId") String roomId);
 
     @POST("rooms/{roomId}/devices/{deviceId}")
     @Headers("Content-Type: application/json")
