@@ -35,15 +35,20 @@ import retrofit2.Response;
 
 public class HomesFragment extends Fragment {
 
+    // Screen controls
     private Button buttonAddHome;
+
+    // variables for dealing with the RecyclerView
     private RecyclerView recyclerView;
-    private List<String> homeNames;
-    private List<String> homeIds;
-    private List<String> homeNamesBackupBeforeDeleting;
-    private Snackbar deletingHomeSnackbar;
     private Integer positionToDelete;
     private LinearLayoutManager layoutManager;
     private HomesAdapter adapter;
+
+    private List<String> homeNames;
+    private List<String> homeIds;
+    private List<String> homeNamesBackupBeforeDeleting;
+
+    private Snackbar deletingHomeSnackbar;
     private static ApiClient api;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

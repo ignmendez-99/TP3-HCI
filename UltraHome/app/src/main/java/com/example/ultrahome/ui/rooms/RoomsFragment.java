@@ -37,16 +37,21 @@ import retrofit2.Response;
 
 public class RoomsFragment extends Fragment {
 
+    // Screen controls
     private Button addNewRoomButton;
+
+    // variables for dealing with the RecyclerView
     private RecyclerView recyclerView;
-    private String homeId;   // this is the home that contains all rooms displayed in this screen
-    private List<String> roomNames;
-    private List<String> roomIds;
-    private List<String> roomNamesBackupBeforeDeleting;
-    private Snackbar deletingRoomSnackbar;
     private Integer positionToDelete;
     private LinearLayoutManager layoutManager;
     private RoomsAdapter adapter;
+
+    private List<String> roomNames;
+    private List<String> roomIds;
+    private List<String> roomNamesBackupBeforeDeleting;
+
+    private Snackbar deletingRoomSnackbar;
+    private String homeId;   // this is the home that contains all rooms displayed in this screen
     private ApiClient api;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
