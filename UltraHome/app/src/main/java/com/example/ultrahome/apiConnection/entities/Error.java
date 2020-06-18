@@ -1,4 +1,4 @@
-package com.example.ultrahome.apiConnection;
+package com.example.ultrahome.apiConnection.entities;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

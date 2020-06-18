@@ -18,10 +18,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.ultrahome.R;
 import com.example.ultrahome.apiConnection.ApiClient;
-import com.example.ultrahome.apiConnection.Home;
-import com.example.ultrahome.apiConnection.Result;
-import com.example.ultrahome.ui.homes.HomesAdapter;
-import com.example.ultrahome.ui.homes.SwipeToDeleteHomeCallback;
+import com.example.ultrahome.apiConnection.entities.Home;
+import com.example.ultrahome.apiConnection.entities.Result;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -47,7 +45,7 @@ public class HomesFragment extends Fragment {
     private static ApiClient api;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_devices, container, false);
+        return inflater.inflate(R.layout.fragment_homes, container, false);
     }
 
     @Override

@@ -1,5 +1,12 @@
 package com.example.ultrahome.apiConnection;
 
+import com.example.ultrahome.apiConnection.entities.deviceEntities.Lights;
+import com.example.ultrahome.apiConnection.entities.Error;
+import com.example.ultrahome.apiConnection.entities.ErrorResult;
+import com.example.ultrahome.apiConnection.entities.Home;
+import com.example.ultrahome.apiConnection.entities.Result;
+import com.example.ultrahome.apiConnection.entities.Room;
+
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.List;
@@ -97,6 +104,26 @@ public class ApiClient {
         return call;
     }
 
+    ////////////// DEVICE GENERAL CALLS ////////////////////
+
+    public Call<Result<Lights>> addDevice(Lights device, Callback<Result<Lights>> callback) {
+        Call<Result<Lights>> call = this.service.addDevice(device);
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<List<Lights>>> getDevices(Callback<Result<List<Lights>>> callback) {
+        Call<Result<List<Lights>>> call = this.service.getDevices();
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<Boolean>> deleteDevice(String deviceId, Callback<Result<Boolean>> callback) {
+        Call<Result<Boolean>> call = this.service.deleteDevice(deviceId);
+        call.enqueue(callback);
+        return call;
+    }
+
     ////////////// HOME-ROOM CALLS ////////////////////
 
     public Call<Result<List<Room>>> getRoomsInThisHome(String homeId, Callback<Result<List<Room>>> callback) {
@@ -107,6 +134,20 @@ public class ApiClient {
 
     public Call<Result<Boolean>> linkRoomWithHome(String homeId, String roomId, Callback<Result<Boolean>> callback) {
         Call<Result<Boolean>> call = this.service.linkRoomWithHome(homeId, roomId);
+        call.enqueue(callback);
+        return call;
+    }
+
+    ////////////// ROOM-DEVICE CALLS ////////////////////
+
+    public Call<Result<List<Lights>>> getDevicesInThisRoom(String roomId, Callback<Result<List<Lights>>> callback) {
+        Call<Result<List<Lights>>> call = this.service.getDevicesInThisRoom(roomId);
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<Boolean>> linkDeviceWithRoom(String roomId, String deviceId, Callback<Result<Boolean>> callback) {
+        Call<Result<Boolean>> call = this.service.linkDeviceWithHome(roomId, deviceId);
         call.enqueue(callback);
         return call;
     }

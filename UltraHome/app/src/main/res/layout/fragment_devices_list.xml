@@ -12,10 +12,28 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <Button
+        android:id="@+id/button_add_lights"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ADD LIGHT"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/horizontal_devices_recycler_view" />
+
+    <Button
+        android:id="@+id/button_delete_lights"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="DELETE DEVICE"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_add_lights" />
+
     <FrameLayout
         android:id="@+id/device_control_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/horizontal_devices_recycler_view"/>
+        app:layout_constraintTop_toBottomOf="@+id/button_delete_lights"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

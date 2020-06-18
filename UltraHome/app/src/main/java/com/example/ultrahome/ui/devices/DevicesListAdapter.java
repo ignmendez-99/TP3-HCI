@@ -19,10 +19,20 @@ public class DevicesListAdapter extends RecyclerView.Adapter<DevicesListAdapter.
 
     private List<String> devicesNames;
     private Context context;
+    private DevicesListFragment currentFragment;
 
-    public DevicesListAdapter(Context context, List<String> list) {
+    public DevicesListAdapter(Context context, List<String> list, DevicesListFragment currentFragment) {
         this.context = context;
         devicesNames = list;
+        this.currentFragment = currentFragment;
+    }
+
+    public Context getContext() {
+        return currentFragment.getContext();
+    }
+
+    public void deleteItem(int position) {
+        currentFragment.deleteDevice(currentFragment.getView(), position);
     }
 
     @NonNull
@@ -36,12 +46,8 @@ public class DevicesListAdapter extends RecyclerView.Adapter<DevicesListAdapter.
     @Override
     public void onBindViewHolder(@NonNull DevicesListViewHolder holder, final int position) {
         holder.deviceName.setText(devicesNames.get(position));
-        holder.devicesConstraintLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // we navigate to the Rooms screen of this Particular Home
-                Toast.makeText(context, "You clicked " + devicesNames.get(position), Toast.LENGTH_SHORT).show();
-            }
+        holder.devicesConstraintLayout.setOnClickListener(view -> {
+            Toast.makeText(context, "FALTA HACER ALGO", Toast.LENGTH_SHORT).show();
         });
     }
 

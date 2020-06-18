@@ -1,11 +1,11 @@
-package com.example.ultrahome.apiConnection;
+package com.example.ultrahome.apiConnection.entities;
 
 import androidx.annotation.NonNull;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Home {
+public class Room {
 
     @SerializedName("id")
     @Expose
@@ -16,8 +16,11 @@ public class Home {
     @SerializedName("meta")
     @Expose
     private Object meta = new Object();
+    @SerializedName("home")
+    @Expose
+    private Home home;
 
-    public Home(String name) {
+    public Room(String name) {
         this.name = name;
     }
 
@@ -27,6 +30,9 @@ public class Home {
     }
     public String getName() {
         return name;
+    }
+    public Home getHome() {
+        return home;
     }
 
     // SETTERS

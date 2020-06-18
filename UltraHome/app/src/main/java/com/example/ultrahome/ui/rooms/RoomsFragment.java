@@ -19,8 +19,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.ultrahome.R;
 import com.example.ultrahome.apiConnection.ApiClient;
-import com.example.ultrahome.apiConnection.Result;
-import com.example.ultrahome.apiConnection.Room;
+import com.example.ultrahome.apiConnection.entities.Result;
+import com.example.ultrahome.apiConnection.entities.Room;
 import com.example.ultrahome.ui.homes.HomeToRoomViewModel;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
@@ -36,7 +36,6 @@ import retrofit2.Response;
 public class RoomsFragment extends Fragment {
 
     private Button addNewRoomButton;
-    private Button removeRoomButton;
     private RecyclerView recyclerView;
     private String homeId;   // this is the home that contains all rooms displayed in this screen
     private List<String> roomNames;
@@ -60,7 +59,7 @@ public class RoomsFragment extends Fragment {
         roomNamesBackupBeforeDeleting = new ArrayList<>();
         api = ApiClient.getInstance();
 
-        // we grab the "parameter" that DevicesFragment left us
+        // we grab the "parameter" that HomesFragment left us
         HomeToRoomViewModel model = new ViewModelProvider(requireActivity()).get(HomeToRoomViewModel.class);
         homeId = model.getHomeId().getValue();
 
@@ -109,7 +108,7 @@ public class RoomsFragment extends Fragment {
             }
             @Override
             public void onFailure(@NonNull Call<Result<Room>> call, @NonNull Throwable t) {
-                Snackbar.make(v, "ERROR tipo 3", Snackbar.LENGTH_LONG).show();
+                handleUnexpectedError(t);
             }
         });
     }

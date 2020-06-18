@@ -10,7 +10,7 @@
         android:id="@+id/navigation_devices"
         android:name="com.example.ultrahome.ui.homes.HomesFragment"
         android:label="@string/title_devices"
-        tools:layout="@layout/fragment_devices">
+        tools:layout="@layout/fragment_homes">
         <action
             android:id="@+id/action_nav_devicesFragment_to_RoomsFragment"
             app:destination="@+id/roomsFragment"/>

@@ -1,5 +1,10 @@
 package com.example.ultrahome.apiConnection;
 
+import com.example.ultrahome.apiConnection.entities.deviceEntities.Lights;
+import com.example.ultrahome.apiConnection.entities.Home;
+import com.example.ultrahome.apiConnection.entities.Result;
+import com.example.ultrahome.apiConnection.entities.Room;
+
 import java.util.List;
 
 import retrofit2.Call;
@@ -51,6 +56,18 @@ public interface ApiService {
     @GET("rooms")
     Call<Result<List<Room>>> getRooms();
 
+    ////////////// DEVICE GENERAL CONTROLS ////////////////////
+
+    @POST("devices")
+    @Headers("Content-Type: application/json")
+    Call<Result<Lights>> addDevice(@Body Lights device);
+
+    @GET("devices")
+    Call<Result<List<Lights>>> getDevices();
+
+    @DELETE("devices/{deviceId}")
+    Call<Result<Boolean>> deleteDevice(@Path("deviceId") String deviceId);
+
     ////////////// HOME-ROOM CONTROLS ////////////////////
 
     @GET("homes/{homeId}/rooms")
@@ -59,4 +76,13 @@ public interface ApiService {
     @POST("homes/{homeId}/rooms/{roomId}")
     @Headers("Content-Type: application/json")
     Call<Result<Boolean>> linkRoomWithHome(@Path("homeId") String homeId, @Path("roomId") String roomId);
+
+    ////////////// ROOM-DEVICE CONTROLS ////////////////////
+
+    @GET("rooms/{roomId}/devices")
+    Call<Result<List<Lights>>> getDevicesInThisRoom(@Path("roomId") String roomId);
+
+    @POST("rooms/{roomId}/devices/{deviceId}")
+    @Headers("Content-Type: application/json")
+    Call<Result<Boolean>> linkDeviceWithHome(@Path("roomId") String roomId, @Path("deviceId") String deviceId);
 }
