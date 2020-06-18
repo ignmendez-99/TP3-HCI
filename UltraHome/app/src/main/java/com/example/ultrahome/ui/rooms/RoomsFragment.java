@@ -78,8 +78,6 @@ public class RoomsFragment extends Fragment {
         recyclerView.setAdapter(adapter);
 
         // Swipe to delete functionality is assigned here
-        // recyclerView.setAdapter(adapter);
-        // recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteRoomCallback(adapter));
         itemTouchHelper.attachToRecyclerView(recyclerView);
     }

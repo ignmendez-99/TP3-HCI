@@ -72,8 +72,6 @@ public class HomesFragment extends Fragment {
         recyclerView.setAdapter(adapter);
 
         // Swipe to delete functionality is assigned here
-        // recyclerView.setAdapter(adapter);
-        // recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteHomeCallback(adapter));
         itemTouchHelper.attachToRecyclerView(recyclerView);
     }
