@@ -4,7 +4,7 @@ import com.example.ultrahome.apiConnection.entities.Room;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public abstract class Device {
+public class Device {
 
     @SerializedName("id")
     @Expose
@@ -25,6 +25,8 @@ public abstract class Device {
     @SerializedName("type")
     @Expose
     protected DeviceType type;
+
+    public Device() {}
 
     // GETTERS
     public String getId() {

@@ -5,7 +5,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -13,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,6 +22,7 @@ import com.example.ultrahome.apiConnection.ApiClient;
 import com.example.ultrahome.apiConnection.entities.Error;
 import com.example.ultrahome.apiConnection.entities.Home;
 import com.example.ultrahome.apiConnection.entities.Result;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -36,12 +37,13 @@ import retrofit2.Response;
 public class HomesFragment extends Fragment {
 
     // Screen controls
-    private Button buttonAddHome;
+    private FloatingActionButton buttonAddHome;
 
     // variables for dealing with the RecyclerView
     private RecyclerView recyclerView;
     private Integer positionToDelete;
     private LinearLayoutManager layoutManager;
+    private GridLayoutManager gridLayoutManager;
     private HomesAdapter adapter;
 
     private List<String> homeNames;
@@ -70,10 +72,16 @@ public class HomesFragment extends Fragment {
         buttonAddHome.setOnClickListener(this::addNewHome);
 
         recyclerView = view.findViewById(R.id.homes_recycler_view);
-        layoutManager = new LinearLayoutManager(getContext());
-        recyclerView.setLayoutManager(layoutManager);
-
-        adapter = new HomesAdapter(getContext(), homeNames, this);
+        if(recyclerView == null) {
+            recyclerView = view.findViewById(R.id.homes_recycler_view_grid);
+            gridLayoutManager = new GridLayoutManager(getContext(), 2);
+            recyclerView.setLayoutManager(gridLayoutManager);
+            adapter = new HomesAdapterGrid(getContext(), homeNames, this);
+        } else {
+            layoutManager = new LinearLayoutManager(getContext());
+            recyclerView.setLayoutManager(layoutManager);
+            adapter = new HomesAdapterLinear(getContext(), homeNames, this);
+        }
         recyclerView.setAdapter(adapter);
 
         // Swipe to delete functionality is assigned here

@@ -74,10 +74,12 @@ public class LightsControllerFragment extends Fragment {
         });
     }
 
+    // HARDCODEADO
     private void updateState() {
         changeTextDependingOnState();
     }
 
+    // HARDCODEADO
     private void changeTextDependingOnState() {
         if(onOffSwitch.isChecked()) {
             onOffText.setText("ON");

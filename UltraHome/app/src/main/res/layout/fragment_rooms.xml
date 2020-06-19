@@ -17,13 +17,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/button_add_room"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="ADD NEW ROOM"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rooms_recycler_view" />
+        android:layout_marginBottom="70dp"
+        android:layout_marginEnd="25dp"
+        android:src="@drawable/add_button"
+        android:layout_gravity="bottom|end"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

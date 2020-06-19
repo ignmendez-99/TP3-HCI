@@ -91,10 +91,16 @@ public class DevicesListFragment extends Fragment {
         button_add_lights.setOnClickListener(this::addNewDevice);
 
         recyclerView = view.findViewById(R.id.horizontal_devices_recycler_view);
-        layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL,false);
-        recyclerView.setLayoutManager(layoutManager);
-
-        adapter = new DevicesListAdapter(getContext(), devicesNames, this);
+        if(recyclerView == null) {
+            recyclerView = view.findViewById(R.id.vertical_devices_recycler_view);
+            layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+            recyclerView.setLayoutManager(layoutManager);
+            adapter = new DevicesListAdapter(getContext(), devicesNames, this);
+        } else {
+            layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+            recyclerView.setLayoutManager(layoutManager);
+            adapter = new DevicesListAdapter(getContext(), devicesNames, this);
+        }
         recyclerView.setAdapter(adapter);
 
         initDeviceTypeIdMap();

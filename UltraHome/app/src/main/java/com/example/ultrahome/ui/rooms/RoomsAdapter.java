@@ -18,12 +18,11 @@ import com.example.ultrahome.ui.homes.HomeToRoomViewModel;
 
 import java.util.List;
 
-public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.RoomsViewHolder> {
-
-    private List<String> roomsNames;
-    private Context context;
-    private RoomsFragment currentFragment;
-    private RoomToDeviceViewModel model;
+public abstract class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.RoomsViewHolder> {
+    protected List<String> roomsNames;
+    protected Context context;
+    protected RoomsFragment currentFragment;
+    protected RoomToDeviceViewModel model;
 
     public RoomsAdapter(Context context, List<String> namesList, RoomsFragment currentFragment) {
         this.context = context;
@@ -37,14 +36,6 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.RoomsViewHol
 
     public void deleteItem(int position) {
         currentFragment.deleteRoom(currentFragment.getView(), position);
-    }
-
-    @NonNull
-    @Override
-    public RoomsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(context);
-        View v = inflater.inflate(R.layout.room_row_layout, parent, false);
-        return new RoomsAdapter.RoomsViewHolder(v);
     }
 
     @Override
@@ -76,7 +67,7 @@ public class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.RoomsViewHol
         public RoomsViewHolder(View v) {
             super(v);
             roomName = v.findViewById(R.id.room_name);
-            roomsConstraintLayout = v.findViewById(R.id.rooms_row_layout);
+            roomsConstraintLayout = v.findViewById(R.id.room_item);
             amountOfDevicesInside = v.findViewById(R.id.number_devices_inside);
         }
     }

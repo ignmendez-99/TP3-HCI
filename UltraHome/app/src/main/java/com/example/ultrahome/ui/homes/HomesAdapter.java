@@ -15,19 +15,11 @@ import com.example.ultrahome.R;
 
 import java.util.List;
 
-public class HomesAdapter extends RecyclerView.Adapter<HomesAdapter.HomesViewHolder> {
-    private List<String> homesNames;
-    private Context context;
-    private HomeToRoomViewModel model;
-    private HomesFragment currentFragment;
-
-    @NonNull
-    @Override
-    public HomesAdapter.HomesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(context);
-        View v = inflater.inflate(R.layout.home_row_layout, parent, false);
-        return new HomesViewHolder(v);
-    }
+public abstract class HomesAdapter extends RecyclerView.Adapter<HomesAdapter.HomesViewHolder> {
+    protected List<String> homesNames;
+    protected Context context;
+    protected HomeToRoomViewModel model;
+    protected HomesFragment currentFragment;
 
     public HomesAdapter(Context context, List<String> namesList, HomesFragment currentFragment) {
         this.context = context;
@@ -73,7 +65,7 @@ public class HomesAdapter extends RecyclerView.Adapter<HomesAdapter.HomesViewHol
         public HomesViewHolder(View v) {
             super(v);
             homeName = v.findViewById(R.id.home_name);
-            homesConstraintLayout = v.findViewById(R.id.homes_row_layout);
+            homesConstraintLayout = v.findViewById(R.id.home_item);
             amountOfRoomsInside = v.findViewById(R.id.number_rooms_inside);
         }
     }

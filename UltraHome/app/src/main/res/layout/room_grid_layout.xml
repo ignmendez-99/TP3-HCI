@@ -4,13 +4,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:id="@+id/home_item">
+    android:id="@+id/room_item">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
+        android:layout_marginBottom="721dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -20,46 +20,40 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="8dp"
-            android:paddingTop="20dp"
-            android:paddingBottom="20dp">
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp">
 
             <TextView
-                android:id="@+id/home_name"
+                android:id="@+id/room_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxWidth="190dp"
-                android:text="HOME NAME"
+                android:maxWidth="210dp"
+                android:text="ROOM NAME"
                 android:textAlignment="center"
                 android:textColor="#000"
                 android:textSize="20sp"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.15"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/rooms_inside"
+                android:id="@+id/number_devices_inside"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=" rooms inside"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.9"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:text="39"
+                app:layout_constraintEnd_toStartOf="@+id/devices_inside"
+                app:layout_constraintTop_toTopOf="@+id/devices_inside" />
 
             <TextView
-                android:id="@+id/number_rooms_inside"
+                android:id="@+id/devices_inside"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="25"
-                app:layout_constraintBottom_toBottomOf="@+id/rooms_inside"
-                app:layout_constraintEnd_toStartOf="@+id/rooms_inside" />
-
+                android:text=" devices inside"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/room_name" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-

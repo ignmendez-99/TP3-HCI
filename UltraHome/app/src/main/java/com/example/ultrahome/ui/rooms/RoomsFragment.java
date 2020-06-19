@@ -5,7 +5,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -14,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,6 +24,7 @@ import com.example.ultrahome.apiConnection.entities.Error;
 import com.example.ultrahome.apiConnection.entities.Result;
 import com.example.ultrahome.apiConnection.entities.Room;
 import com.example.ultrahome.ui.homes.HomeToRoomViewModel;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -38,12 +39,13 @@ import retrofit2.Response;
 public class RoomsFragment extends Fragment {
 
     // Screen controls
-    private Button addNewRoomButton;
+    private FloatingActionButton addNewRoomButton;
 
     // variables for dealing with the RecyclerView
     private RecyclerView recyclerView;
     private Integer positionToDelete;
     private LinearLayoutManager layoutManager;
+    private GridLayoutManager gridLayoutManager;
     private RoomsAdapter adapter;
 
     private List<String> roomNames;
@@ -77,10 +79,16 @@ public class RoomsFragment extends Fragment {
         addNewRoomButton.setOnClickListener(this::addNewRoom);
 
         recyclerView = view.findViewById(R.id.rooms_recycler_view);
-        layoutManager = new LinearLayoutManager(getContext());
-        recyclerView.setLayoutManager(layoutManager);
-
-        adapter = new RoomsAdapter(getContext(), roomNames, this);
+        if(recyclerView == null) {
+            recyclerView = view.findViewById(R.id.rooms_recycler_view_grid);
+            gridLayoutManager = new GridLayoutManager(getContext(), 2);
+            recyclerView.setLayoutManager(gridLayoutManager);
+            adapter = new RoomsAdapterGrid(getContext(), roomNames, this);
+        } else {
+            layoutManager = new LinearLayoutManager(getContext());
+            recyclerView.setLayoutManager(layoutManager);
+            adapter = new RoomsAdapterLinear(getContext(), roomNames, this);
+        }
         recyclerView.setAdapter(adapter);
 
         // Swipe to delete functionality is assigned here
