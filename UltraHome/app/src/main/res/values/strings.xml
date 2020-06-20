@@ -5,4 +5,12 @@
     <string name="title_routines">Routines</string>
     <string name="roomsFragment">Rooms</string>
     <string name="devicesListFragment">devicesListFragment</string>
+
+    <string name="blinds_open_button">Open completely</string>
+    <string name="blinds_close_button">Close completely</string>
+    <string name="blinds_percentage_text">PERCENTAGE</string>
+
+    <string name="edit_button">Edit</string>
+    <string name="delete_button">Delete</string>
+    <string name="done_button">Done</string>
 </resources>
