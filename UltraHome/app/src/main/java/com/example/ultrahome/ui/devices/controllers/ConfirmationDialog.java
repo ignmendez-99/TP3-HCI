@@ -7,6 +7,8 @@ import android.os.Bundle;
 
 import androidx.fragment.app.DialogFragment;
 
+import com.example.ultrahome.ui.devices.DevicesListFragment;
+
 public class ConfirmationDialog extends DialogFragment {
 
     @Override
@@ -23,7 +25,9 @@ public class ConfirmationDialog extends DialogFragment {
                 .setPositiveButton(android.R.string.yes,  new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        // do something
+                        BlindsControllerFragment containerFragment = (BlindsControllerFragment) getParentFragment();
+                        assert containerFragment != null;
+                        containerFragment.deleteDevice(containerFragment.getView());
                     }
                 })
                 .create();

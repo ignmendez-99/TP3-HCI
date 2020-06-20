@@ -286,39 +286,10 @@ public class DevicesListFragment extends Fragment {
         return deviceTypeIds;
     }
 
-    void insertNestedFragment(String deviceTypeId, String deviceId, View v, int positionInRecyclerView) {
-        Integer layoutToChoose = supportedDeviceTypeIds.get(deviceTypeId);
-        if(layoutToChoose != null) {
-            switch(layoutToChoose) {
-                case R.layout.fragment_lights_controller:
-                    childFragment = LightsControllerFragment.newInstance(deviceId, positionInRecyclerView);
-                    break;
-                case R.layout.fragment_blinds_controller:
-                    childFragment = BlindsControllerFragment.newInstance(deviceId, positionInRecyclerView);
-                    break;
-                case R.layout.fragment_door_controller:
-                    childFragment = DoorControllerFragment.newInstance(deviceId, positionInRecyclerView);
-                    break;
-                case R.layout.fragment_faucet_controller:
-                    childFragment = FaucetControllerFragment.newInstance(deviceId, positionInRecyclerView);
-                    break;
-                case R.layout.fragment_refrigerator_controller:
-                    childFragment = RefrigeratorControllerFragment.newInstance(deviceId, positionInRecyclerView);
-                    break;
-                case R.layout.fragment_speaker_controller:
-                    childFragment = SpeakerControllerFragment.newInstance(deviceId, positionInRecyclerView);
-                    break;
-                case R.layout.fragment_vacuum_controller:
-                    childFragment = VacuumControllerFragment.newInstance(deviceId, positionInRecyclerView);
-                    break;
-                default:
-                    throw new IllegalStateException("Unexpected value: " + layoutToChoose);
-            }
-            FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-            transaction.replace(R.id.device_control_container, childFragment).commit();
-        } else {
-            Snackbar.make(v, "Could not load device", Snackbar.LENGTH_SHORT);
-        }
+    void insertNestedFragment(String deviceTypeId, String deviceId, String deviceName, View v, int positionInRecyclerView) {
+        childFragment = GenericDeviceFragment.newInstance(deviceId, deviceName, deviceTypeId, positionInRecyclerView);
+        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+        transaction.replace(R.id.device_control_container, childFragment).commit();
     }
 
     private <T> void handleError(@NonNull Response<T> response) {
