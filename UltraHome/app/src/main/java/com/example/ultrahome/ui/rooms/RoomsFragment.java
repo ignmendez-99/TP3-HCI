@@ -72,9 +72,6 @@ public class RoomsFragment extends Fragment {
         HomeToRoomViewModel model = new ViewModelProvider(requireActivity()).get(HomeToRoomViewModel.class);
         homeId = model.getHomeId().getValue();
 
-        // Displays in screen all Rooms -->  todo: FALTA CACHE, ya que sino puede ser mucha carga?
-        getAllRoomsOfThisHome(view);
-
         addNewRoomButton = view.findViewById(R.id.button_add_room);
         addNewRoomButton.setOnClickListener(this::addNewRoom);
 
@@ -91,9 +88,32 @@ public class RoomsFragment extends Fragment {
         }
         recyclerView.setAdapter(adapter);
 
+        // If there is a savedState, we retrieve it and we DON'T call the API.
+        if(savedInstanceState != null) {
+            int numberOfRoomsSaved = savedInstanceState.getInt("numberOfRooms");
+            for(int i = 0; i < numberOfRoomsSaved; i++) {
+                roomNames.add(savedInstanceState.getString("roomName" + i));
+                roomIds.add(savedInstanceState.getString("roomId" + i));
+                adapter.notifyItemInserted(i);
+            }
+        } else {
+            // Displays in screen all Rooms -->  todo: FALTA CACHE, ya que sino puede ser mucha carga?
+            getAllRoomsOfThisHome(view);
+        }
+
         // Swipe to delete functionality is assigned here
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteRoomCallback(adapter));
         itemTouchHelper.attachToRecyclerView(recyclerView);
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("numberOfRooms", roomNames.size());
+        for(int i = 0; i < roomNames.size(); i++) {
+            outState.putString("roomName" + i, roomNames.get(i));
+            outState.putString("roomId" + i, roomIds.get(i));
+        }
     }
 
     List<String> getIdList() {

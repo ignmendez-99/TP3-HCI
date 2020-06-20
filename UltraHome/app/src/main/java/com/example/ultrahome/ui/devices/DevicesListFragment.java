@@ -84,9 +84,6 @@ public class DevicesListFragment extends Fragment {
         RoomToDeviceViewModel model = new ViewModelProvider(requireActivity()).get(RoomToDeviceViewModel.class);
         roomId = model.getRoomId().getValue();
 
-        // Displays in screen all Devices -->  todo: FALTA CACHE, ya que sino puede ser mucha carga?
-        getAllDevicesOfThisRoom(view);
-
         button_add_lights = view.findViewById(R.id.button_add_device);
         button_add_lights.setOnClickListener(this::addNewDevice);
 
@@ -103,7 +100,29 @@ public class DevicesListFragment extends Fragment {
         }
         recyclerView.setAdapter(adapter);
 
+        if(savedInstanceState != null) {
+            int numberOfDevicesSaved = savedInstanceState.getInt("numberOfDevices");
+            for(int i = 0; i < numberOfDevicesSaved; i++) {
+                devicesNames.add(savedInstanceState.getString("deviceName" + i));
+                devicesIds.add(savedInstanceState.getString("deviceId" + i));
+                adapter.notifyItemInserted(i);
+            }
+        } else {
+            // Displays in screen all Devices -->  todo: FALTA CACHE, ya que sino puede ser mucha carga?
+            getAllDevicesOfThisRoom(view);
+        }
+
         initDeviceTypeIdMap();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("numberOfDevices", devicesNames.size());
+        for(int i = 0; i < devicesNames.size(); i++) {
+            outState.putString("deviceName" + i, devicesNames.get(i));
+            outState.putString("deviceId" + i, devicesIds.get(i));
+        }
     }
 
     // todo: esto quizas se puede llevar a otra Clase, ya que sino esta clase hace demasiado

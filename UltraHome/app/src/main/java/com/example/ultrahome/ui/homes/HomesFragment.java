@@ -65,9 +65,6 @@ public class HomesFragment extends Fragment {
         homeIds = new ArrayList<>();
         homeNamesBackupBeforeDeleting = new ArrayList<>();
 
-        // Displays in screen all Homes -->  todo: FALTA CACHE, ya que sino puede ser mucha carga?
-        getAllHomes(view);
-
         buttonAddHome = view.findViewById(R.id.button_add_home);
         buttonAddHome.setOnClickListener(this::addNewHome);
 
@@ -84,9 +81,32 @@ public class HomesFragment extends Fragment {
         }
         recyclerView.setAdapter(adapter);
 
+        // If there is a savedState, we retrieve it and we DON'T call the API.
+        if(savedInstanceState != null) {
+            int numberOfHomesSaved = savedInstanceState.getInt("numberOfHomes");
+            for(int i = 0; i < numberOfHomesSaved; i++) {
+                homeNames.add(savedInstanceState.getString("homeName" + i));
+                homeIds.add(savedInstanceState.getString("homeId" + i));
+                adapter.notifyItemInserted(i);
+            }
+        } else {
+            // Displays in screen all Homes -->  todo: FALTA CACHE, ya que sino puede ser mucha carga?
+            getAllHomes(view);
+        }
+
         // Swipe to delete functionality is assigned here
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteHomeCallback(adapter));
         itemTouchHelper.attachToRecyclerView(recyclerView);
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("numberOfHomes", homeNames.size());
+        for(int i = 0; i < homeNames.size(); i++) {
+            outState.putString("homeName" + i, homeNames.get(i));
+            outState.putString("homeId" + i, homeIds.get(i));
+        }
     }
 
     List<String> getIdList() {
