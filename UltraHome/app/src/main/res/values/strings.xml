@@ -13,4 +13,6 @@
     <string name="edit_button">Edit</string>
     <string name="delete_button">Delete</string>
     <string name="done_button">Done</string>
+
+    <string name="delete_device_confirmation">Are you sure you want to delete the device?</string>
 </resources>
