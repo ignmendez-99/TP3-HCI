@@ -5,12 +5,15 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.ultrahome.ui.devices.DevicesListFragment;
+import com.example.ultrahome.ui.devices.GenericDeviceFragment;
 
 public class ConfirmationDialog extends DialogFragment {
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         return new AlertDialog.Builder(getActivity())
@@ -25,7 +28,7 @@ public class ConfirmationDialog extends DialogFragment {
                 .setPositiveButton(android.R.string.yes,  new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        BlindsControllerFragment containerFragment = (BlindsControllerFragment) getParentFragment();
+                        GenericDeviceFragment containerFragment = (GenericDeviceFragment) getParentFragment();
                         assert containerFragment != null;
                         containerFragment.deleteDevice(containerFragment.getView());
                     }

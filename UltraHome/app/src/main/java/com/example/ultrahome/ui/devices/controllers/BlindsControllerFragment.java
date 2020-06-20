@@ -20,6 +20,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.ultrahome.MainActivity;
 import com.example.ultrahome.R;
 import com.example.ultrahome.ui.devices.DevicesListFragment;
+import com.example.ultrahome.ui.devices.GenericDeviceFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class BlindsControllerFragment extends Fragment {
@@ -35,12 +36,6 @@ public class BlindsControllerFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         readBundle(getArguments());
-    }
-
-    protected void deleteDevice(View view) {
-        DevicesListFragment containerFragment = (DevicesListFragment) getParentFragment();
-        assert containerFragment != null;
-        containerFragment.deleteDevice(view, positionInRecyclerView);
     }
 
     private void readBundle(Bundle bundle) {

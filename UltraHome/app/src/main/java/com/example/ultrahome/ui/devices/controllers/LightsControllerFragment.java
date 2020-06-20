@@ -16,7 +16,6 @@ import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 
 import com.example.ultrahome.R;
-import com.example.ultrahome.ui.devices.DevicesListFragment;
 
 public class LightsControllerFragment extends Fragment {
 
@@ -25,7 +24,6 @@ public class LightsControllerFragment extends Fragment {
     private SeekBar brightnessSeekBar;
     private CardView colorSelector;
     private int[] colorRGB;
-    private Button buttonDeleteDevice;
     private String deviceId;
     private int positionInRecyclerView;
 
@@ -43,9 +41,6 @@ public class LightsControllerFragment extends Fragment {
         colorSelector = view.findViewById(R.id.lights_color_selector);
 
         readBundle(getArguments());
-
-        buttonDeleteDevice = view.findViewById(R.id.button_delete_lights);
-        buttonDeleteDevice.setOnClickListener(this::deleteDevice);
 
         // todo: this should look for data in the DataBase !!!!!
         updateState();
@@ -86,12 +81,6 @@ public class LightsControllerFragment extends Fragment {
         } else {
             onOffText.setText("OFF");
         }
-    }
-
-    private void deleteDevice(View view) {
-        DevicesListFragment containerFragment = (DevicesListFragment) getParentFragment();
-        assert containerFragment != null;
-        containerFragment.deleteDevice(view, positionInRecyclerView);
     }
 
     private void readBundle(Bundle bundle) {

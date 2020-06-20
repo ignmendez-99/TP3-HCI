@@ -11,11 +11,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.ultrahome.R;
-import com.example.ultrahome.ui.devices.DevicesListFragment;
 
 public class FaucetControllerFragment extends Fragment {
 
-    private Button buttonDeleteDevice;
     private String deviceId;
     private int positionInRecyclerView;
 
@@ -26,18 +24,10 @@ public class FaucetControllerFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         readBundle(getArguments());
-
-        buttonDeleteDevice = view.findViewById(R.id.button_delete_faucet);
-        buttonDeleteDevice.setOnClickListener(this::deleteDevice);
     }
 
-    private void deleteDevice(View view) {
-        DevicesListFragment containerFragment = (DevicesListFragment) getParentFragment();
-        assert containerFragment != null;
-        containerFragment.deleteDevice(view, positionInRecyclerView);
-    }
+
 
     private void readBundle(Bundle bundle) {
         if (bundle != null) {

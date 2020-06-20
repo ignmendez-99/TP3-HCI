@@ -46,20 +46,6 @@ public class GenericDeviceFragment extends Fragment {
     private Map<String, Integer> supportedDeviceTypeIds;
     private Fragment childFragment;
 
-    @NonNull
-    public static GenericDeviceFragment newInstance(String deviceId, String deviceName, String deviceTypeId, int positionInRecyclerView) {
-        Bundle bundle = new Bundle();
-        bundle.putString("deviceName", deviceName);
-        bundle.putString("deviceId", deviceId);
-        bundle.putString("deviceTypeId", deviceTypeId);
-        bundle.putInt("positionInRecyclerView", positionInRecyclerView);
-
-        GenericDeviceFragment fragment = new GenericDeviceFragment();
-        fragment.setArguments(bundle);
-
-        return fragment;
-    }
-
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.generic_device, container, false);
     }
@@ -93,7 +79,21 @@ public class GenericDeviceFragment extends Fragment {
 
         initDeviceTypeIdMap();
 
-        insertNestedFragment(deviceTypeId, deviceId, view, positionInRecyclerView);
+        insertNestedFragment(view);
+    }
+
+    @NonNull
+    public static GenericDeviceFragment newInstance(String deviceId, String deviceName, String deviceTypeId, int positionInRecyclerView) {
+        Bundle bundle = new Bundle();
+        bundle.putString("deviceName", deviceName);
+        bundle.putString("deviceId", deviceId);
+        bundle.putString("deviceTypeId", deviceTypeId);
+        bundle.putInt("positionInRecyclerView", positionInRecyclerView);
+
+        GenericDeviceFragment fragment = new GenericDeviceFragment();
+        fragment.setArguments(bundle);
+
+        return fragment;
     }
 
     private void readBundle(Bundle bundle) {
@@ -105,7 +105,7 @@ public class GenericDeviceFragment extends Fragment {
         }
     }
 
-    void insertNestedFragment(String deviceTypeId, String deviceId, View v, int positionInRecyclerView) {
+    private void insertNestedFragment(View v) {
         Integer layoutToChoose = supportedDeviceTypeIds.get(deviceTypeId);
         if(layoutToChoose != null) {
             switch(layoutToChoose) {
@@ -138,6 +138,12 @@ public class GenericDeviceFragment extends Fragment {
         } else {
             Snackbar.make(v, "Could not load device", Snackbar.LENGTH_SHORT);
         }
+    }
+
+    public void deleteDevice(View view) {
+        DevicesListFragment containerFragment = (DevicesListFragment) getParentFragment();
+        assert containerFragment != null;
+        containerFragment.deleteDevice(view, positionInRecyclerView);
     }
 
     // todo: esto quizas se puede llevar a otra Clase, ya que sino esta clase hace demasiado
