@@ -43,14 +43,14 @@
         android:text="STOP"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/button2" />
+        app:layout_constraintTop_toTopOf="@+id/dispense_exact_amount_button" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/dispense_exact_amount_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="Dispense exact ammount"
+        android:layout_marginTop="36dp"
+        android:text="Dispense exact amount"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/faucet_switch" />
@@ -60,6 +60,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/stop_button">
 
@@ -76,6 +77,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="START" />
+
+        <Button
+            android:id="@+id/cancel_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="CANCEL" />
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

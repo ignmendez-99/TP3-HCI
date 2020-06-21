@@ -5,6 +5,7 @@ import com.example.ultrahome.apiConnection.entities.Result;
 import com.example.ultrahome.apiConnection.entities.Room;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.Device;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.DeviceState;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.blinds.BlindsState;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.door.DoorState;
 
 import java.util.List;
@@ -101,6 +102,19 @@ public interface ApiService {
     @PUT("devices/{deviceId}/{actionName}")
     @Headers("Content-Type: application/json")
     Call<Result<Boolean>> executeActionOnDoor(@Path("deviceId") String deviceId, @Path("actionName") String actionName);
+
+    ////////////// BLINDS CONTROLS ////////////////////
+
+    @GET("devices/{deviceId}/state")
+    Call<Result<BlindsState>> getBlindsState(@Path("deviceId") String deviceId);
+
+    @PUT("devices/{deviceId}/{actionName}")
+    @Headers("Content-Type: application/json")
+    Call<Result<Boolean>> openOrCloseBlinds(@Path("deviceId") String deviceId, @Path("actionName") String actionName);
+
+    @PUT("devices/{deviceId}/{actionName}")
+    @Headers("Content-Type: application/json")
+    Call<Result<Integer>> changeBlindsLevel(@Path("deviceId") String deviceId, @Path("actionName") String actionName);
 
 
 }

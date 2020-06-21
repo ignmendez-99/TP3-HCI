@@ -2,6 +2,7 @@ package com.example.ultrahome.apiConnection;
 
 import com.example.ultrahome.apiConnection.entities.deviceEntities.Device;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.DeviceState;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.blinds.BlindsState;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.door.Door;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.door.DoorState;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.lights.Lights;
@@ -190,6 +191,32 @@ public class ApiClient {
 
     public Call<Result<Boolean>> unlockDoor(String deviceId, Callback<Result<Boolean>> callback) {
         Call<Result<Boolean>> call = this.service.executeActionOnDoor(deviceId, "unlock");
+        call.enqueue(callback);
+        return call;
+    }
+
+    ////////////// BLINDS CALLS ////////////////////
+
+    public Call<Result<BlindsState>> getBlindsState(String deviceId, Callback<Result<BlindsState>> callback) {
+        Call<Result<BlindsState>> call = this.service.getBlindsState(deviceId);
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<Boolean>> openBlinds(String deviceId, Callback<Result<Boolean>> callback) {
+        Call<Result<Boolean>> call = this.service.openOrCloseBlinds(deviceId, "open");
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<Boolean>> closeBlinds(String deviceId, Callback<Result<Boolean>> callback) {
+        Call<Result<Boolean>> call = this.service.openOrCloseBlinds(deviceId, "close");
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<Integer>> setBlindsLevel(String deviceId, int newLevel, Callback<Result<Integer>> callback) {
+        Call<Result<Integer>> call = this.service.changeBlindsLevel(deviceId, "setLevel");
         call.enqueue(callback);
         return call;
     }

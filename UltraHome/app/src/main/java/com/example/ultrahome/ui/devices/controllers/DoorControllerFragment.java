@@ -48,22 +48,7 @@ public class DoorControllerFragment extends Fragment {
         openCloseSwitch = view.findViewById(R.id.open_switch);
         lockUnlockSwitch = view.findViewById(R.id.lock_switch);
 
-        if(openCloseSwitch != null && lockUnlockSwitch != null) {
-            openCloseSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                if (isChecked) {
-                    closeDoor();
-                } else {
-                    openDoor();
-                }
-            });
-            lockUnlockSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                if (isChecked) {
-                    lockDoor();
-                } else {
-                    unlockDoor();
-                }
-            });
-        }
+
 
         api.getDoorState(deviceId, new Callback<Result<DoorState>>() {
             @Override
@@ -82,6 +67,22 @@ public class DoorControllerFragment extends Fragment {
                             openCloseSwitch.setEnabled(false);
                         lockUnlockSwitch.setChecked(isLocked);
                         openCloseSwitch.setChecked(!isOpen);
+                        if(openCloseSwitch != null && lockUnlockSwitch != null) {
+                            openCloseSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                                if (isChecked) {
+                                    closeDoor();
+                                } else {
+                                    openDoor();
+                                }
+                            });
+                            lockUnlockSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                                if (isChecked) {
+                                    lockDoor();
+                                } else {
+                                    unlockDoor();
+                                }
+                            });
+                        }
                     }
                 } else {
                     handleError(response);

@@ -20,4 +20,16 @@ public class BlindsState extends DeviceState {
     @SerializedName("currentLevel")
     @Expose
     private Integer currentLevel;
+
+    public String getStatus() {
+        return status;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public int getCurrentLevel() {
+        return currentLevel;
+    }
 }

@@ -4,7 +4,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.Toast;
 
@@ -20,11 +22,13 @@ public class FaucetControllerFragment extends Fragment {
     private int positionInRecyclerView;
 
     private Switch openCloseSwitch;
+    private Button dispenseExactAmountButton, stopButton, startButton, cancelButton;
+    private EditText ammount;
 
     private boolean isDispensing;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_door_controller, container, false);
+        return inflater.inflate(R.layout.fragment_faucet_controller, container, false);
     }
 
     @Override
@@ -32,24 +36,36 @@ public class FaucetControllerFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         readBundle(getArguments());
 
-        openCloseSwitch = view.findViewById(R.id.lock_switch);
+        openCloseSwitch = view.findViewById(R.id.faucet_switch);
+        dispenseExactAmountButton = view.findViewById(R.id.dispense_exact_amount_button);
+        stopButton = view.findViewById(R.id.stop_button);
+        startButton = view.findViewById(R.id.start_button);
+        cancelButton = view.findViewById(R.id.cancel_button);
+        ammount = view.findViewById(R.id.ammount);
 
-//        if(openCloseSwitch != null && lockUnlockSwitch != null) {
-//            openCloseSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-//                if (isChecked) {
-//                    closeDoor();
-//                } else {
-//                    openDoor();
-//                }
-//            });
-//            lockUnlockSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-//                if (isChecked) {
-//                    lockDoor();
-//                } else {
-//                    unlockDoor();
-//                }
-//            });
-//        }
+        if(isDispensing)
+            dispenseExactAmountButton.setVisibility(View.INVISIBLE);
+
+        stopButton.setVisibility(View.INVISIBLE);
+        startButton.setVisibility(View.INVISIBLE);
+        cancelButton.setVisibility(View.INVISIBLE);
+        ammount.setVisibility(View.INVISIBLE);
+
+        stopButton.setOnClickListener(this::stopDispensing);
+        startButton.setOnClickListener(this::dispenseAmount);
+        dispenseExactAmountButton.setOnClickListener(this::dispenseExactAmountButtonPressed);
+        cancelButton.setOnClickListener(this::cancelButtonPressed);
+
+
+        if(openCloseSwitch != null) {
+            openCloseSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (isChecked) {
+                    openFaucet();
+                } else {
+                    closeFaucet();
+                }
+            });
+        }
 
     }
 
@@ -67,6 +83,7 @@ public class FaucetControllerFragment extends Fragment {
         }
         Toast.makeText(getContext(), "OPENING FAUCET", Toast.LENGTH_LONG).show();
         isDispensing = true;
+        dispenseExactAmountButton.setVisibility(View.INVISIBLE);
         //api abrir faucet
     }
 
@@ -77,23 +94,31 @@ public class FaucetControllerFragment extends Fragment {
         }
         Toast.makeText(getContext(), "CLOSING FAUCET", Toast.LENGTH_LONG).show();
         isDispensing = false;
+        dispenseExactAmountButton.setVisibility(View.VISIBLE);
         //api cerrar faucet
     }
 
-//    private void dispenseAmmount() {
-//        if(isLocked) {
-//            Toast.makeText(getContext(), "THE DOOR IS ALREADY LOCKED", Toast.LENGTH_LONG).show();
-//            return;
-//        }
-//        if(isOpen) {
-//            Toast.makeText(getContext(), "THE DOOR IS OPEN!", Toast.LENGTH_LONG).show();
-//            return;
-//        }
-//        Toast.makeText(getContext(), "LOCKING DOOR", Toast.LENGTH_LONG).show();
-//        isLocked = true;
-//        openCloseSwitch.setEnabled(false);
-//        //api bloquear puerta
-//    }
+    private void dispenseExactAmountButtonPressed(View view) {
+        dispenseExactAmountButton.setVisibility(View.INVISIBLE);
+        startButton.setVisibility(View.VISIBLE);
+        cancelButton.setVisibility(View.VISIBLE);
+        ammount.setVisibility(View.VISIBLE);
+    }
+
+    private void cancelButtonPressed(View view) {
+        dispenseExactAmountButton.setVisibility(View.VISIBLE);
+        startButton.setVisibility(View.INVISIBLE);
+        cancelButton.setVisibility(View.INVISIBLE);
+        ammount.setVisibility(View.INVISIBLE);
+    }
+
+    private void stopDispensing(View view) {
+        
+    }
+
+    private void dispenseAmount(View view) {
+
+    }
 
 
     @NonNull
