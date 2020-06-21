@@ -8,7 +8,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
-import com.example.ultrahome.ui.devices.DevicesListFragment;
 import com.example.ultrahome.ui.devices.GenericDeviceFragment;
 
 public class ConfirmationDialog extends DialogFragment {

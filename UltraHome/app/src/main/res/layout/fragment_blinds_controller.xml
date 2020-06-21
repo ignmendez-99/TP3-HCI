@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <SeekBar
-        android:id="@+id/percentage_seekBar_blinds"
+        android:id="@+id/percentage_blinds_seekBar"
         android:layout_width="229dp"
         android:layout_height="46dp"
         app:layout_constraintBottom_toBottomOf="@+id/percentage_text_blinds"

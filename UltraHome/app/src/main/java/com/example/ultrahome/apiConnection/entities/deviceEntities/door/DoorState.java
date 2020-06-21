@@ -1,9 +1,10 @@
 package com.example.ultrahome.apiConnection.entities.deviceEntities.door;
 
+import com.example.ultrahome.apiConnection.entities.deviceEntities.DeviceState;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class DoorState {
+public class DoorState extends DeviceState {
 
     @SerializedName("status")
     @Expose
@@ -12,4 +13,20 @@ public class DoorState {
     @SerializedName("lock")
     @Expose
     private String lock;
+
+    public boolean isLocked() {
+        return lock.equals("locked");
+    }
+
+    public boolean isUnlocked() {
+        return lock.equals("unlocked");
+    }
+
+    public boolean isOpen() {
+        return status.equals("opened");
+    }
+
+    public boolean isClose() {
+        return status.equals("closed");
+    }
 }
