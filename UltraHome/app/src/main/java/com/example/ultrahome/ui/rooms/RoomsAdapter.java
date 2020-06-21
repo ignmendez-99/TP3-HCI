@@ -42,15 +42,8 @@ public abstract class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.Roo
     public void onBindViewHolder(@NonNull RoomsViewHolder holder, final int position) {
         holder.roomName.setText(roomsNames.get(position));
         holder.roomsConstraintLayout.setOnClickListener(view -> {
-
-            // we send the roomId to the DevicesFragment, so that the correct Devices are loaded
-            List<String> idList = currentFragment.getIdList();
-            String idOfRoomClicked = idList.get(position);
-            model = new ViewModelProvider(currentFragment.requireActivity()).get(RoomToDeviceViewModel.class);
-            model.storeRoomId(idOfRoomClicked);
-
             // we navigate to the Devices screen of this particular Room
-            currentFragment.navigateToDevicesFragment(view);
+            currentFragment.navigateToDevicesFragment(view, position);
         });
     }
 

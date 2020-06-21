@@ -10,6 +10,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -73,7 +74,7 @@ public class HomesFragment extends Fragment {
             recyclerView = view.findViewById(R.id.homes_recycler_view_grid);
             gridLayoutManager = new GridLayoutManager(getContext(), 2);
             recyclerView.setLayoutManager(gridLayoutManager);
-            adapter = new HomesAdapterGrid(getContext(), homeNames, this);
+            adapter = new HomesAdapterGrid(getContext(), homeNames,this);
         } else {
             layoutManager = new LinearLayoutManager(getContext());
             recyclerView.setLayoutManager(layoutManager);
@@ -90,7 +91,6 @@ public class HomesFragment extends Fragment {
                 adapter.notifyItemInserted(i);
             }
         } else {
-            // Displays in screen all Homes -->  todo: FALTA CACHE, ya que sino puede ser mucha carga?
             getAllHomes(view);
         }
 
@@ -101,21 +101,24 @@ public class HomesFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
+        // call superclass to save any view hierarchy
         super.onSaveInstanceState(outState);
-        outState.putInt("numberOfHomes", homeNames.size());
+
+        // ESTO CRASHEA CUANDO DAS VUELTA EL CELULAR DESDE ROOMS
+        /* outState.putInt("numberOfHomes", homeNames.size());
         for(int i = 0; i < homeNames.size(); i++) {
             outState.putString("homeName" + i, homeNames.get(i));
             outState.putString("homeId" + i, homeIds.get(i));
-        }
+        } */
     }
 
-    List<String> getIdList() {
-        return homeIds;
-    }
-
-    void navigateToRoomsFragment(View view) {
+    void navigateToRoomsFragment(View view, int position) {
+        // we send the homeId to the RoomsFragment, so that the correct Rooms are loaded
+        String idOfHomeClicked = homeIds.get(position);
+        HomeToRoomViewModel model = new ViewModelProvider(requireActivity()).get(HomeToRoomViewModel.class);
+        model.storeHomeId(idOfHomeClicked);
         final NavController navController =  Navigation.findNavController(view);
-        navController.navigate(R.id.roomsFragment);
+        navController.navigate(R.id.action_HomesFragment_to_RoomsFragment);
     }
 
     private void addNewHome(View v) {

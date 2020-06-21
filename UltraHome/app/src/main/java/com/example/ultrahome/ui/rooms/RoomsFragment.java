@@ -68,7 +68,7 @@ public class RoomsFragment extends Fragment {
         roomNamesBackupBeforeDeleting = new ArrayList<>();
         api = ApiClient.getInstance();
 
-        // we grab the "parameter" that HomesFragment left us
+        // we grab the homeId that HomesFragment left us
         HomeToRoomViewModel model = new ViewModelProvider(requireActivity()).get(HomeToRoomViewModel.class);
         homeId = model.getHomeId().getValue();
 
@@ -97,7 +97,6 @@ public class RoomsFragment extends Fragment {
                 adapter.notifyItemInserted(i);
             }
         } else {
-            // Displays in screen all Rooms -->  todo: FALTA CACHE, ya que sino puede ser mucha carga?
             getAllRoomsOfThisHome(view);
         }
 
@@ -108,21 +107,23 @@ public class RoomsFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
+        // call superclass to save any view hierarchy
         super.onSaveInstanceState(outState);
-        outState.putInt("numberOfRooms", roomNames.size());
+
+        /* outState.putInt("numberOfRooms", roomNames.size());
         for(int i = 0; i < roomNames.size(); i++) {
             outState.putString("roomName" + i, roomNames.get(i));
             outState.putString("roomId" + i, roomIds.get(i));
-        }
+        } */
     }
 
-    List<String> getIdList() {
-        return roomIds;
-    }
-
-    void navigateToDevicesFragment(View view) {
+    void navigateToDevicesFragment(View view, int position) {
+        // we send the roomId to the DevicesFragment, so that the correct Devices are loaded
+        String idOfRoomClicked = roomIds.get(position);
+        RoomToDeviceViewModel model = new ViewModelProvider(requireActivity()).get(RoomToDeviceViewModel.class);
+        model.storeRoomId(idOfRoomClicked);
         final NavController navController =  Navigation.findNavController(view);
-        navController.navigate(R.id.devicesFragment);
+        navController.navigate(R.id.action_RoomsFragment_to_DevicesListFragment);
     }
 
     private void addNewRoom(View v) {
