@@ -110,11 +110,13 @@ public class RoomsFragment extends Fragment {
         // call superclass to save any view hierarchy
         super.onSaveInstanceState(outState);
 
-        /* outState.putInt("numberOfRooms", roomNames.size());
-        for(int i = 0; i < roomNames.size(); i++) {
-            outState.putString("roomName" + i, roomNames.get(i));
-            outState.putString("roomId" + i, roomIds.get(i));
-        } */
+        if(roomNames != null) {
+            outState.putInt("numberOfRooms", roomNames.size());
+            for (int i = 0; i < roomNames.size(); i++) {
+                outState.putString("roomName" + i, roomNames.get(i));
+                outState.putString("roomId" + i, roomIds.get(i));
+            }
+        }
     }
 
     void navigateToDevicesFragment(View view, int position) {

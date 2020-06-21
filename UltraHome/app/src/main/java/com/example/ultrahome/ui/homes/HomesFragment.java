@@ -104,12 +104,13 @@ public class HomesFragment extends Fragment {
         // call superclass to save any view hierarchy
         super.onSaveInstanceState(outState);
 
-        // ESTO CRASHEA CUANDO DAS VUELTA EL CELULAR DESDE ROOMS
-        /* outState.putInt("numberOfHomes", homeNames.size());
-        for(int i = 0; i < homeNames.size(); i++) {
-            outState.putString("homeName" + i, homeNames.get(i));
-            outState.putString("homeId" + i, homeIds.get(i));
-        } */
+        if(homeNames != null) {
+            outState.putInt("numberOfHomes", homeNames.size());
+            for (int i = 0; i < homeNames.size(); i++) {
+                outState.putString("homeName" + i, homeNames.get(i));
+                outState.putString("homeId" + i, homeIds.get(i));
+            }
+        }
     }
 
     void navigateToRoomsFragment(View view, int position) {
