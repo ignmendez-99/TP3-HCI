@@ -1,10 +1,10 @@
 <resources>
     <string name="app_name">UltraHome</string>
-    <string name="title_devices">Devices</string>
+    <string name="title_homes">Homes</string>
     <string name="title_profile">Profile</string>
     <string name="title_routines">Routines</string>
-    <string name="roomsFragment">Rooms</string>
-    <string name="devicesListFragment">devicesListFragment</string>
+    <string name="title_rooms">Rooms</string>
+    <string name="title_devices">Devices</string>
 
     <string name="blinds_open_button">Open completely</string>
     <string name="blinds_close_button">Close completely</string>

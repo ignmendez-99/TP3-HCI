@@ -108,7 +108,6 @@ public class DevicesListFragment extends Fragment {
                 adapter.notifyItemInserted(i);
             }
         } else {
-            // Displays in screen all Devices -->  todo: FALTA CACHE, ya que sino puede ser mucha carga?
             getAllDevicesOfThisRoom(view);
         }
 
@@ -117,11 +116,15 @@ public class DevicesListFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
+        // call superclass to save any view hierarchy
         super.onSaveInstanceState(outState);
-        outState.putInt("numberOfDevices", devicesNames.size());
-        for(int i = 0; i < devicesNames.size(); i++) {
-            outState.putString("deviceName" + i, devicesNames.get(i));
-            outState.putString("deviceId" + i, devicesIds.get(i));
+
+        if(devicesNames != null) {
+            outState.putInt("numberOfDevices", devicesNames.size());
+            for (int i = 0; i < devicesNames.size(); i++) {
+                outState.putString("deviceName" + i, devicesNames.get(i));
+                outState.putString("deviceId" + i, devicesIds.get(i));
+            }
         }
     }
 

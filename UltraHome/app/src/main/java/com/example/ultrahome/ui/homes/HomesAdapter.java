@@ -16,10 +16,9 @@ import com.example.ultrahome.R;
 import java.util.List;
 
 public abstract class HomesAdapter extends RecyclerView.Adapter<HomesAdapter.HomesViewHolder> {
-    protected List<String> homesNames;
+    private List<String> homesNames;
     protected Context context;
-    protected HomeToRoomViewModel model;
-    protected HomesFragment currentFragment;
+    private HomesFragment currentFragment;
 
     public HomesAdapter(Context context, List<String> namesList, HomesFragment currentFragment) {
         this.context = context;
@@ -31,15 +30,8 @@ public abstract class HomesAdapter extends RecyclerView.Adapter<HomesAdapter.Hom
     public void onBindViewHolder(@NonNull HomesViewHolder holder, int position) {
         holder.homeName.setText(homesNames.get(position));
         holder.homesConstraintLayout.setOnClickListener(view -> {
-
-            // we send the homeId to the RoomsFragment, so that the correct Rooms are loaded
-            List<String> idList = currentFragment.getIdList();
-            String idOfHomeClicked = idList.get(position);
-            model = new ViewModelProvider(currentFragment.requireActivity()).get(HomeToRoomViewModel.class);
-            model.storeHomeId(idOfHomeClicked);
-
             // we navigate to the Rooms screen of this Particular Home
-            currentFragment.navigateToRoomsFragment(view);
+            currentFragment.navigateToRoomsFragment(view, position);
         });
     }
 
