@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.ultrahome.R;
 import com.example.ultrahome.apiConnection.ApiClient;
+import com.example.ultrahome.apiConnection.ErrorHandler;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.Device;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.lights.Lights;
 import com.example.ultrahome.apiConnection.entities.Error;
@@ -45,7 +46,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class DevicesListFragment extends Fragment {
-
     private Map<String, Integer> supportedDeviceTypeIds;
 
     // screen controls
@@ -169,11 +169,11 @@ public class DevicesListFragment extends Fragment {
                     } else
                         Snackbar.make(view, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
                 } else
-                    handleError(response);
+                    ErrorHandler.handleError(response, getContext());
             }
             @Override
             public void onFailure(@NonNull Call<Result<Device>> call, @NonNull Throwable t) {
-                handleUnexpectedError(t);
+                ErrorHandler.handleUnexpectedError(t);
             }
         });
     }
@@ -193,12 +193,12 @@ public class DevicesListFragment extends Fragment {
                     } else
                         Snackbar.make(view, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
                 } else
-                    handleError(response);
+                    ErrorHandler.handleError(response, getContext());
             }
 
             @Override
             public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
-                handleUnexpectedError(t);
+                ErrorHandler.handleUnexpectedError(t);
                 // todo: faltaria eliminar el Device ya creado, ya que hubo error al linkearlo con la Room
             }
         });
@@ -227,43 +227,46 @@ public class DevicesListFragment extends Fragment {
     }
 
     private void getAllDevicesOfThisRoom(View view) {
-        api.getDevices(new Callback<Result<List<Device>>>() {
-            @Override
-            public void onResponse(@NonNull Call<Result<List<Device>>> call, @NonNull Response<Result<List<Device>>> response) {
-                if(response.isSuccessful()) {
-                    Result<List<Device>> result = response.body();
-                    if(result != null) {
-                        List<Device> deviceList = result.getResult();
-                        if(deviceList.size() != 0) {
-                            for(Device device : deviceList) {
-                                if(device.getRoom() == null) {
-                                    // The Room containing this device was deleted! We must delete this Device
-                                    deleteUselessDevice(device, view);
-                                } else {
-                                    if(device.getRoom().getId().equals(roomId)) {
-                                        devicesIds.add(device.getId());
-                                        deviceTypeIds.add(device.getType().getId());
-                                        devicesNames.add(device.getName());
-                                        adapter.notifyItemInserted(devicesNames.size() - 1);
+        new Thread(() -> {
+            api.getDevices(new Callback<Result<List<Device>>>() {
+                @Override
+                public void onResponse(@NonNull Call<Result<List<Device>>> call, @NonNull Response<Result<List<Device>>> response) {
+                    if (response.isSuccessful()) {
+                        Result<List<Device>> result = response.body();
+                        if (result != null) {
+                            List<Device> deviceList = result.getResult();
+                            if (deviceList.size() != 0) {
+                                for (Device device : deviceList) {
+                                    if (device.getRoom() == null) {
+                                        // The Room containing this device was deleted! We must delete this Device
+                                        deleteUselessDevice(device, view);
+                                    } else {
+                                        if (device.getRoom().getId().equals(roomId)) {
+                                            devicesIds.add(device.getId());
+                                            deviceTypeIds.add(device.getType().getId());
+                                            devicesNames.add(device.getName());
+                                            adapter.notifyItemInserted(devicesNames.size() - 1);
+                                        }
                                     }
                                 }
                             }
-                        }
+                        } else
+                            Snackbar.make(view, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
                     } else
-                        Snackbar.make(view, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
-                } else
-                    handleError(response);
-            }
+                        ErrorHandler.handleError(response, getContext());
+                }
 
-            @Override
-            public void onFailure(@NonNull Call<Result<List<Device>>> call, @NonNull Throwable t) {
-                handleUnexpectedError(t);
-            }
-        });
+                @Override
+                public void onFailure(@NonNull Call<Result<List<Device>>> call, @NonNull Throwable t) {
+                    ErrorHandler.handleUnexpectedError(t);
+                }
+            });
+        }).start();
     }
 
     /* this method deletes a Device which has no Room, therefore its useless in our App */
     private void deleteUselessDevice(@NonNull Device d, View v) {
+        // There's no need for a new Thread, as this function is already called inside one!
         api.deleteDevice(d.getId(), new Callback<Result<Boolean>>() {
             @Override
             public void onResponse(@NonNull Call<Result<Boolean>> call, @NonNull Response<Result<Boolean>> response) {
@@ -272,11 +275,11 @@ public class DevicesListFragment extends Fragment {
                     if(result == null || !result.getResult())
                         Snackbar.make(v, "No se pudo eliminar un Device sin padre", Snackbar.LENGTH_LONG).show();
                 } else
-                    handleError(response);
+                    ErrorHandler.handleError(response, getContext());
             }
             @Override
             public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
-                handleUnexpectedError(t);
+                ErrorHandler.handleUnexpectedError(t);
             }
         });
     }
@@ -293,17 +296,6 @@ public class DevicesListFragment extends Fragment {
         childFragment = GenericDeviceFragment.newInstance(deviceId, deviceName, deviceTypeId, positionInRecyclerView);
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         transaction.replace(R.id.device_control_container, childFragment).commit();
-    }
-
-    private <T> void handleError(@NonNull Response<T> response) {
-        Error error = ApiClient.getInstance().getError(response.errorBody());
-        String text = "ERROR" + error.getDescription().get(0) + error.getCode();
-        Toast.makeText(getContext(), text, Toast.LENGTH_LONG).show();
-    }
-
-    private void handleUnexpectedError(@NonNull Throwable t) {
-        String LOG_TAG = "com.example.ultrahome";
-        Log.e(LOG_TAG, t.toString());
     }
 
 
@@ -333,25 +325,28 @@ public class DevicesListFragment extends Fragment {
         public void onDismissed(Snackbar transientBottomBar, int event) {
             if(event == DISMISS_EVENT_TIMEOUT || event == DISMISS_EVENT_CONSECUTIVE) {
                 super.onDismissed(transientBottomBar, event);
-                api.deleteDevice(devicesIds.get(positionToDelete), new Callback<Result<Boolean>>() {
-                    @Override
-                    public void onResponse(@NonNull Call<Result<Boolean>> call, @NonNull Response<Result<Boolean>> response) {
-                        if (response.isSuccessful()) {
-                            Result<Boolean> result = response.body();
-                            if (result != null && result.getResult()) {
-                                devicesIds.remove(positionToDelete.intValue());
-                                deviceTypeIds.remove(positionToDelete.intValue());
-                                deviceNamesBackupBeforeDeleting.remove(0);
+                new Thread(() -> {
+                    api.deleteDevice(devicesIds.get(positionToDelete), new Callback<Result<Boolean>>() {
+                        @Override
+                        public void onResponse(@NonNull Call<Result<Boolean>> call, @NonNull Response<Result<Boolean>> response) {
+                            if (response.isSuccessful()) {
+                                Result<Boolean> result = response.body();
+                                if (result != null && result.getResult()) {
+                                    devicesIds.remove(positionToDelete.intValue());
+                                    deviceTypeIds.remove(positionToDelete.intValue());
+                                    deviceNamesBackupBeforeDeleting.remove(0);
+                                } else
+                                    Snackbar.make(view, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
                             } else
-                                Snackbar.make(view, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
-                        } else
-                            handleError(response);
-                    }
-                    @Override
-                    public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
-                        handleUnexpectedError(t);
-                    }
-                });
+                                ErrorHandler.handleError(response, getContext());
+                        }
+
+                        @Override
+                        public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
+                            ErrorHandler.handleUnexpectedError(t);
+                        }
+                    });
+                }).start();
             }
         }
     }

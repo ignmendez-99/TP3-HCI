@@ -28,7 +28,7 @@ public abstract class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.Roo
     }
 
     void deleteItem(int position) {
-        currentFragment.deleteRoom(currentFragment.getView(), position);
+        currentFragment.showDeleteRoomDialog(position);
     }
 
     @Override

@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -134,22 +135,34 @@ public class HomesFragment extends Fragment{
         addHomeDialog.show();
     }
 
-    private void deleteHome(View v) {
-        // remove the Home Card from screen
-        String homeNameToRemove = homeNames.get(positionToDelete);
-        homeNamesBackupBeforeDeleting.add(homeNameToRemove);
-        homeNames.remove(positionToDelete.intValue());
-        adapter.notifyItemRemoved(positionToDelete);
-
+    void deleteHome(View v) {
         deletingHomeSnackbar = Snackbar.make(v, "Home deleted!", Snackbar.LENGTH_SHORT);
         deletingHomeSnackbar.setAction("UNDO", new UndoDeleteHomeListener());
         deletingHomeSnackbar.addCallback(new DeleteHomeSnackbarTimeout(v));
         deletingHomeSnackbar.show();
     }
 
-    public void deleteHome(View v, int position) {
+    /* this method just puts the ""removed"" Home back on screen */
+    void recoverRemovedHome() {
+        String homeToRetrieve = homeNamesBackupBeforeDeleting.get(0);
+        homeNamesBackupBeforeDeleting.remove(0);
+        homeNames.add(positionToDelete, homeToRetrieve);
+        adapter.notifyItemInserted(positionToDelete);
+    }
+
+    void showDeleteHomeDialog(int position) {
         positionToDelete = position;
-        deleteHome(v);
+
+        // remove the Home Card from screen
+        String homeNameToRemove = homeNames.get(positionToDelete);
+        homeNamesBackupBeforeDeleting.add(homeNameToRemove);
+        homeNames.remove(positionToDelete.intValue());
+        adapter.notifyItemRemoved(positionToDelete);
+
+        FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+        // Create and show the dialog.
+        DeleteHomeConfirmationDialog newFragment = new DeleteHomeConfirmationDialog();
+        newFragment.show(ft, "dialog");
     }
 
     private void getAllHomes(View v) {
@@ -211,24 +224,27 @@ public class HomesFragment extends Fragment{
         public void onDismissed(Snackbar transientBottomBar, int event) {
             if(event == DISMISS_EVENT_TIMEOUT || event == DISMISS_EVENT_CONSECUTIVE) {
                 super.onDismissed(transientBottomBar, event);
-                api.deleteHome(homeIds.get(positionToDelete), new Callback<Result<Boolean>>() {
-                    @Override
-                    public void onResponse(@NonNull Call<Result<Boolean>> call, @NonNull Response<Result<Boolean>> response) {
-                        if (response.isSuccessful()) {
-                            Result<Boolean> result = response.body();
-                            if (result != null && result.getResult()) {
-                                homeIds.remove(positionToDelete.intValue());
-                                homeNamesBackupBeforeDeleting.remove(0);
+                new Thread(() -> {
+                    api.deleteHome(homeIds.get(positionToDelete), new Callback<Result<Boolean>>() {
+                        @Override
+                        public void onResponse(@NonNull Call<Result<Boolean>> call, @NonNull Response<Result<Boolean>> response) {
+                            if (response.isSuccessful()) {
+                                Result<Boolean> result = response.body();
+                                if (result != null && result.getResult()) {
+                                    homeIds.remove(positionToDelete.intValue());
+                                    homeNamesBackupBeforeDeleting.remove(0);
+                                } else
+                                    Snackbar.make(view, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
                             } else
-                                Snackbar.make(view, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
-                        } else
-                            ErrorHandler.handleError(response, getContext());
-                    }
-                    @Override
-                    public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
-                        ErrorHandler.handleUnexpectedError(t);
-                    }
-                });
+                                ErrorHandler.handleError(response, getContext());
+                        }
+
+                        @Override
+                        public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
+                            ErrorHandler.handleUnexpectedError(t);
+                        }
+                    });
+                }).start();
             }
         }
     }

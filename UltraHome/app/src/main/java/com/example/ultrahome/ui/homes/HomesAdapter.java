@@ -40,7 +40,7 @@ public abstract class HomesAdapter extends RecyclerView.Adapter<HomesAdapter.Hom
     }
 
     public void deleteItem(int position) {
-        currentFragment.deleteHome(currentFragment.getView(), position);
+        currentFragment.showDeleteHomeDialog(position);
     }
 
     @Override

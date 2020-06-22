@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -139,22 +140,34 @@ public class RoomsFragment extends Fragment {
         addHomeDialog.show();
     }
 
-    private void deleteRoom(View view) {
-        // remove the Room Card from screen
-        String roomNameToRemove = roomNames.get(positionToDelete);
-        roomNamesBackupBeforeDeleting.add(roomNameToRemove);
-        roomNames.remove(positionToDelete.intValue());
-        adapter.notifyItemRemoved(positionToDelete);
-
+    void deleteRoom(View view) {
         deletingRoomSnackbar = Snackbar.make(view, "Room deleted!", Snackbar.LENGTH_SHORT);
         deletingRoomSnackbar.setAction("UNDO", new UndoDeleteRoomListener());
         deletingRoomSnackbar.addCallback(new DeleteRoomSnackbarTimeout(view));
         deletingRoomSnackbar.show();
     }
 
-    void deleteRoom(View v, int position) {
+    /* this method just puts the ""removed"" Room back on screen */
+    void recoverRemovedRoom() {
+        String roomToRetrieve = roomNamesBackupBeforeDeleting.get(0);
+        roomNamesBackupBeforeDeleting.remove(0);
+        roomNames.add(positionToDelete, roomToRetrieve);
+        adapter.notifyItemInserted(positionToDelete);
+    }
+
+    void showDeleteRoomDialog(int position) {
         positionToDelete = position;
-        deleteRoom(v);
+
+        // remove the Home Card from screen
+        String roomNameToRemove = roomNames.get(positionToDelete);
+        roomNamesBackupBeforeDeleting.add(roomNameToRemove);
+        roomNames.remove(positionToDelete.intValue());
+        adapter.notifyItemRemoved(positionToDelete);
+
+        FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+        // Create and show the dialog.
+        DeleteRoomConfirmationDialog newFragment = new DeleteRoomConfirmationDialog();
+        newFragment.show(ft, "dialog");
     }
 
     private void getAllRoomsOfThisHome(View v) {
@@ -200,6 +213,7 @@ public class RoomsFragment extends Fragment {
 
     /* this method deletes a Room which has no Home, therefore its useless in our App */
     private void deleteUselessRoom(@NonNull Room r, View v) {
+        // There's no need for a new Thread, as this function is already called inside one!
         api.deleteRoom(r.getId(), new Callback<Result<Boolean>>() {
             @Override
             public void onResponse(@NonNull Call<Result<Boolean>> call, @NonNull Response<Result<Boolean>> response) {
@@ -244,24 +258,27 @@ public class RoomsFragment extends Fragment {
         public void onDismissed(Snackbar transientBottomBar, int event) {
             if(event == DISMISS_EVENT_TIMEOUT || event == DISMISS_EVENT_CONSECUTIVE) {
                 super.onDismissed(transientBottomBar, event);
-                api.deleteRoom(roomIds.get(positionToDelete), new Callback<Result<Boolean>>() {
-                    @Override
-                    public void onResponse(@NonNull Call<Result<Boolean>> call, @NonNull Response<Result<Boolean>> response) {
-                        if (response.isSuccessful()) {
-                            Result<Boolean> result = response.body();
-                            if (result != null && result.getResult()) {
-                                roomIds.remove(positionToDelete.intValue());
-                                roomNamesBackupBeforeDeleting.remove(0);
+                new Thread(() -> {
+                    api.deleteRoom(roomIds.get(positionToDelete), new Callback<Result<Boolean>>() {
+                        @Override
+                        public void onResponse(@NonNull Call<Result<Boolean>> call, @NonNull Response<Result<Boolean>> response) {
+                            if (response.isSuccessful()) {
+                                Result<Boolean> result = response.body();
+                                if (result != null && result.getResult()) {
+                                    roomIds.remove(positionToDelete.intValue());
+                                    roomNamesBackupBeforeDeleting.remove(0);
+                                } else
+                                    Snackbar.make(view, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
                             } else
-                                Snackbar.make(view, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
-                        } else
-                            ErrorHandler.handleError(response, getContext());
-                    }
-                    @Override
-                    public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
-                        ErrorHandler.handleUnexpectedError(t);
-                    }
-                });
+                                ErrorHandler.handleError(response, getContext());
+                        }
+
+                        @Override
+                        public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
+                            ErrorHandler.handleUnexpectedError(t);
+                        }
+                    });
+                }).start();
             }
         }
     }
