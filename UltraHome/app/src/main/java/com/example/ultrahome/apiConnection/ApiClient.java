@@ -1,6 +1,10 @@
 package com.example.ultrahome.apiConnection;
 
 import com.example.ultrahome.apiConnection.entities.deviceEntities.Device;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.DeviceState;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.blinds.BlindsState;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.door.Door;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.door.DoorState;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.lights.Lights;
 import com.example.ultrahome.apiConnection.entities.Error;
 import com.example.ultrahome.apiConnection.entities.ErrorResult;
@@ -119,6 +123,12 @@ public class ApiClient {
         return call;
     }
 
+    public Call<Result<DeviceState>> getDeviceState(String deviceId, Callback<Result<DeviceState>> callback) {
+        Call<Result<DeviceState>> call = this.service.getDeviceState(deviceId);
+        call.enqueue(callback);
+        return call;
+    }
+
     public Call<Result<Boolean>> deleteDevice(String deviceId, Callback<Result<Boolean>> callback) {
         Call<Result<Boolean>> call = this.service.deleteDevice(deviceId);
         call.enqueue(callback);
@@ -149,6 +159,64 @@ public class ApiClient {
 
     public Call<Result<Boolean>> linkDeviceWithRoom(String roomId, String deviceId, Callback<Result<Boolean>> callback) {
         Call<Result<Boolean>> call = this.service.linkDeviceWithHome(roomId, deviceId);
+        call.enqueue(callback);
+        return call;
+    }
+
+    ////////////// DOOR CALLS ////////////////////
+
+    public Call<Result<DoorState>> getDoorState(String deviceId, Callback<Result<DoorState>> callback) {
+        Call<Result<DoorState>> call = this.service.getDoorState(deviceId);
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<Boolean>> openDoor(String deviceId, Callback<Result<Boolean>> callback) {
+        Call<Result<Boolean>> call = this.service.executeActionOnDoor(deviceId, "open");
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<Boolean>> closeDoor(String deviceId, Callback<Result<Boolean>> callback) {
+        Call<Result<Boolean>> call = this.service.executeActionOnDoor(deviceId, "close");
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<Boolean>> lockDoor(String deviceId, Callback<Result<Boolean>> callback) {
+        Call<Result<Boolean>> call = this.service.executeActionOnDoor(deviceId, "lock");
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<Boolean>> unlockDoor(String deviceId, Callback<Result<Boolean>> callback) {
+        Call<Result<Boolean>> call = this.service.executeActionOnDoor(deviceId, "unlock");
+        call.enqueue(callback);
+        return call;
+    }
+
+    ////////////// BLINDS CALLS ////////////////////
+
+    public Call<Result<BlindsState>> getBlindsState(String deviceId, Callback<Result<BlindsState>> callback) {
+        Call<Result<BlindsState>> call = this.service.getBlindsState(deviceId);
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<Boolean>> openBlinds(String deviceId, Callback<Result<Boolean>> callback) {
+        Call<Result<Boolean>> call = this.service.openOrCloseBlinds(deviceId, "open");
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<Boolean>> closeBlinds(String deviceId, Callback<Result<Boolean>> callback) {
+        Call<Result<Boolean>> call = this.service.openOrCloseBlinds(deviceId, "close");
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<Integer>> setBlindsLevel(String deviceId, int newLevel, Callback<Result<Integer>> callback) {
+        Call<Result<Integer>> call = this.service.changeBlindsLevel(deviceId, "setLevel");
         call.enqueue(callback);
         return call;
     }

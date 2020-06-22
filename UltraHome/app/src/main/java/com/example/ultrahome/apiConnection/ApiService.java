@@ -4,6 +4,9 @@ import com.example.ultrahome.apiConnection.entities.Home;
 import com.example.ultrahome.apiConnection.entities.Result;
 import com.example.ultrahome.apiConnection.entities.Room;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.Device;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.DeviceState;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.blinds.BlindsState;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.door.DoorState;
 
 import java.util.List;
 
@@ -68,6 +71,11 @@ public interface ApiService {
     @DELETE("devices/{deviceId}")
     Call<Result<Boolean>> deleteDevice(@Path("deviceId") String deviceId);
 
+    @GET("devices/{deviceId}/state")
+    Call<Result<DeviceState>> getDeviceState(@Path("deviceId") String deviceId);
+
+//    TODO: UNUSED AS IT DIDN'T WORK
+
     ////////////// HOME-ROOM CONTROLS ////////////////////
 
     @GET("homes/{homeId}/rooms")
@@ -85,4 +93,28 @@ public interface ApiService {
     @POST("rooms/{roomId}/devices/{deviceId}")
     @Headers("Content-Type: application/json")
     Call<Result<Boolean>> linkDeviceWithHome(@Path("roomId") String roomId, @Path("deviceId") String deviceId);
+
+    ////////////// DOOR CONTROLS ////////////////////
+
+    @GET("devices/{deviceId}/state")
+    Call<Result<DoorState>> getDoorState(@Path("deviceId") String deviceId);
+
+    @PUT("devices/{deviceId}/{actionName}")
+    @Headers("Content-Type: application/json")
+    Call<Result<Boolean>> executeActionOnDoor(@Path("deviceId") String deviceId, @Path("actionName") String actionName);
+
+    ////////////// BLINDS CONTROLS ////////////////////
+
+    @GET("devices/{deviceId}/state")
+    Call<Result<BlindsState>> getBlindsState(@Path("deviceId") String deviceId);
+
+    @PUT("devices/{deviceId}/{actionName}")
+    @Headers("Content-Type: application/json")
+    Call<Result<Boolean>> openOrCloseBlinds(@Path("deviceId") String deviceId, @Path("actionName") String actionName);
+
+    @PUT("devices/{deviceId}/{actionName}")
+    @Headers("Content-Type: application/json")
+    Call<Result<Integer>> changeBlindsLevel(@Path("deviceId") String deviceId, @Path("actionName") String actionName);
+
+
 }
