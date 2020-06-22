@@ -9,6 +9,16 @@
     android:visibility="visible"
     tools:visibility="visible">
 
+    <include
+        android:id="@+id/loadingRoomsList"
+        layout="@layout/loading_circle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="50dp"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rooms_recycler_view"
         android:layout_width="match_parent"
@@ -18,7 +28,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/button_add_room"
+        android:id="@+id/button_show_AddRoomDialog"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"

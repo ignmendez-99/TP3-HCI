@@ -1,11 +1,9 @@
 package com.example.ultrahome.ui.rooms;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,7 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.ultrahome.R;
 import com.example.ultrahome.apiConnection.ApiClient;
-import com.example.ultrahome.apiConnection.entities.Error;
+import com.example.ultrahome.apiConnection.ErrorHandler;
 import com.example.ultrahome.apiConnection.entities.Result;
 import com.example.ultrahome.apiConnection.entities.Room;
 import com.example.ultrahome.ui.homes.HomeToRoomViewModel;
@@ -30,7 +28,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -72,8 +69,8 @@ public class RoomsFragment extends Fragment {
         HomeToRoomViewModel model = new ViewModelProvider(requireActivity()).get(HomeToRoomViewModel.class);
         homeId = model.getHomeId().getValue();
 
-        addNewRoomButton = view.findViewById(R.id.button_add_room);
-        addNewRoomButton.setOnClickListener(this::addNewRoom);
+        addNewRoomButton = view.findViewById(R.id.button_show_AddRoomDialog);
+        addNewRoomButton.setOnClickListener(this::showAddRoomDialog);
 
         recyclerView = view.findViewById(R.id.rooms_recycler_view);
         if(recyclerView == null) {
@@ -128,52 +125,18 @@ public class RoomsFragment extends Fragment {
         navController.navigate(R.id.action_RoomsFragment_to_DevicesListFragment);
     }
 
-    private void addNewRoom(View v) {
-        String name = "Cocina de Nacho 2 " + new Random().nextInt(10000); // TODO: HARDCODEADO -> EL USUARIO DEBE ELEGIR EL NOMBRE
-        Room newRoom = new Room(name);
-        api.addRoom(newRoom, new Callback<Result<Room>>() {
-            @Override
-            public void onResponse(@NonNull Call<Result<Room>> call, @NonNull Response<Result<Room>> response) {
-                if(response.isSuccessful()) {
-                    Result<Room> result = response.body();
-                    if(result != null) {
-                        String temporalId = result.getResult().getId();
-                        linkNewRoomWithThisHome(v, name, temporalId);
-                    } else
-                        Snackbar.make(v, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
-                } else
-                    handleError(response);
-            }
-            @Override
-            public void onFailure(@NonNull Call<Result<Room>> call, @NonNull Throwable t) {
-                handleUnexpectedError(t);
-            }
-        });
+    /* Called by the AddRoomDialog, when the Room has been successfully added */
+    void notifyNewRoomAdded(String roomId, String roomName) {
+        roomIds.add(roomId);
+        roomNames.add(roomName);
+        adapter.notifyItemInserted(roomNames.size() - 1);
+        Snackbar.make(this.requireView(), "Room Added!", Snackbar.LENGTH_SHORT).show();
     }
 
-    private void linkNewRoomWithThisHome(View v, String newRoomName, String newRoomId) {
-        api.linkRoomWithHome(homeId, newRoomId, new Callback<Result<Boolean>>() {
-            @Override
-            public void onResponse(@NonNull Call<Result<Boolean>> call, @NonNull Response<Result<Boolean>> response) {
-                if(response.isSuccessful()) {
-                    Result<Boolean> result = response.body();
-                    if(result != null && result.getResult()) {
-                        roomIds.add(newRoomId);
-                        roomNames.add(newRoomName);
-                        adapter.notifyItemInserted(roomNames.size() - 1);
-                        Snackbar.make(v, "Room Added!", Snackbar.LENGTH_SHORT).show();
-                    } else
-                        Snackbar.make(v, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
-                } else
-                    handleError(response);
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
-                handleUnexpectedError(t);
-                // todo: faltaria eliminar la Room ya creada, ya que hubo error al linkearla con la home
-            }
-        });
+    private void showAddRoomDialog(View v) {
+        // Create and show the dialog.
+        AddRoomDialog addHomeDialog = new AddRoomDialog(requireContext(), homeId, this);
+        addHomeDialog.show();
     }
 
     private void deleteRoom(View view) {
@@ -195,37 +158,44 @@ public class RoomsFragment extends Fragment {
     }
 
     private void getAllRoomsOfThisHome(View v) {
-        api.getRooms(new Callback<Result<List<Room>>>() {
-            @Override
-            public void onResponse(@NonNull Call<Result<List<Room>>> call, @NonNull Response<Result<List<Room>>> response) {
-                if(response.isSuccessful()) {
-                    Result<List<Room>> result = response.body();
-                    if(result != null) {
-                        List<Room> roomList = result.getResult();
-                        if(roomList.size() != 0) {
-                            for (Room room : roomList) {
-                                if(room.getHome() == null) {
-                                    // The Home containing this room was deleted! We must delete this Room
-                                    deleteUselessRoom(room, v);
-                                } else {
-                                    if(room.getHome().getId().equals(homeId)) {
-                                        roomIds.add(room.getId());
-                                        roomNames.add(room.getName());
-                                        adapter.notifyItemInserted(roomNames.size() - 1);
+        new Thread(() -> {
+            api.getRooms(new Callback<Result<List<Room>>>() {
+                @Override
+                public void onResponse(@NonNull Call<Result<List<Room>>> call, @NonNull Response<Result<List<Room>>> response) {
+                    if (response.isSuccessful()) {
+                        Result<List<Room>> result = response.body();
+                        if (result != null) {
+                            List<Room> roomList = result.getResult();
+                            if (roomList.size() != 0) {
+                                for (Room room : roomList) {
+                                    if (room.getHome() == null) {
+                                        // The Home containing this room was deleted! We must delete this Room
+                                        deleteUselessRoom(room, v);
+                                    } else {
+                                        if (room.getHome().getId().equals(homeId)) {
+                                            roomIds.add(room.getId());
+                                            roomNames.add(room.getName());
+                                            adapter.notifyItemInserted(roomNames.size() - 1);
+                                        }
                                     }
                                 }
                             }
-                        }
+                        } else
+                            Snackbar.make(v, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
                     } else
-                        Snackbar.make(v, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
-                } else
-                    handleError(response);
-            }
-            @Override
-            public void onFailure(@NonNull Call<Result<List<Room>>> call, @NonNull Throwable t) {
-                handleUnexpectedError(t);
-            }
-        });
+                        ErrorHandler.handleError(response, getContext());
+                    v.findViewById(R.id.loadingRoomsList).setVisibility(View.GONE);
+                    v.findViewById(R.id.button_show_AddRoomDialog).setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<Result<List<Room>>> call, @NonNull Throwable t) {
+                    v.findViewById(R.id.loadingRoomsList).setVisibility(View.GONE);
+                    v.findViewById(R.id.button_show_AddRoomDialog).setVisibility(View.VISIBLE);
+                    ErrorHandler.handleUnexpectedError(t);
+                }
+            });
+        }).start();
     }
 
     /* this method deletes a Room which has no Home, therefore its useless in our App */
@@ -238,24 +208,13 @@ public class RoomsFragment extends Fragment {
                     if(result == null || !result.getResult())
                         Snackbar.make(v, "No se pudo eliminar una Room sin padre", Snackbar.LENGTH_LONG).show();
                 } else
-                    handleError(response);
+                    ErrorHandler.handleError(response, getContext());
             }
             @Override
             public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
-                handleUnexpectedError(t);
+                ErrorHandler.handleUnexpectedError(t);
             }
         });
-    }
-
-    private <T> void handleError(@NonNull Response<T> response) {
-        Error error = ApiClient.getInstance().getError(response.errorBody());
-        String text = "ERROR" + error.getDescription().get(0) + error.getCode();
-        Toast.makeText(getContext(), text, Toast.LENGTH_LONG).show();
-    }
-
-    private void handleUnexpectedError(@NonNull Throwable t) {
-        String LOG_TAG = "com.example.ultrahome";
-        Log.e(LOG_TAG, t.toString());
     }
 
 
@@ -296,11 +255,11 @@ public class RoomsFragment extends Fragment {
                             } else
                                 Snackbar.make(view, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
                         } else
-                            handleError(response);
+                            ErrorHandler.handleError(response, getContext());
                     }
                     @Override
                     public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
-                        handleUnexpectedError(t);
+                        ErrorHandler.handleUnexpectedError(t);
                     }
                 });
             }

@@ -1,20 +1,14 @@
 package com.example.ultrahome.ui.rooms;
 
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.ultrahome.R;
-import com.example.ultrahome.ui.homes.HomeToRoomViewModel;
 
 import java.util.List;
 
@@ -22,7 +16,6 @@ public abstract class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.Roo
     protected List<String> roomsNames;
     protected Context context;
     protected RoomsFragment currentFragment;
-    protected RoomToDeviceViewModel model;
 
     public RoomsAdapter(Context context, List<String> namesList, RoomsFragment currentFragment) {
         this.context = context;
@@ -34,7 +27,7 @@ public abstract class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.Roo
         return currentFragment.getContext();
     }
 
-    public void deleteItem(int position) {
+    void deleteItem(int position) {
         currentFragment.deleteRoom(currentFragment.getView(), position);
     }
 

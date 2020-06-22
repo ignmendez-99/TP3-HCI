@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="350dp"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <TextView
-        android:id="@+id/dialog_add_home_title"
+        android:id="@+id/dialog_add_room_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Add New Home"
+        android:text="Add New Room"
         android:textSize="25sp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
@@ -17,16 +16,16 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/dialog_add_home_subtitle"
+        android:id="@+id/dialog_add_room_subtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Choose a new name for your Home"
+        android:text="Choose a new name for your Room"
         android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="@+id/dialog_add_home_title"
-        app:layout_constraintTop_toBottomOf="@+id/dialog_add_home_title" />
+        app:layout_constraintStart_toStartOf="@+id/dialog_add_room_title"
+        app:layout_constraintTop_toBottomOf="@+id/dialog_add_room_title" />
 
     <EditText
-        android:id="@+id/home_name_edit_text"
+        android:id="@+id/room_name_edit_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
@@ -34,35 +33,35 @@
         android:maxLength="65"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dialog_add_home_subtitle" />
+        app:layout_constraintTop_toBottomOf="@+id/dialog_add_room_subtitle" />
 
     <TextView
-        android:id="@+id/dialog_add_home_error_message"
+        android:id="@+id/dialog_add_room_error_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp"
         android:visibility="gone"
         android:textColor="@android:color/holo_red_light"
-        app:layout_constraintStart_toStartOf="@+id/home_name_edit_text"
-        app:layout_constraintTop_toBottomOf="@+id/home_name_edit_text" />
+        app:layout_constraintStart_toStartOf="@+id/room_name_edit_text"
+        app:layout_constraintTop_toBottomOf="@+id/room_name_edit_text" />
 
     <LinearLayout
-        android:id="@+id/add_home_buttom_pair"
+        android:id="@+id/add_room_buttom_pair"
         style="?android:attr/buttonBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dialog_add_home_error_message">
+        app:layout_constraintTop_toBottomOf="@+id/dialog_add_room_error_message">
 
         <Button
-            android:id="@+id/button_show_AddHomeDialog"
+            android:id="@+id/button_show_AddRoomDialog"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="ADD NEW HOME" />
+            android:text="ADD NEW ROOM" />
 
         <Button
-            android:id="@+id/button_close_add_home_dialog"
+            android:id="@+id/button_close_add_room_dialog"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -70,7 +69,7 @@
     </LinearLayout>
 
     <include
-        android:id="@+id/loadingAddingHome"
+        android:id="@+id/loadingAddingRoom"
         layout="@layout/loading_circle"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
@@ -79,7 +78,6 @@
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dialog_add_home_error_message"/>
-
+        app:layout_constraintTop_toBottomOf="@+id/dialog_add_room_error_message"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

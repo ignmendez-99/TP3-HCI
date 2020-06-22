@@ -1,17 +1,13 @@
 package com.example.ultrahome.ui.homes;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -23,18 +19,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.ultrahome.R;
 import com.example.ultrahome.apiConnection.ApiClient;
 import com.example.ultrahome.apiConnection.ErrorHandler;
-import com.example.ultrahome.apiConnection.entities.Error;
 import com.example.ultrahome.apiConnection.entities.Home;
 import com.example.ultrahome.apiConnection.entities.Result;
-import com.example.ultrahome.ui.devices.controllers.ConfirmationDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Random;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -71,7 +63,7 @@ public class HomesFragment extends Fragment{
         homeIds = new ArrayList<>();
         homeNamesBackupBeforeDeleting = new ArrayList<>();
 
-        buttonAddHome = view.findViewById(R.id.button_add_home);
+        buttonAddHome = view.findViewById(R.id.button_show_AddHomeDialog);
         buttonAddHome.setOnClickListener(this::showAddHomeDialog);
 
         recyclerView = view.findViewById(R.id.homes_recycler_view);
@@ -174,17 +166,19 @@ public class HomesFragment extends Fragment{
                                 homeNames.add(h.getName());
                                 adapter.notifyItemInserted(homeNames.size() - 1);
                             }
-                            v.findViewById(R.id.loadingHomesList).setVisibility(View.GONE);
-                            v.findViewById(R.id.button_add_home).setVisibility(View.VISIBLE);
                         } else
                             Snackbar.make(v, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
                     } else
                         ErrorHandler.handleError(response, getContext());
+                    v.findViewById(R.id.loadingHomesList).setVisibility(View.GONE);
+                    v.findViewById(R.id.button_show_AddHomeDialog).setVisibility(View.VISIBLE);
                 }
 
                 @Override
                 public void onFailure(@NonNull Call<Result<List<Home>>> call, @NonNull Throwable t) {
                     ErrorHandler.handleUnexpectedError(t);
+                    v.findViewById(R.id.loadingHomesList).setVisibility(View.GONE);
+                    v.findViewById(R.id.button_show_AddHomeDialog).setVisibility(View.VISIBLE);
                 }
             });
         }).start();

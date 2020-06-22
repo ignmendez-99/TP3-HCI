@@ -45,52 +45,58 @@ public class AddHomeDialog extends Dialog {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.dialog_add_home);
 
-        add_button = findViewById(R.id.button_add_home_2);
+        add_button = findViewById(R.id.button_show_AddHomeDialog);
         cancel_button = findViewById(R.id.button_close_add_home_dialog);
         homeNameEditText = findViewById(R.id.home_name_edit_text);
         errorMessage = findViewById(R.id.dialog_add_home_error_message);
-        add_button.setOnClickListener(this::addNewHome);
+        add_button.setOnClickListener(this::checkCorrectInput);
 
         cancel_button.setOnClickListener(v -> dismiss());
     }
 
-    /* Checks for correct input and, if it is valid, we call the Api */
-    private void addNewHome(View v) {
+    private void checkCorrectInput(View v) {
         homeName = homeNameEditText.getText().toString();
         if(homeName.length() > 60 || homeName.length() < 3) {
             errorMessage.setVisibility(View.VISIBLE);
             errorMessage.setText("Name must be between 3 and 60 characters");
         } else {
-            if( ! homeName.matches("^[a-zA-Z0-9_ ]{3,60}") ) {
+            if (!homeName.matches("^[a-zA-Z0-9_ ]{3,60}")) {
                 errorMessage.setVisibility(View.VISIBLE);
                 errorMessage.setText("Name must only contain numbers, digits, spaces or _");
             } else {
-                findViewById(R.id.loadingAddingHome).setVisibility(View.VISIBLE);
-                findViewById(R.id.add_home_buttom_pair).setVisibility(View.GONE);
-                newHome = new Home(homeName);
-                new Thread(() -> {
-                    ApiClient.getInstance().addHome(newHome, new Callback<Result<Home>>() {
-                        @Override
-                        public void onResponse(@NonNull Call<Result<Home>> call, @NonNull Response<Result<Home>> response) {
-                            if(response.isSuccessful()) {
-                                Result<Home> result = response.body();
-                                if(result != null) {
-                                    findViewById(R.id.loadingAddingHome).setVisibility(View.GONE);
-                                    findViewById(R.id.add_home_buttom_pair).setVisibility(View.VISIBLE);
-                                    fragmentInstance.notifyNewHomeAdded(result.getResult().getId(), homeName);
-                                    dismiss();
-                                } else
-                                    Snackbar.make(v, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
-                            } else
-                                ErrorHandler.handleError(response, context);
-                        }
-                        @Override
-                        public void onFailure(@NonNull Call<Result<Home>> call, @NonNull Throwable t) {
-                            ErrorHandler.handleUnexpectedError(t);
-                        }
-                    });
-                }).start();
+                addNewHome(v);
             }
         }
+    }
+
+    private void addNewHome(View v) {
+        findViewById(R.id.loadingAddingHome).setVisibility(View.VISIBLE);
+        findViewById(R.id.add_home_buttom_pair).setVisibility(View.GONE);
+        newHome = new Home(homeName);
+        new Thread(() -> {
+            ApiClient.getInstance().addHome(newHome, new Callback<Result<Home>>() {
+                @Override
+                public void onResponse(@NonNull Call<Result<Home>> call, @NonNull Response<Result<Home>> response) {
+                    if (response.isSuccessful()) {
+                        Result<Home> result = response.body();
+                        if (result != null) {
+                            fragmentInstance.notifyNewHomeAdded(result.getResult().getId(), homeName);
+                            dismiss();
+                        } else
+                            Snackbar.make(v, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
+                    } else
+                        ErrorHandler.handleError(response, context);
+                    findViewById(R.id.loadingAddingHome).setVisibility(View.GONE);
+                    findViewById(R.id.add_home_buttom_pair).setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<Result<Home>> call, @NonNull Throwable t) {
+                    findViewById(R.id.loadingAddingHome).setVisibility(View.GONE);
+                    findViewById(R.id.add_home_buttom_pair).setVisibility(View.VISIBLE);
+                    ErrorHandler.handleUnexpectedError(t);
+                }
+            });
+        }).start();
     }
 }
