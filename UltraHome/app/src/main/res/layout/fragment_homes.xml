@@ -7,6 +7,21 @@
     android:layout_height="match_parent"
     tools:context=".ui.homes.HomesFragment">
 
+    <RelativeLayout
+        android:id="@+id/loadingHomesList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true" />
+    </RelativeLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/homes_recycler_view"
         android:layout_width="match_parent"
@@ -15,11 +30,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
+    <!-- will appear once the STATE is recovered -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/button_add_home"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
+        android:visibility="gone"
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="24dp"
         android:src="@drawable/add_button"

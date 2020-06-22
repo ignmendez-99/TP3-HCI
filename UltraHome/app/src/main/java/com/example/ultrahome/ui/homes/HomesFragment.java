@@ -9,7 +9,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -20,22 +22,25 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.ultrahome.R;
 import com.example.ultrahome.apiConnection.ApiClient;
+import com.example.ultrahome.apiConnection.ErrorHandler;
 import com.example.ultrahome.apiConnection.entities.Error;
 import com.example.ultrahome.apiConnection.entities.Home;
 import com.example.ultrahome.apiConnection.entities.Result;
+import com.example.ultrahome.ui.devices.controllers.ConfirmationDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class HomesFragment extends Fragment {
+public class HomesFragment extends Fragment{
 
     // Screen controls
     private FloatingActionButton buttonAddHome;
@@ -67,7 +72,7 @@ public class HomesFragment extends Fragment {
         homeNamesBackupBeforeDeleting = new ArrayList<>();
 
         buttonAddHome = view.findViewById(R.id.button_add_home);
-        buttonAddHome.setOnClickListener(this::addNewHome);
+        buttonAddHome.setOnClickListener(this::showAddHomeDialog);
 
         recyclerView = view.findViewById(R.id.homes_recycler_view);
         if(recyclerView == null) {
@@ -113,6 +118,7 @@ public class HomesFragment extends Fragment {
         }
     }
 
+    /* Called by HomesAdapter, when a Card is clicked */
     void navigateToRoomsFragment(View view, int position) {
         // we send the homeId to the RoomsFragment, so that the correct Rooms are loaded
         String idOfHomeClicked = homeIds.get(position);
@@ -122,29 +128,18 @@ public class HomesFragment extends Fragment {
         navController.navigate(R.id.action_HomesFragment_to_RoomsFragment);
     }
 
-    private void addNewHome(View v) {
-        String name = "Casa de Nacho " + new Random().nextInt(10000); // TODO: HARDCODEADO -> EL USUARIO DEBE ELEGIR EL NOMBRE
-        Home newHome = new Home(name);
-        api.addHome(newHome, new Callback<Result<Home>>() {
-            @Override
-            public void onResponse(@NonNull Call<Result<Home>> call, @NonNull Response<Result<Home>> response) {
-                if(response.isSuccessful()) {
-                    Result<Home> result = response.body();
-                    if(result != null) {
-                        homeIds.add(result.getResult().getId());
-                        homeNames.add(name);
-                        adapter.notifyItemInserted(homeNames.size() - 1);
-                        Snackbar.make(v, "Home Added!", Snackbar.LENGTH_SHORT).show();
-                    } else
-                        Snackbar.make(v, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
-                } else
-                    handleError(response);
-            }
-            @Override
-            public void onFailure(@NonNull Call<Result<Home>> call, @NonNull Throwable t) {
-                handleUnexpectedError(t);
-            }
-        });
+    /* Called by the AddHomeDialog, when the Home has been successfully added */
+    void notifyNewHomeAdded(String homeId, String homeName) {
+        homeIds.add(homeId);
+        homeNames.add(homeName);
+        adapter.notifyItemInserted(homeNames.size() - 1);
+        Snackbar.make(this.requireView(), "Home Added!", Snackbar.LENGTH_SHORT).show();
+    }
+
+    private void showAddHomeDialog(View v) {
+        // Create and show the dialog.
+        AddHomeDialog addHomeDialog = new AddHomeDialog(requireContext(), this);
+        addHomeDialog.show();
     }
 
     private void deleteHome(View v) {
@@ -166,40 +161,33 @@ public class HomesFragment extends Fragment {
     }
 
     private void getAllHomes(View v) {
-        api.getHomes(new Callback<Result<List<Home>>>() {
-            @Override
-            public void onResponse(@NonNull Call<Result<List<Home>>> call, @NonNull Response<Result<List<Home>>> response) {
-                if(response.isSuccessful()) {
-                    Result<List<Home>> result = response.body();
-                    if(result != null) {
-                        List<Home> homeList = result.getResult();
-                        for (Home h: homeList) {
-                            homeIds.add(h.getId());
-                            homeNames.add(h.getName());
-                            adapter.notifyItemInserted(homeNames.size() - 1);
-                        }
+        new Thread(() -> {
+            api.getHomes(new Callback<Result<List<Home>>>() {
+                @Override
+                public void onResponse(@NonNull Call<Result<List<Home>>> call, @NonNull Response<Result<List<Home>>> response) {
+                    if(response.isSuccessful()) {
+                        Result<List<Home>> result = response.body();
+                        if(result != null) {
+                            List<Home> homeList = result.getResult();
+                            for (Home h: homeList) {
+                                homeIds.add(h.getId());
+                                homeNames.add(h.getName());
+                                adapter.notifyItemInserted(homeNames.size() - 1);
+                            }
+                            v.findViewById(R.id.loadingHomesList).setVisibility(View.GONE);
+                            v.findViewById(R.id.button_add_home).setVisibility(View.VISIBLE);
+                        } else
+                            Snackbar.make(v, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
                     } else
-                        Snackbar.make(v, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
-                } else
-                    handleError(response);
-            }
+                        ErrorHandler.handleError(response, getContext());
+                }
 
-            @Override
-            public void onFailure(@NonNull Call<Result<List<Home>>> call, @NonNull Throwable t) {
-                handleUnexpectedError(t);
-            }
-        });
-    }
-
-    private <T> void handleError(@NonNull Response<T> response) {
-        Error error = ApiClient.getInstance().getError(response.errorBody());
-        String text = "ERROR" + error.getDescription().get(0) + error.getCode();
-        Toast.makeText(getContext(), text, Toast.LENGTH_LONG).show();
-    }
-
-    private static void handleUnexpectedError(@NonNull Throwable t) {
-        String LOG_TAG = "com.example.ultrahome";
-        Log.e(LOG_TAG, t.toString());
+                @Override
+                public void onFailure(@NonNull Call<Result<List<Home>>> call, @NonNull Throwable t) {
+                    ErrorHandler.handleUnexpectedError(t);
+                }
+            });
+        }).start();
     }
 
 
@@ -240,11 +228,11 @@ public class HomesFragment extends Fragment {
                             } else
                                 Snackbar.make(view, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
                         } else
-                            handleError(response);
+                            ErrorHandler.handleError(response, getContext());
                     }
                     @Override
                     public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
-                        handleUnexpectedError(t);
+                        ErrorHandler.handleUnexpectedError(t);
                     }
                 });
             }
