@@ -158,10 +158,11 @@ public class HomesFragment extends Fragment{
         homeNamesBackupBeforeDeleting.add(homeNameToRemove);
         homeNames.remove(positionToDelete.intValue());
         adapter.notifyItemRemoved(positionToDelete);
+        adapter.notifyItemRangeChanged(positionToDelete, homeNames.size());
 
         FragmentTransaction ft = getChildFragmentManager().beginTransaction();
         // Create and show the dialog.
-        DeleteHomeConfirmationDialog newFragment = new DeleteHomeConfirmationDialog();
+        DeleteHomeConfirmationDialog newFragment = new DeleteHomeConfirmationDialog(this);
         newFragment.show(ft, "dialog");
     }
 

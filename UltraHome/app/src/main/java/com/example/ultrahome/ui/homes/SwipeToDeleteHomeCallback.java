@@ -16,10 +16,8 @@ import com.example.ultrahome.R;
 public  class SwipeToDeleteHomeCallback extends ItemTouchHelper.SimpleCallback {
 
     private HomesAdapter mAdapter;
-
     private Drawable icon;
     private final ColorDrawable background;
-
 
     public SwipeToDeleteHomeCallback(HomesAdapter adapter) {
         super(0, ItemTouchHelper.LEFT);
