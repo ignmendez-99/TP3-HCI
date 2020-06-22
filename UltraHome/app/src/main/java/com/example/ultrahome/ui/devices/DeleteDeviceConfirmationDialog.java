@@ -1,4 +1,4 @@
-package com.example.ultrahome.ui.homes;
+package com.example.ultrahome.ui.devices;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -8,12 +8,12 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
-public class DeleteHomeConfirmationDialog extends DialogFragment {
+public class DeleteDeviceConfirmationDialog extends DialogFragment {
 
-    private HomesFragment containerFragment;
-    private boolean mustRecoverHome = true;
+    private DevicesListFragment containerFragment;
+    private boolean mustRecoverDevice = true;
 
-    public DeleteHomeConfirmationDialog(HomesFragment containerFragment) {
+    public DeleteDeviceConfirmationDialog(DevicesListFragment containerFragment) {
         this.containerFragment = containerFragment;
     }
 
@@ -22,15 +22,15 @@ public class DeleteHomeConfirmationDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         return new AlertDialog.Builder(getActivity())
                 .setTitle("Warning!")
-                .setMessage("Are you sure you want to delete this Home?")
+                .setMessage("Are you sure you want to delete this Device?")
                 .setNegativeButton(android.R.string.no, (dialog, which) -> {
                     dismiss();
                 })
                 .setPositiveButton(android.R.string.yes, (dialog, which) -> {
-                    mustRecoverHome = false;
-                    containerFragment = (HomesFragment) getParentFragment();
+                    mustRecoverDevice = false;
+                    containerFragment = (DevicesListFragment) getParentFragment();
                     assert containerFragment != null;
-                    containerFragment.deleteHome(containerFragment.getView());
+                    containerFragment.deleteDevice(containerFragment.getView());
                 })
                 .create();
     }
@@ -38,10 +38,8 @@ public class DeleteHomeConfirmationDialog extends DialogFragment {
     @Override
     public void onDismiss(@NonNull DialogInterface dialog) {
         super.onDismiss(dialog);
-        if(mustRecoverHome) {
-            containerFragment.recoverRemovedHome();
+        if(mustRecoverDevice) {
+            containerFragment.recoverRemovedDevice();
         }
     }
-
-
 }

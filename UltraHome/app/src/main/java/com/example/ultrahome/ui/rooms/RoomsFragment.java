@@ -163,10 +163,11 @@ public class RoomsFragment extends Fragment {
         roomNamesBackupBeforeDeleting.add(roomNameToRemove);
         roomNames.remove(positionToDelete.intValue());
         adapter.notifyItemRemoved(positionToDelete);
+        adapter.notifyItemRangeChanged(positionToDelete, roomNames.size());
 
         FragmentTransaction ft = getChildFragmentManager().beginTransaction();
         // Create and show the dialog.
-        DeleteRoomConfirmationDialog newFragment = new DeleteRoomConfirmationDialog();
+        DeleteRoomConfirmationDialog newFragment = new DeleteRoomConfirmationDialog(this);
         newFragment.show(ft, "dialog");
     }
 

@@ -15,7 +15,6 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.ultrahome.R;
 import com.example.ultrahome.ui.devices.controllers.BlindsControllerFragment;
-import com.example.ultrahome.ui.devices.controllers.ConfirmationDialog;
 import com.example.ultrahome.ui.devices.controllers.DoorControllerFragment;
 import com.example.ultrahome.ui.devices.controllers.FaucetControllerFragment;
 import com.example.ultrahome.ui.devices.controllers.LightsControllerFragment;
@@ -140,12 +139,6 @@ public class GenericDeviceFragment extends Fragment {
         }
     }
 
-    public void deleteDevice(View view) {
-        DevicesListFragment containerFragment = (DevicesListFragment) getParentFragment();
-        assert containerFragment != null;
-        containerFragment.deleteDevice(view, positionInRecyclerView);
-    }
-
     // todo: esto quizas se puede llevar a otra Clase, ya que sino esta clase hace demasiado
     private void initDeviceTypeIdMap() {
         supportedDeviceTypeIds = new HashMap<>();
@@ -195,9 +188,12 @@ public class GenericDeviceFragment extends Fragment {
     }
 
     private void deletePressed(View view) {
-        FragmentTransaction ft = getChildFragmentManager().beginTransaction();
-        // Create and show the dialog.
-        ConfirmationDialog newFragment = new ConfirmationDialog ();
-        newFragment.show(ft, "dialog");
+        // detach the Controller Fragment from screen
+        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+        transaction.detach(childFragment).commit();
+
+        DevicesListFragment containerFragment = (DevicesListFragment) getParentFragment();
+        assert containerFragment != null;
+        containerFragment.showDeleteDeviceDialog(positionInRecyclerView);
     }
 }

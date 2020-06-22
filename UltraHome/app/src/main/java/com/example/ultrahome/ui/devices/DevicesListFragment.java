@@ -204,8 +204,10 @@ public class DevicesListFragment extends Fragment {
         });
     }
 
-    private void deleteDevice(View v) {
-        // detach the Device fragment from screen
+    public void showDeleteDeviceDialog(int position) {
+        positionToDelete = position;
+
+        // detach the GenericDeviceFragment from screen
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         transaction.detach(childFragment).commit();
 
@@ -214,16 +216,27 @@ public class DevicesListFragment extends Fragment {
         deviceNamesBackupBeforeDeleting.add(roomNameToRemove);
         devicesNames.remove(positionToDelete.intValue());
         adapter.notifyItemRemoved(positionToDelete);
+        adapter.notifyItemRangeChanged(positionToDelete, devicesNames.size());
 
+        FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+        // Create and show the dialog.
+        DeleteDeviceConfirmationDialog newFragment = new DeleteDeviceConfirmationDialog(this);
+        newFragment.show(ft, "dialog");
+    }
+
+    /* this method just puts the ""removed"" Device back on screen */
+    void recoverRemovedDevice() {
+        String deviceToRetrieve = deviceNamesBackupBeforeDeleting.get(0);
+        deviceNamesBackupBeforeDeleting.remove(0);
+        devicesNames.add(positionToDelete, deviceToRetrieve);
+        adapter.notifyItemInserted(positionToDelete);
+    }
+
+    void deleteDevice(View v) {
         deletingDeviceSnackbar = Snackbar.make(v, "Device deleted!", Snackbar.LENGTH_SHORT);
         deletingDeviceSnackbar.setAction("UNDO", new UndoDeleteDeviceListener());
         deletingDeviceSnackbar.addCallback(new DeleteDeviceSnackbarTimeout(v));
         deletingDeviceSnackbar.show();
-    }
-
-    public void deleteDevice(View v, int position) {
-        positionToDelete = position;
-        deleteDevice(v);
     }
 
     private void getAllDevicesOfThisRoom(View view) {
