@@ -37,7 +37,7 @@ public class ApiClient {
     private static ApiClient instance = null;
     // Use IP 10.0.2.2 instead of 127.0.0.1 when running Android emulator in the
     // same computer that runs the API.
-    private final String BaseURL = "http://10.0.2.2:8080/api/";
+    private final String BaseURL = "http://10.0.2.2:8081/api/";
 
     private ApiClient() {
         retrofit = new Retrofit.Builder()

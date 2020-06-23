@@ -40,7 +40,7 @@
         android:id="@+id/devices_to_select"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Choose a set of devices"
+        android:text="Choose a device"
         android:textSize="20sp"
         android:paddingTop="10dp"
         app:layout_constraintStart_toStartOf="@+id/routine_name_edit_text"
@@ -48,12 +48,49 @@
 
     <Spinner
         android:id="@+id/devices_spinner"
-        android:layout_width="fill_parent"
+        android:layout_width="250dp"
         android:layout_height="40dp"
-        android:prompt="@string/app_name"
         android:textColor="#000000"
         app:layout_constraintStart_toStartOf="@+id/devices_to_select"
         app:layout_constraintTop_toBottomOf="@+id/devices_to_select"/>
+
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/action_selection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@+id/devices_spinner"
+        app:layout_constraintTop_toBottomOf="@+id/devices_spinner">
+
+        <TextView
+            android:id="@+id/actions_to_select"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Choose an action"
+            android:textSize="20sp"
+            android:paddingTop="10dp"
+            app:layout_constraintStart_toStartOf="@+id/devices_spinner"
+            app:layout_constraintTop_toBottomOf="@+id/devices_spinner" />
+
+        <Spinner
+            android:id="@+id/actions_spinner"
+            android:layout_width="250dp"
+            android:layout_height="40dp"
+            android:textColor="#000000"
+            app:layout_constraintStart_toStartOf="@+id/actions_to_select"
+            app:layout_constraintTop_toBottomOf="@+id/actions_to_select"/>
+    </LinearLayout>
+
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/selected_action"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"
+        android:gravity="center_horizontal"
+        android:textAlignment="center"
+        app:layout_constraintStart_toStartOf="@+id/action_selection"
+        app:layout_constraintTop_toBottomOf="@+id/action_selection"/>
 
     <LinearLayout
         android:id="@+id/add_routine_buttom_pair"
@@ -61,7 +98,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/devices_spinner">
+        app:layout_constraintTop_toBottomOf="@+id/selected_action">
+
+
+        <Button
+            android:id="@+id/button_add_action"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ADD ACTION" />
 
         <Button
             android:id="@+id/button_show_AddRoutineDialog"
@@ -78,12 +123,7 @@
             android:text="CANCEL" />
     </LinearLayout>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/verficar_id"
-        app:layout_constraintStart_toStartOf="@+id/add_routine_buttom_pair"
-        app:layout_constraintTop_toBottomOf="@+id/add_routine_buttom_pair"/>
+
 
 
 
