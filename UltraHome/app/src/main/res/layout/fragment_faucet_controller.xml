@@ -8,13 +8,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
-
     <TextView
         android:id="@+id/textView7"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="24dp"
-        android:text="Close"
+        android:text="@string/close_string"
         app:layout_constraintBottom_toBottomOf="@+id/faucet_switch"
         app:layout_constraintEnd_toStartOf="@+id/faucet_switch"
         app:layout_constraintTop_toTopOf="@+id/faucet_switch" />
@@ -24,7 +23,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:text="Open"
+        android:text="@string/open_string"
         app:layout_constraintBottom_toBottomOf="@+id/faucet_switch"
         app:layout_constraintStart_toEndOf="@+id/faucet_switch"
         app:layout_constraintTop_toTopOf="@+id/faucet_switch" />
@@ -43,7 +42,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:backgroundTint="#FF7F7F"
-        android:text="STOP"
+        android:text="@string/stop_string"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/dispense_exact_amount_button" />
@@ -53,7 +52,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="36dp"
-        android:text="Dispense exact amount"
+        android:text="@string/dispense_exact_amount_string"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/faucet_switch" />
@@ -72,30 +71,30 @@
             android:layout_height="48dp"
             android:layout_marginEnd="28dp"
             android:ems="10"
-            android:inputType="number" />
+            android:inputType="number"
+            android:autofillHints="@string/amount_hint_string" />
 
         <Spinner
             android:id="@+id/unit_spinner"
             android:layout_width="48dp"
             android:layout_height="match_parent"
-            android:layout_marginRight="24dp"
+            android:layout_marginEnd="24dp"
             android:layout_weight="1"
             android:background="#F3F3F3"
-            android:entries="@array/units"
-            />
+            android:entries="@array/units" />
 
         <Button
             android:id="@+id/start_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="START" />
+            android:text="@string/start_string" />
 
         <Button
             android:id="@+id/cancel_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="CANCEL" />
+            android:text="@string/cancel_string" />
 
     </LinearLayout>
 

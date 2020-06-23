@@ -1,29 +1,24 @@
 <resources>
-    <string name="app_name">UltraHome</string>
-    <string name="title_homes">Homes</string>
-    <string name="title_profile">Profile</string>
-    <string name="title_routines">Routines</string>
-    <string name="title_rooms">Rooms</string>
-    <string name="title_devices">Devices</string>
+    <!--  //////////////////////////////////////////////  -->
+    <!--  //////////////  UNIQUE STRINGS  //////////////  -->
+    <!--  //////////////////////////////////////////////  -->
 
-    <string name="blinds_open_button">Open completely</string>
-    <string name="blinds_close_button">Close completely</string>
+    <!-- ////////////// BLINDS STRINGS ////////////// -->
+
+    <string name="max_level_string">MAX. LEVEL:</string>
+    <string name="max_level_placeholder">100%</string>  <!-- PLACEHOLDER, WILL BE EDITED LATER -->
+    <string name="current_level_string">CURRENT LEVEL</string>
+    <string name="open_completely_string">OPEN COMPLETELY</string>
+    <string name="close_completely_string">CLOSE COMPLETELY</string>
     <string name="blinds_percentage_text">PERCENTAGE</string>
+    <string name="status_placeholder">CLOSING…</string>  <!-- PLACEHOLDER, WILL BE EDITED LATER -->
 
-    <string name="edit_button">Edit</string>
-    <string name="delete_button">Delete</string>
-    <string name="done_button">Done</string>
+    <!-- ////////////// REFRIGERATOR STRINGS ////////////// -->
 
-    <string-array name="units">
-        <item>ml</item>
-        <item>cl</item>
-        <item>dl</item>
-        <item>l</item>
-        <item>dal</item>
-        <item>hl</item>
-        <item>kl</item>
-    </string-array>
-
+    <string name="fridge_temp_string">FRIDGE TEMP.:</string>
+    <string name="freezer_temp_string">FREEZER TEMP.:</string>
+    <string name="mode_string">MODE:</string>
+    <string name="celsius_string">º C</string>
     <string-array name="fridge_temps">
         <item>2</item>
         <item>3</item>
@@ -33,7 +28,6 @@
         <item>7</item>
         <item>8</item>
     </string-array>
-
     <string-array name="freezer_temps">
         <item>-20</item>
         <item>-19</item>
@@ -49,12 +43,86 @@
         <item>-9</item>
         <item>-8</item>
     </string-array>
-
     <string-array name="refrigerator_modes">
         <item>DEFAULT</item>
         <item>VACATION</item>
         <item>PARTY</item>
     </string-array>
+
+    <!-- ////////////// FAUCET STRINGS ////////////// -->
+
+    <string name="dispense_exact_amount_string">DISPENSE EXACT AMOUNT</string>
+    <string name="cancel_string">CANCEL</string>
+    <string name="stop_string">STOP</string>
+    <string name="amount_hint_string">AMOUN</string>
+    <string-array name="units">
+        <item>ml</item>
+        <item>cl</item>
+        <item>dl</item>
+        <item>l</item>
+        <item>dal</item>
+        <item>hl</item>
+        <item>kl</item>
+    </string-array>
+
+    <!-- ////////////// DOOR STRINGS ////////////// -->
+
+    <string name="lock_string">LOCK</string>
+    <string name="unlock_string">UNLOCK</string>
+
+    <!-- ////////////// VACUUM STRINGS ////////////// -->
+
+    <string name="vacuum_string">VACUUM</string>
+    <string name="mop_string">MOP</string>
+    <string name="pause_string">PAUSE</string>
+    <string name="dock_string">DOCK</string>
+    <string name="location_string">LOCATION</string>
+    <string name="battery_placeholder">BATTERY: 100%</string>  <!-- PLACEHOLDER, WILL BE EDITED LATER -->
+
+    <!-- ////////////// LIGHTS STRINGS ////////////// -->
+
+    <string name="on_string">ON</string>
+    <string name="off_string">OFF</string>
+    <string name="brightness_string">BRIGHTNESS:</string>
+    <string name="color_string">COLOR:</string>
+    <string name="brightness_placeholder">100</string>  <!-- PLACEHOLDER, WILL BE EDITED LATER -->
+
+
+
+    <!--  //////////////////////////////////////////////  -->
+    <!--  //////////////  SHARED STRINGS  //////////////  -->
+    <!--  //////////////////////////////////////////////  -->
+
+    <!-- ////////////// FAUCET AND DOOR STRINGS ////////////// -->
+
+    <string name="close_string">CLOSE</string>
+    <string name="open_string">OPEN</string>
+
+    <!-- ////////////// FAUCET AND VACUUM STRINGS ////////////// -->
+
+    <string name="start_string">START</string>
+
+
+
+
+
+
+    <!--  //////////////////////////////////////////////  -->
+    <!--  //////////////  OTHER STRINGS  ///////////////  -->
+    <!--  //////////////////////////////////////////////  -->
+
+    <!-- ////////////// THESE NEED TO BE ORGANIZED!!!!!! ////////////// -->
+
+    <string name="app_name">UltraHome</string>
+    <string name="title_homes">Homes</string>
+    <string name="title_profile">Profile</string>
+    <string name="title_routines">Routines</string>
+    <string name="title_rooms">Rooms</string>
+    <string name="title_devices">Devices</string>
+
+    <string name="edit_button">Edit</string>
+    <string name="delete_button">Delete</string>
+    <string name="done_button">Done</string>
 
     <string name="delete_device_confirmation">Are you sure you want to delete the device?</string>
 </resources>

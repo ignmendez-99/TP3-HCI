@@ -8,7 +8,7 @@
     tools:context=".ui.routines.RoutinesFragment">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/routines_recycler_view"
+        android:id="@+id/routines_recycler_view_grid"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
@@ -19,12 +19,11 @@
         android:id="@+id/button_add_routine"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="70dp"
+        android:layout_marginEnd="25dp"
         android:src="@drawable/add_button"
+        android:layout_gravity="bottom|end"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-

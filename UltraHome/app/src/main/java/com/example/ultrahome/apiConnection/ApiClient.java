@@ -1,7 +1,10 @@
 package com.example.ultrahome.apiConnection;
 
+import com.example.ultrahome.apiConnection.entities.Routine.Routine;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.Device;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.DeviceState;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.DeviceType;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.DeviceTypeComplete;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.blinds.BlindsState;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.door.Door;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.door.DoorState;
@@ -14,6 +17,7 @@ import com.example.ultrahome.apiConnection.entities.Home;
 import com.example.ultrahome.apiConnection.entities.Result;
 import com.example.ultrahome.apiConnection.entities.Room;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.refrigerator.RefrigeratorState;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.vacuum.VacuumState;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -139,6 +143,14 @@ public class ApiClient {
         return call;
     }
 
+    ////////////// DEVICE-TYPE CALLS ////////////////////
+
+    public Call<Result<DeviceTypeComplete>> getDeviceType(String deviceTypeId, Callback<Result<DeviceTypeComplete>> callback){
+        Call<Result<DeviceTypeComplete>> call = this.service.getDeviceType(deviceTypeId);
+        call.enqueue(callback);
+        return call;
+    }
+
     ////////////// HOME-ROOM CALLS ////////////////////
 
     public Call<Result<List<Room>>> getRoomsInThisHome(String homeId, Callback<Result<List<Room>>> callback) {
@@ -163,6 +175,44 @@ public class ApiClient {
 
     public Call<Result<Boolean>> linkDeviceWithRoom(String roomId, String deviceId, Callback<Result<Boolean>> callback) {
         Call<Result<Boolean>> call = this.service.linkDeviceWithHome(roomId, deviceId);
+        call.enqueue(callback);
+        return call;
+    }
+
+    ////////////// ROUTINE CALLS ////////////////////
+
+    public Call<Result<List<Routine>>> getRoutines(Callback<Result<List<Routine>>> callback){
+        Call<Result<List<Routine>>> call = this.service.getRoutines();
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<Routine>> addRoutine(Routine routine, Callback<Result<Routine>> callback){
+        Call<Result<Routine>> call = this.service.addRoutine(routine);
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<Boolean>> deleteRoutine(String routineId, Callback<Result<Boolean>> callback){
+        Call<Result<Boolean>> call = this.service.deleteRoutine(routineId);
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<Boolean>> getRoutine(String routineId, Callback<Result<Boolean>> callback){
+        Call<Result<Boolean>> call = this.service.deleteRoutine(routineId);
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<Boolean>> modifyRoutine(String routineId, Routine routine, Callback<Result<Boolean>> callback){
+        Call<Result<Boolean>> call = this.service.modifyRoutine(routineId, routine);
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<List<Boolean>>> executeRoutine(String routineId, Callback<Result<List<Boolean>>> callback){
+        Call<Result<List<Boolean>>> call = this.service.executeRoutine(routineId);
         call.enqueue(callback);
         return call;
     }
@@ -326,6 +376,53 @@ public class ApiClient {
         aux[0] = newColor;
 
         Call<Result<String>> call = this.service.setLightColor(deviceId, "setColor", aux);
+        call.enqueue(callback);
+        return call;
+    }
+
+    ////////////// VACUUM CALLS ////////////////////
+
+    public Call<Result<VacuumState>> getVacuumState(String deviceId, Callback<Result<VacuumState>> callback) {
+        Call<Result<VacuumState>> call = this.service.getVacuumState(deviceId);
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<String>> setVacuumMode(String deviceId, String newMode, Callback<Result<String>> callback) {
+        String [] aux = new String[1];
+        aux[0] = newMode;
+
+        Call<Result<String>> call = this.service.setLightColor(deviceId, "setMode", aux);
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<String>> setVacuumState(String deviceId, String newState, Callback<Result<String>> callback) {
+        Call<Result<String>> call;
+        switch (newState) {
+            case "start":
+                call = this.service.setVacuumMode(deviceId, "start");
+                break;
+            case "pause":
+                call = this.service.setVacuumMode(deviceId, "pause");
+                break;
+            case "dock":
+                call = this.service.setVacuumMode(deviceId, "dock");
+                break;
+            default:
+                call = this.service.setVacuumMode(deviceId, "start");
+                break;
+
+        }
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<String>> setVacuumLocation(String deviceId, String newLocation, Callback<Result<String>> callback) {
+        String [] aux = new String[1];
+        aux[0] = newLocation;
+
+        Call<Result<String>> call = this.service.setLightColor(deviceId, "setLocation", aux);
         call.enqueue(callback);
         return call;
     }
