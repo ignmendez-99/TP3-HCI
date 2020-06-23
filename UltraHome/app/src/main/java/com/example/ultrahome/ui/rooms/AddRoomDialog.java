@@ -125,7 +125,6 @@ public class AddRoomDialog extends Dialog {
             public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
                 ErrorHandler.handleUnexpectedError(t);
                 addRoomFail();
-                // todo: faltaria eliminar la Room ya creada, ya que hubo error al linkearla con la home
             }
         });
     }

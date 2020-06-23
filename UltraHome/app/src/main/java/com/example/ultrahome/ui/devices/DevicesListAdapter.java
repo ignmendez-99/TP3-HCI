@@ -44,7 +44,7 @@ public class DevicesListAdapter extends RecyclerView.Adapter<DevicesListAdapter.
             List<String> deviceIds = currentFragment.getIdList();
             String clickedDeviceTypeId = deviceTypeIds.get(position);
             String clickedDeviceId = deviceIds.get(position);
-            currentFragment.insertNestedFragment(clickedDeviceTypeId, clickedDeviceId, devicesNames.get(position), view, position);
+            currentFragment.insertNestedFragment(clickedDeviceTypeId, clickedDeviceId, devicesNames.get(position), position);
         });
     }
 

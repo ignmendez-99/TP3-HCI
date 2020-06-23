@@ -96,6 +96,11 @@ public class RoomsFragment extends Fragment {
                 roomIds.add(savedInstanceState.getString("roomId" + i));
                 adapter.notifyItemInserted(i);
             }
+            if(numberOfRoomsSaved == 0) {
+                view.findViewById(R.id.zero_rooms).setVisibility(View.VISIBLE);
+            }
+            requireView().findViewById(R.id.button_show_AddRoomDialog).setVisibility(View.VISIBLE);
+            requireView().findViewById(R.id.loadingRoomsList).setVisibility(View.GONE);
         } else {
             getAllRoomsOfThisHome(view);
         }
@@ -140,6 +145,7 @@ public class RoomsFragment extends Fragment {
         roomIds.add(roomId);
         roomNames.add(roomName);
         adapter.notifyItemInserted(roomNames.size() - 1);
+        requireView().findViewById(R.id.zero_rooms).setVisibility(View.GONE);
         Snackbar.make(this.requireView(), "Room Added!", Snackbar.LENGTH_SHORT).show();
     }
 
@@ -203,7 +209,9 @@ public class RoomsFragment extends Fragment {
                                         }
                                     }
                                 }
-                            }
+                                v.findViewById(R.id.zero_rooms).setVisibility(View.GONE);
+                            } else
+                                v.findViewById(R.id.zero_rooms).setVisibility(View.VISIBLE);
                             v.findViewById(R.id.button_show_AddRoomDialog).setVisibility(View.VISIBLE);
                         } else {
                             if (fragmentOnScreen)
@@ -302,6 +310,8 @@ public class RoomsFragment extends Fragment {
                                     if (result != null && result.getResult()) {
                                         roomIds.remove(positionToDelete.intValue());
                                         roomNamesBackupBeforeDeleting.remove(0);
+                                        if(roomIds.size() == 0)
+                                            RoomsFragment.this.requireView().findViewById(R.id.zero_rooms).setVisibility(View.VISIBLE);
                                     } else {
                                         if(fragmentOnScreen)
                                             showDeleteRoomError();

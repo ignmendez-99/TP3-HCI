@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="570dp"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/dialog_add_device_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add New Device"
+        android:textSize="25sp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/dialog_add_device_subtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Choose a new name for your Device"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="@+id/dialog_add_device_title"
+        app:layout_constraintTop_toBottomOf="@+id/dialog_add_device_title" />
+
+    <EditText
+        android:id="@+id/device_name_edit_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:hint="New Name"
+        android:maxLength="65"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dialog_add_device_subtitle" />
+
+    <TextView
+        android:id="@+id/dialog_add_device_error_message_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:visibility="gone"
+        android:textColor="@android:color/holo_red_light"
+        app:layout_constraintStart_toStartOf="@+id/device_name_edit_text"
+        app:layout_constraintTop_toBottomOf="@+id/device_name_edit_text" />
+
+    <TextView
+        android:id="@+id/dialog_add_device_error_message_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:visibility="gone"
+        android:textColor="@android:color/holo_red_light"
+        app:layout_constraintStart_toStartOf="@+id/device_name_edit_text"
+        app:layout_constraintTop_toBottomOf="@+id/device_types_radioGroup_1" />
+
+    <LinearLayout
+        android:id="@+id/add_device_buttom_pair"
+        style="?android:attr/buttonBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dialog_add_device_error_message_2">
+
+        <Button
+            android:id="@+id/button_add_device"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ADD NEW DEVICE" />
+
+        <Button
+            android:id="@+id/button_close_add_device_dialog"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CANCEL" />
+    </LinearLayout>
+
+    <include
+        android:id="@+id/loadingAddingDevice"
+        layout="@layout/loading_circle"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_marginTop="50dp"
+        android:gravity="center"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dialog_add_device_error_message_2"/>
+
+    <RadioGroup
+        android:id="@+id/device_types_radioGroup_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/dialog_add_device_error_message_1">
+
+        <RadioButton
+            android:id="@+id/door_radioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Door" />
+
+        <RadioButton
+            android:id="@+id/faucet_radioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Faucet" />
+
+        <RadioButton
+            android:id="@+id/blinds_radioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Blinds" />
+
+        <RadioButton
+            android:id="@+id/speaker_radioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Speaker" />
+
+        <RadioButton
+            android:id="@+id/refrigerator_radioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Refrigerator" />
+
+        <RadioButton
+            android:id="@+id/vacuum_radioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Vacuum" />
+
+        <RadioButton
+            android:id="@+id/lights_radioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lights" />
+    </RadioGroup>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

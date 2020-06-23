@@ -1,12 +1,12 @@
 package com.example.ultrahome.ui.devices;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,10 +20,7 @@ import com.example.ultrahome.R;
 import com.example.ultrahome.apiConnection.ApiClient;
 import com.example.ultrahome.apiConnection.ErrorHandler;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.Device;
-import com.example.ultrahome.apiConnection.entities.deviceEntities.lights.Lights;
-import com.example.ultrahome.apiConnection.entities.Error;
 import com.example.ultrahome.apiConnection.entities.Result;
-import com.example.ultrahome.apiConnection.entities.deviceEntities.DeviceType;
 import com.example.ultrahome.ui.devices.controllers.BlindsControllerFragment;
 import com.example.ultrahome.ui.devices.controllers.DoorControllerFragment;
 import com.example.ultrahome.ui.devices.controllers.FaucetControllerFragment;
@@ -40,23 +37,29 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class DevicesListFragment extends Fragment {
+
     private Map<String, Integer> supportedDeviceTypeIds;
 
     // screen controls
     private FloatingActionButton button_add_device;
+    private FloatingActionButton deleteDeviceButton;
+    private FloatingActionButton editButton;
+    private FloatingActionButton doneButton;
+    private EditText deviceNameEdited;
+    private TextView deviceNameInScreen;
+    private boolean editing = false;
+    private String currentDeviceName;
 
     // variables for dealing with the RecyclerView
     private RecyclerView recyclerView;
     private LinearLayoutManager layoutManager;
     private DevicesListAdapter adapter;
-    private Integer positionToDelete;
 
     private List<String> devicesNames;
     private List<String> devicesIds;
@@ -66,9 +69,12 @@ public class DevicesListFragment extends Fragment {
     private String roomId;   // this is the room that contains all devices displayed in this screen
     private Snackbar deletingDeviceSnackbar;
     private boolean fragmentOnScreen = true;
+    private boolean childOnScreen = false;
     private boolean deletingDevice = false;
     private ApiClient api;
     private Fragment childFragment;
+    private Integer positionOfDeviceDisplayed;
+    private Integer positionOfDeviceDisplayedBackup; // useful when the User UNDO the Deletion
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_devices_list, container, false);
@@ -84,41 +90,167 @@ public class DevicesListFragment extends Fragment {
         api = ApiClient.getInstance();
 
         // we grab the "parameter" that RoomsFragment left us
+        // TODO: try this with an Intent/Bundle
         RoomToDeviceViewModel model = new ViewModelProvider(requireActivity()).get(RoomToDeviceViewModel.class);
         roomId = model.getRoomId().getValue();
 
-        button_add_device = view.findViewById(R.id.button_show_AddDeviceDialog);
-        button_add_device.setOnClickListener(this::showAddRoomDialog);
+        DevicesListViewModel previousState = new ViewModelProvider(requireActivity()).get(DevicesListViewModel.class);
+        childFragment = previousState.getChildFragment().getValue();
 
         recyclerView = view.findViewById(R.id.horizontal_devices_recycler_view);
         if(recyclerView == null) {
             recyclerView = view.findViewById(R.id.vertical_devices_recycler_view);
             layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-            recyclerView.setLayoutManager(layoutManager);
-            adapter = new DevicesListAdapter(getContext(), devicesNames, this);
         } else {
             layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-            recyclerView.setLayoutManager(layoutManager);
-            adapter = new DevicesListAdapter(getContext(), devicesNames, this);
         }
+        recyclerView.setLayoutManager(layoutManager);
+        adapter = new DevicesListAdapter(getContext(), devicesNames, this);
         recyclerView.setAdapter(adapter);
 
         if(savedInstanceState != null) {
+            childOnScreen = savedInstanceState.getBoolean("childOnScreen");
+            if(savedInstanceState.getBoolean("mustRecoverPosition")) {
+                positionOfDeviceDisplayed = savedInstanceState.getInt("positionOfDeviceDisplayed");
+            }
             int numberOfDevicesSaved = savedInstanceState.getInt("numberOfDevices");
             for(int i = 0; i < numberOfDevicesSaved; i++) {
                 devicesNames.add(savedInstanceState.getString("deviceName" + i));
                 devicesIds.add(savedInstanceState.getString("deviceId" + i));
+                deviceTypeIds.add(savedInstanceState.getString("deviceTypeId" + i));
                 adapter.notifyItemInserted(i);
             }
+            if(numberOfDevicesSaved == 0) {
+                view.findViewById(R.id.zero_devices).setVisibility(View.VISIBLE);
+            }
+            requireView().findViewById(R.id.button_show_AddDeviceDialog).setVisibility(View.VISIBLE);
+            requireView().findViewById(R.id.loadingDevicesList).setVisibility(View.GONE);
+            editing = savedInstanceState.getBoolean("editing");
+            currentDeviceName = savedInstanceState.getString("deviceInScreenName");
         } else {
             getAllDevicesOfThisRoom(view);
         }
+
+        initDeviceTypeIdMap();
+        initScreenControllers(view);
+    }
+
+    private void initScreenControllers(@NonNull View view) {
+        button_add_device = view.findViewById(R.id.button_show_AddDeviceDialog);
+        button_add_device.setOnClickListener(this::showAddRoomDialog);
+
+        deleteDeviceButton = view.findViewById(R.id.delete_device_button);
+        deleteDeviceButton.setOnClickListener(this::deletePressed);
+        if(childOnScreen && editing) {
+            deleteDeviceButton.setVisibility(View.VISIBLE);
+            deleteDeviceButton.setClickable(true);
+        } else {
+            deleteDeviceButton.setVisibility(View.INVISIBLE);
+            deleteDeviceButton.setClickable(false);
+        }
+
+        doneButton = view.findViewById(R.id.done_editing_device_button);
+        doneButton.setOnClickListener(this::editPressed);
+        if(childOnScreen && editing) {
+            doneButton.setVisibility(View.VISIBLE);
+            doneButton.setClickable(true);
+        } else {
+            doneButton.setVisibility(View.INVISIBLE);
+            doneButton.setClickable(false);
+        }
+
+        editButton = view.findViewById(R.id.edit_device_button);
+        editButton.setOnClickListener(this::editPressed);
+        if(childOnScreen && !editing) {
+            editButton.setVisibility(View.VISIBLE);
+            editButton.setClickable(true);
+        } else {
+            editButton.setVisibility(View.INVISIBLE);
+            editButton.setClickable(false);
+        }
+
+        deviceNameEdited = view.findViewById(R.id.device_name_editText);
+        if(childOnScreen) {
+            if(editing)
+                deviceNameEdited.setVisibility(View.VISIBLE);
+            deviceNameEdited.setText(currentDeviceName);
+        }
+        deviceNameInScreen = view.findViewById(R.id.device_name_textView);
+        if(childOnScreen) {
+            if(!editing)
+                deviceNameInScreen.setVisibility(View.VISIBLE);
+            deviceNameInScreen.setText(currentDeviceName);
+        }
+    }
+
+    private void editPressed(View view) {
+        if (editing) {
+            editButton.setVisibility(View.VISIBLE);
+            editButton.setClickable(true);
+            deleteDeviceButton.setVisibility(View.INVISIBLE);
+            deleteDeviceButton.setClickable(false);
+            doneButton.setVisibility(View.INVISIBLE);
+            doneButton.setClickable(false);
+            deviceNameEdited.setVisibility(View.INVISIBLE);
+            deviceNameInScreen.setVisibility(View.VISIBLE);
+
+            if (! deviceNameEdited.getText().toString().equals(currentDeviceName)) {
+                currentDeviceName = deviceNameEdited.getText().toString();
+                deviceNameInScreen.setText(currentDeviceName);
+                // todo: API CALL PARA RENOMBRAR
+            }
+        } else {
+            editButton.setVisibility(View.INVISIBLE);
+            editButton.setClickable(false);
+            deleteDeviceButton.setVisibility(View.VISIBLE);
+            deleteDeviceButton.setClickable(true);
+
+            doneButton.setVisibility(View.VISIBLE);
+            doneButton.setClickable(true);
+            deviceNameEdited.setText(currentDeviceName);
+            deviceNameEdited.setVisibility(View.VISIBLE);
+            deviceNameInScreen.setVisibility(View.INVISIBLE);
+        }
+        editing = !editing;
+    }
+
+    private void deletePressed(View view) {
+        deleteDeviceButton.setVisibility(View.GONE);
+        doneButton.setVisibility(View.GONE);
+        doneButton.setClickable(false);
+        deviceNameEdited.setVisibility(View.GONE);
+        deviceNameInScreen.setVisibility(View.GONE);
+        editButton.setClickable(true);
+        childOnScreen = false;
+
+        showDeleteDeviceDialog();
+    }
+
+    // todo: esto quizas se puede llevar a otra Clase, ya que sino esta clase hace demasiado
+    private void initDeviceTypeIdMap() {
+        supportedDeviceTypeIds = new HashMap<>();
+        // SPEAKER
+        supportedDeviceTypeIds.put("c89b94e8581855bc", R.layout.fragment_speaker_controller);
+        // FAUCET
+        supportedDeviceTypeIds.put("dbrlsh7o5sn8ur4i", R.layout.fragment_faucet_controller);
+        // BLINDS
+        supportedDeviceTypeIds.put("eu0v2xgprrhhg41g", R.layout.fragment_blinds_controller);
+        // LIGHTS
+        supportedDeviceTypeIds.put("go46xmbqeomjrsjr", R.layout.fragment_lights_controller);
+        // DOOR
+        supportedDeviceTypeIds.put("lsf78ly0eqrjbz91", R.layout.fragment_door_controller);
+        // VACUUM
+        supportedDeviceTypeIds.put("ofglvd9gqx8yfl3l", R.layout.fragment_vacuum_controller);
+        // REFRIGERATOR
+        supportedDeviceTypeIds.put("rnizejqr2di0okho", R.layout.fragment_refrigerator_controller);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         fragmentOnScreen = false;
+        DevicesListViewModel model = new ViewModelProvider(requireActivity()).get(DevicesListViewModel.class);
+        model.storeChildFragment(childFragment);
     }
 
     @Override
@@ -131,7 +263,16 @@ public class DevicesListFragment extends Fragment {
             for (int i = 0; i < devicesNames.size(); i++) {
                 outState.putString("deviceName" + i, devicesNames.get(i));
                 outState.putString("deviceId" + i, devicesIds.get(i));
+                outState.putString("deviceTypeId" + i, deviceTypeIds.get(i));
             }
+            outState.putBoolean("childOnScreen", childOnScreen);
+            outState.putBoolean("editing", editing);
+            outState.putString("deviceInScreenName", currentDeviceName);
+            if(positionOfDeviceDisplayed != null) {
+                outState.putBoolean("mustRecoverPosition", true);
+                outState.putInt("positionOfDeviceDisplayed", positionOfDeviceDisplayed);
+            } else
+                outState.putBoolean("mustRecoverPosition", false);
         }
     }
 
@@ -141,6 +282,7 @@ public class DevicesListFragment extends Fragment {
         devicesNames.add(deviceName);
         deviceTypeIds.add(deviceTypeId);
         adapter.notifyItemInserted(devicesNames.size() - 1);
+        requireView().findViewById(R.id.zero_devices).setVisibility(View.GONE);
         Snackbar.make(this.requireView(), "Device Added!", Snackbar.LENGTH_SHORT).show();
     }
 
@@ -150,19 +292,23 @@ public class DevicesListFragment extends Fragment {
         addHomeDialog.show();
     }
 
-    public void showDeleteDeviceDialog(int position) {
-        positionToDelete = position;
-
-        // detach the GenericDeviceFragment from screen
+    public void showDeleteDeviceDialog() {
+        // detach the Controller Fragment from screen
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         transaction.detach(childFragment).commit();
+        childFragment.onDestroy();
+        childFragment.onDetach();
+        childFragment = null;
 
         // remove the Device Card from screen
-        String roomNameToRemove = devicesNames.get(positionToDelete);
+        String roomNameToRemove = devicesNames.get(positionOfDeviceDisplayed);
         deviceNamesBackupBeforeDeleting.add(roomNameToRemove);
-        devicesNames.remove(positionToDelete.intValue());
-        adapter.notifyItemRemoved(positionToDelete);
-        adapter.notifyItemRangeChanged(positionToDelete, devicesNames.size());
+        devicesNames.remove(positionOfDeviceDisplayed.intValue());
+        adapter.notifyItemRemoved(positionOfDeviceDisplayed);
+        adapter.notifyItemRangeChanged(positionOfDeviceDisplayed, devicesNames.size());
+
+        positionOfDeviceDisplayedBackup = positionOfDeviceDisplayed;
+        positionOfDeviceDisplayed = null;
 
         FragmentTransaction ft = getChildFragmentManager().beginTransaction();
         // Create and show the dialog.
@@ -174,8 +320,9 @@ public class DevicesListFragment extends Fragment {
     void recoverRemovedDevice(View v) {
         String deviceToRetrieve = deviceNamesBackupBeforeDeleting.get(0);
         deviceNamesBackupBeforeDeleting.remove(0);
-        devicesNames.add(positionToDelete, deviceToRetrieve);
-        adapter.notifyItemInserted(positionToDelete);
+        devicesNames.add(positionOfDeviceDisplayedBackup, deviceToRetrieve);
+        adapter.notifyItemInserted(positionOfDeviceDisplayedBackup);
+        adapter.notifyItemRangeChanged(positionOfDeviceDisplayedBackup, devicesNames.size());
     }
 
     void deleteDevice(View v) {
@@ -209,7 +356,9 @@ public class DevicesListFragment extends Fragment {
                                         }
                                     }
                                 }
-                            }
+                                view.findViewById(R.id.zero_devices).setVisibility(View.GONE);
+                            } else
+                                view.findViewById(R.id.zero_devices).setVisibility(View.VISIBLE);
                             view.findViewById(R.id.button_show_AddDeviceDialog).setVisibility(View.VISIBLE);
                         } else
                             if(fragmentOnScreen)
@@ -282,10 +431,56 @@ public class DevicesListFragment extends Fragment {
         return deviceTypeIds;
     }
 
-    void insertNestedFragment(String deviceTypeId, String deviceId, String deviceName, View v, int positionInRecyclerView) {
-        childFragment = GenericDeviceFragment.newInstance(deviceId, deviceName, deviceTypeId, positionInRecyclerView);
-        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-        transaction.replace(R.id.device_control_container, childFragment).commit();
+    void insertNestedFragment(String deviceTypeId, String deviceId, String deviceName, @NonNull Integer positionInRecyclerView) {
+        if(!positionInRecyclerView.equals(positionOfDeviceDisplayed)) {
+            positionOfDeviceDisplayed = positionInRecyclerView;
+            Integer layoutToChoose = supportedDeviceTypeIds.get(deviceTypeId);
+            if (layoutToChoose != null) {
+                if(childFragment != null) {
+                    FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+                    transaction.detach(childFragment).commit();
+                    childFragment.onDestroy();
+                    childFragment.onDetach();
+                    childFragment = null;
+                }
+                switch (layoutToChoose) {
+                    case R.layout.fragment_lights_controller:
+                        childFragment = LightsControllerFragment.newInstance(deviceId, positionInRecyclerView);
+                        break;
+                    case R.layout.fragment_blinds_controller:
+                        childFragment = BlindsControllerFragment.newInstance(deviceId, positionInRecyclerView);
+                        break;
+                    case R.layout.fragment_door_controller:
+                        childFragment = DoorControllerFragment.newInstance(deviceId, positionInRecyclerView);
+                        break;
+                    case R.layout.fragment_faucet_controller:
+                        childFragment = FaucetControllerFragment.newInstance(deviceId, positionInRecyclerView);
+                        break;
+                    case R.layout.fragment_refrigerator_controller:
+                        childFragment = RefrigeratorControllerFragment.newInstance(deviceId, positionInRecyclerView);
+                        break;
+                    case R.layout.fragment_speaker_controller:
+                        childFragment = SpeakerControllerFragment.newInstance(deviceId, positionInRecyclerView);
+                        break;
+                    case R.layout.fragment_vacuum_controller:
+                        childFragment = VacuumControllerFragment.newInstance(deviceId, positionInRecyclerView);
+                        break;
+                    default:
+                        throw new IllegalStateException("Unexpected value: " + layoutToChoose);
+                }
+                FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+                transaction.replace(R.id.device_control_container, childFragment).commit();
+                editButton.setVisibility(View.VISIBLE);
+                editButton.setClickable(true);
+                deviceNameInScreen.setVisibility(View.VISIBLE);
+                currentDeviceName = deviceName;
+                deviceNameInScreen.setText(currentDeviceName);
+                deviceNameEdited.setText(currentDeviceName);
+                childOnScreen = true;
+            } else {
+                Snackbar.make(requireView(), "Could not load device", Snackbar.LENGTH_SHORT);
+            }
+        }
     }
 
 
@@ -296,8 +491,9 @@ public class DevicesListFragment extends Fragment {
         public void onClick(View v) {
             String deviceToRetrieve = deviceNamesBackupBeforeDeleting.get(0);
             deviceNamesBackupBeforeDeleting.remove(0);
-            devicesNames.add(positionToDelete, deviceToRetrieve);
-            adapter.notifyItemInserted(positionToDelete);
+            devicesNames.add(positionOfDeviceDisplayedBackup, deviceToRetrieve);
+            adapter.notifyItemInserted(positionOfDeviceDisplayedBackup);
+            adapter.notifyItemRangeChanged(positionOfDeviceDisplayedBackup, devicesNames.size());
             deletingDeviceSnackbar.dismiss();
         }
     }
@@ -313,15 +509,17 @@ public class DevicesListFragment extends Fragment {
                 if (event == DISMISS_EVENT_TIMEOUT || event == DISMISS_EVENT_CONSECUTIVE) {
                     super.onDismissed(transientBottomBar, event);
                     new Thread(() -> {
-                        api.deleteDevice(devicesIds.get(positionToDelete), new Callback<Result<Boolean>>() {
+                        api.deleteDevice(devicesIds.get(positionOfDeviceDisplayedBackup), new Callback<Result<Boolean>>() {
                             @Override
                             public void onResponse(@NonNull Call<Result<Boolean>> call, @NonNull Response<Result<Boolean>> response) {
                                 if (response.isSuccessful()) {
                                     Result<Boolean> result = response.body();
                                     if (result != null && result.getResult()) {
-                                        devicesIds.remove(positionToDelete.intValue());
-                                        deviceTypeIds.remove(positionToDelete.intValue());
+                                        devicesIds.remove(positionOfDeviceDisplayedBackup.intValue());
+                                        deviceTypeIds.remove(positionOfDeviceDisplayedBackup.intValue());
                                         deviceNamesBackupBeforeDeleting.remove(0);
+                                        if(devicesIds.size() == 0)
+                                            DevicesListFragment.this.requireView().findViewById(R.id.zero_devices).setVisibility(View.VISIBLE);
                                     } else {
                                         if(fragmentOnScreen)
                                             showDeleteDeviceError();

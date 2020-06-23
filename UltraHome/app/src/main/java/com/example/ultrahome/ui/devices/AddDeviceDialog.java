@@ -201,7 +201,6 @@ public class AddDeviceDialog extends Dialog {
             public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
                 ErrorHandler.handleUnexpectedError(t);
                 addDeviceFail();
-                // todo: faltaria eliminar el Device ya creado, ya que hubo error al linkearlo con la Room
             }
         });
     }

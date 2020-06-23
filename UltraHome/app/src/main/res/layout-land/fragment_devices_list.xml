@@ -5,25 +5,151 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <include
+        android:id="@+id/loadingDevicesList"
+        layout="@layout/loading_circle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="50dp"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/get_devices_failed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/get_devices_failed_textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Could not recover Devices!"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/button_get_devices_again"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Try Again"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/get_devices_failed_textView" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/zero_devices"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:text="You don't have any Devices!\n Press the green button to add one!"
+        android:textSize="20sp"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/vertical_devices_recycler_view"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <Button
-        android:id="@+id/button_add_device"
+    <EditText
+        android:id="@+id/device_name_editText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="ADD DEVICE"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/vertical_devices_recycler_view"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginStart="13dp"
+        android:ems="10"
+        android:visibility="gone"
+        android:inputType="textPersonName"
+        android:text="PLACEHOLDER EDIT"
+        android:textSize="24sp"
+        app:layout_constraintStart_toEndOf="@id/vertical_devices_recycler_view"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/device_name_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="10dp"
+        android:text="PLACEHOLDER TEXT"
+        android:visibility="gone"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        android:textSize="24sp"
+        app:layout_constraintStart_toEndOf="@id/vertical_devices_recycler_view"
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <FrameLayout
         android:id="@+id/device_control_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="55dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/button_show_AddDeviceDialog"
+        app:layout_constraintStart_toEndOf="@+id/vertical_devices_recycler_view"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- will appear once the STATE is recovered -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/button_show_AddDeviceDialog"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        app:layout_constraintStart_toEndOf="@+id/button_add_device"/>
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="14dp"
+        android:layout_marginBottom="14dp"
+        android:src="@drawable/add_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Will appear when a device is displayed -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/delete_device_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#C6FF5353"
+        android:text="@string/delete_button"
+        android:visibility="gone"
+        android:src="@mipmap/delete_icon_round"
+        android:layout_marginBottom="200dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/button_show_AddDeviceDialog"/>
+
+    <!-- Will appear when a device is displayed -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/edit_device_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="14dp"
+        android:layout_marginBottom="100dp"
+        android:visibility="gone"
+        android:clickable="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/edit" />
+
+    <!-- Will appear when a device is displayed -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/done_editing_device_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="14dp"
+        android:layout_marginBottom="100dp"
+        android:visibility="gone"
+        android:clickable="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/ok" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

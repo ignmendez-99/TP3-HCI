@@ -91,6 +91,11 @@ public class HomesFragment extends Fragment{
                 homeIds.add(savedInstanceState.getString("homeId" + i));
                 adapter.notifyItemInserted(i);
             }
+            if(numberOfHomesSaved == 0) {
+                view.findViewById(R.id.zero_homes).setVisibility(View.VISIBLE);
+            }
+            requireView().findViewById(R.id.button_show_AddHomeDialog).setVisibility(View.VISIBLE);
+            requireView().findViewById(R.id.loadingHomesList).setVisibility(View.GONE);
         } else {
             getAllHomes(view);
         }
@@ -135,6 +140,7 @@ public class HomesFragment extends Fragment{
         homeIds.add(homeId);
         homeNames.add(homeName);
         adapter.notifyItemInserted(homeNames.size() - 1);
+        requireView().findViewById(R.id.zero_homes).setVisibility(View.GONE);
         Snackbar.make(this.requireView(), "Home Added!", Snackbar.LENGTH_SHORT).show();
     }
 
@@ -190,6 +196,10 @@ public class HomesFragment extends Fragment{
                                 homeNames.add(h.getName());
                                 adapter.notifyItemInserted(homeNames.size() - 1);
                             }
+                            if(homeList.size() == 0)
+                                v.findViewById(R.id.zero_homes).setVisibility(View.VISIBLE);
+                            else
+                                v.findViewById(R.id.zero_homes).setVisibility(View.GONE);
                             v.findViewById(R.id.button_show_AddHomeDialog).setVisibility(View.VISIBLE);
                         } else {
                             if(fragmentOnScreen)
@@ -271,6 +281,8 @@ public class HomesFragment extends Fragment{
                                     if (result != null && result.getResult()) {
                                         homeIds.remove(positionToDelete.intValue());
                                         homeNamesBackupBeforeDeleting.remove(0);
+                                        if(homeIds.size() == 0)
+                                            HomesFragment.this.requireView().findViewById(R.id.zero_homes).setVisibility(View.VISIBLE);
                                     } else {
                                         if(fragmentOnScreen)
                                             showDeleteHomeError();
