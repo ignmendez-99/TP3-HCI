@@ -28,6 +28,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -50,7 +51,9 @@ public class HomesFragment extends Fragment{
     private List<String> homeNamesBackupBeforeDeleting;
 
     private Snackbar deletingHomeSnackbar;
-    private static ApiClient api;
+    private boolean deletingHome = false;
+    private boolean fragmentOnScreen = true;
+    private ApiClient api;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_homes, container, false);
@@ -98,6 +101,12 @@ public class HomesFragment extends Fragment{
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        fragmentOnScreen = false;
+    }
+
+    @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         // call superclass to save any view hierarchy
         super.onSaveInstanceState(outState);
@@ -138,12 +147,13 @@ public class HomesFragment extends Fragment{
     void deleteHome(View v) {
         deletingHomeSnackbar = Snackbar.make(v, "Home deleted!", Snackbar.LENGTH_SHORT);
         deletingHomeSnackbar.setAction("UNDO", new UndoDeleteHomeListener());
-        deletingHomeSnackbar.addCallback(new DeleteHomeSnackbarTimeout(v));
+        deletingHome = true;
+        deletingHomeSnackbar.addCallback(new DeleteHomeSnackbarTimeout());
         deletingHomeSnackbar.show();
     }
 
     /* this method just puts the ""removed"" Home back on screen */
-    void recoverRemovedHome() {
+    void recoverRemovedHome(View v) {
         String homeToRetrieve = homeNamesBackupBeforeDeleting.get(0);
         homeNamesBackupBeforeDeleting.remove(0);
         homeNames.add(positionToDelete, homeToRetrieve);
@@ -180,22 +190,52 @@ public class HomesFragment extends Fragment{
                                 homeNames.add(h.getName());
                                 adapter.notifyItemInserted(homeNames.size() - 1);
                             }
-                        } else
-                            Snackbar.make(v, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
-                    } else
+                            v.findViewById(R.id.button_show_AddHomeDialog).setVisibility(View.VISIBLE);
+                        } else {
+                            if(fragmentOnScreen)
+                                showGetHomesError();
+                        }
+                    } else {
                         ErrorHandler.handleError(response, getContext());
+                        if(fragmentOnScreen)
+                            showGetHomesError();
+                    }
                     v.findViewById(R.id.loadingHomesList).setVisibility(View.GONE);
-                    v.findViewById(R.id.button_show_AddHomeDialog).setVisibility(View.VISIBLE);
                 }
 
                 @Override
                 public void onFailure(@NonNull Call<Result<List<Home>>> call, @NonNull Throwable t) {
                     ErrorHandler.handleUnexpectedError(t);
-                    v.findViewById(R.id.loadingHomesList).setVisibility(View.GONE);
-                    v.findViewById(R.id.button_show_AddHomeDialog).setVisibility(View.VISIBLE);
+                    if(fragmentOnScreen)
+                        showGetHomesError();
                 }
             });
         }).start();
+    }
+
+    private void showGetHomesError() {
+        requireView().findViewById(R.id.get_homes_failed).setVisibility(View.VISIBLE);
+        requireView().findViewById(R.id.button_get_homes_again).setOnClickListener(HomesFragment.this::getHomesAgain);
+        requireView().findViewById(R.id.loadingHomesList).setVisibility(View.GONE);
+    }
+
+    private void showDeleteHomeError() {
+        Snackbar s = Snackbar.make(requireView(), "Could not delete Home!", Snackbar.LENGTH_SHORT);
+        s.setAction("CLOSE", HomesFragment.this::recoverRemovedHome);
+        s.addCallback(new BaseTransientBottomBar.BaseCallback<Snackbar>() {
+            @Override
+            public void onDismissed(Snackbar transientBottomBar, int event) {
+                super.onDismissed(transientBottomBar, event);
+                HomesFragment.this.recoverRemovedHome(HomesFragment.this.getView());
+            }
+        });
+        s.show();
+    }
+
+    private void getHomesAgain(View v) {
+        requireView().findViewById(R.id.get_homes_failed).setVisibility(View.GONE);
+        requireView().findViewById(R.id.loadingHomesList).setVisibility(View.VISIBLE);
+        getAllHomes(requireView());
     }
 
 
@@ -215,37 +255,42 @@ public class HomesFragment extends Fragment{
 
     /* In the moment that the delete-home-snackbar disappears, the Home is deleted from DataBase */
     private class DeleteHomeSnackbarTimeout extends BaseTransientBottomBar.BaseCallback<Snackbar> {
-        private View view;
-
-        DeleteHomeSnackbarTimeout(View v) {
-            view = v;
-        }
 
         @Override
         public void onDismissed(Snackbar transientBottomBar, int event) {
-            if(event == DISMISS_EVENT_TIMEOUT || event == DISMISS_EVENT_CONSECUTIVE) {
-                super.onDismissed(transientBottomBar, event);
-                new Thread(() -> {
-                    api.deleteHome(homeIds.get(positionToDelete), new Callback<Result<Boolean>>() {
-                        @Override
-                        public void onResponse(@NonNull Call<Result<Boolean>> call, @NonNull Response<Result<Boolean>> response) {
-                            if (response.isSuccessful()) {
-                                Result<Boolean> result = response.body();
-                                if (result != null && result.getResult()) {
-                                    homeIds.remove(positionToDelete.intValue());
-                                    homeNamesBackupBeforeDeleting.remove(0);
-                                } else
-                                    Snackbar.make(view, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
-                            } else
-                                ErrorHandler.handleError(response, getContext());
-                        }
+            if(deletingHome) {
+                deletingHome = false;
+                if (event == DISMISS_EVENT_TIMEOUT || event == DISMISS_EVENT_CONSECUTIVE) {
+                    super.onDismissed(transientBottomBar, event);
+                    new Thread(() -> {
+                        api.deleteHome(homeIds.get(positionToDelete), new Callback<Result<Boolean>>() {
+                            @Override
+                            public void onResponse(@NonNull Call<Result<Boolean>> call, @NonNull Response<Result<Boolean>> response) {
+                                if (response.isSuccessful()) {
+                                    Result<Boolean> result = response.body();
+                                    if (result != null && result.getResult()) {
+                                        homeIds.remove(positionToDelete.intValue());
+                                        homeNamesBackupBeforeDeleting.remove(0);
+                                    } else {
+                                        if(fragmentOnScreen)
+                                            showDeleteHomeError();
+                                    }
+                                } else {
+                                    ErrorHandler.handleError(response, getContext());
+                                    if(fragmentOnScreen)
+                                        showDeleteHomeError();
+                                }
+                            }
 
-                        @Override
-                        public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
-                            ErrorHandler.handleUnexpectedError(t);
-                        }
-                    });
-                }).start();
+                            @Override
+                            public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
+                                ErrorHandler.handleUnexpectedError(t);
+                                if(fragmentOnScreen)
+                                    showDeleteHomeError();
+                            }
+                        });
+                    }).start();
+                }
             }
         }
     }

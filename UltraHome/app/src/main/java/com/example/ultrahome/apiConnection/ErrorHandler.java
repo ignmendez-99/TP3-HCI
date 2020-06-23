@@ -12,14 +12,15 @@ import retrofit2.Response;
 
 public class ErrorHandler {
 
+    private static String LOG_TAG = "com.example.ultrahome";
+
     public static <T> void handleError(@NonNull Response<T> response, Context context) {
         Error error = ApiClient.getInstance().getError(response.errorBody());
         String text = "ERROR" + error.getDescription().get(0) + error.getCode();
-        Toast.makeText(context, text, Toast.LENGTH_LONG).show();
+        Log.e(LOG_TAG, text);
     }
 
     public static void handleUnexpectedError(@NonNull Throwable t) {
-        String LOG_TAG = "com.example.ultrahome";
         Log.e(LOG_TAG, t.toString());
     }
 }

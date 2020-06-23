@@ -28,13 +28,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GenericDeviceFragment extends Fragment {
-    private Button deleteButton;
+    private Button deleteDeviceButton;
     private FloatingActionButton editButton;
     private FloatingActionButton doneButton;
-    private EditText nameEdited;
-    private TextView name;
+    private EditText deviceNameEdited;
+    private TextView deviceName;
 
-    private String currentName;
+    private String currentDeviceName;
 
     private String deviceId;
     private String deviceTypeId;
@@ -55,26 +55,26 @@ public class GenericDeviceFragment extends Fragment {
 
         readBundle(getArguments());
 
-        deleteButton = view.findViewById(R.id.delete_button);
-        deleteButton.setOnClickListener(this::deletePressed);
-        deleteButton.setVisibility(View.INVISIBLE);
-        deleteButton.setClickable(false);
+        deleteDeviceButton = view.findViewById(R.id.delete_device_button);
+        deleteDeviceButton.setOnClickListener(this::deletePressed);
+        deleteDeviceButton.setVisibility(View.INVISIBLE);
+        deleteDeviceButton.setClickable(false);
 
-        doneButton = view.findViewById(R.id.done_button);
+        doneButton = view.findViewById(R.id.done_editing_device_button);
         doneButton.setOnClickListener(this::editPressed);
         doneButton.setVisibility(View.INVISIBLE);
         doneButton.setClickable(false);
 
-        editButton = view.findViewById(R.id.edit_button);
+        editButton = view.findViewById(R.id.edit_device_button);
         editButton.setOnClickListener(this::editPressed);
 
-        nameEdited = view.findViewById(R.id.name_edited);
-        nameEdited.setVisibility(View.INVISIBLE);
+        deviceNameEdited = view.findViewById(R.id.device_name_editText);
+        deviceNameEdited.setVisibility(View.INVISIBLE);
 
-        name = view.findViewById(R.id.name);
-        name.setText(currentName);
+        deviceName = view.findViewById(R.id.generic_device_name);
+        deviceName.setText(currentDeviceName);
 
-        nameEdited.setText(currentName);
+        deviceNameEdited.setText(currentDeviceName);
 
         initDeviceTypeIdMap();
 
@@ -98,7 +98,7 @@ public class GenericDeviceFragment extends Fragment {
     private void readBundle(Bundle bundle) {
         if (bundle != null) {
             deviceId = bundle.getString("deviceId");
-            currentName = bundle.getString("deviceName");
+            currentDeviceName = bundle.getString("deviceName");
             deviceTypeId = bundle.getString("deviceTypeId");
             positionInRecyclerView = bundle.getInt("positionInRecyclerView");
         }
@@ -162,27 +162,27 @@ public class GenericDeviceFragment extends Fragment {
         if (editing) {
             editButton.setVisibility(View.VISIBLE);
             editButton.setClickable(true);
-            deleteButton.setVisibility(View.INVISIBLE);
-            deleteButton.setClickable(false);
+            deleteDeviceButton.setVisibility(View.INVISIBLE);
+            deleteDeviceButton.setClickable(false);
             doneButton.setVisibility(View.INVISIBLE);
             doneButton.setClickable(false);
-            nameEdited.setVisibility(View.INVISIBLE);
-            name.setVisibility(View.VISIBLE);
+            deviceNameEdited.setVisibility(View.INVISIBLE);
+            deviceName.setVisibility(View.VISIBLE);
 
-            if (! nameEdited.getText().toString().equals(currentName)) {
-                currentName = nameEdited.getText().toString();
-                name.setText(currentName);
+            if (! deviceNameEdited.getText().toString().equals(currentDeviceName)) {
+                currentDeviceName = deviceNameEdited.getText().toString();
+                deviceName.setText(currentDeviceName);
                 // API CALL PARA RENOMBRAR
             }
         } else {
             editButton.setVisibility(View.INVISIBLE);
             editButton.setClickable(false);
-            deleteButton.setVisibility(View.VISIBLE);
-            deleteButton.setClickable(true);
+            deleteDeviceButton.setVisibility(View.VISIBLE);
+            deleteDeviceButton.setClickable(true);
             doneButton.setVisibility(View.VISIBLE);
             doneButton.setClickable(true);
-            nameEdited.setVisibility(View.VISIBLE);
-            name.setVisibility(View.INVISIBLE);
+            deviceNameEdited.setVisibility(View.VISIBLE);
+            deviceName.setVisibility(View.INVISIBLE);
         }
         editing = !editing;
     }

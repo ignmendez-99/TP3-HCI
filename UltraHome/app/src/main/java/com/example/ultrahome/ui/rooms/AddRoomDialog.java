@@ -16,7 +16,6 @@ import com.example.ultrahome.apiConnection.ApiClient;
 import com.example.ultrahome.apiConnection.ErrorHandler;
 import com.example.ultrahome.apiConnection.entities.Result;
 import com.example.ultrahome.apiConnection.entities.Room;
-import com.google.android.material.snackbar.Snackbar;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -47,7 +46,7 @@ public class AddRoomDialog extends Dialog {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.dialog_add_room);
 
-        add_button = findViewById(R.id.button_show_AddRoomDialog);
+        add_button = findViewById(R.id.button_add_room);
         cancel_button = findViewById(R.id.button_close_add_room_dialog);
         roomNameEditText = findViewById(R.id.room_name_edit_text);
         errorMessage = findViewById(R.id.dialog_add_room_error_message);
@@ -66,12 +65,13 @@ public class AddRoomDialog extends Dialog {
                 errorMessage.setVisibility(View.VISIBLE);
                 errorMessage.setText("Name must only contain numbers, digits, spaces or _");
             } else {
-                addNewRoom(v);
+                addNewRoom();
             }
         }
     }
 
-    private void addNewRoom(View v) {
+    private void addNewRoom() {
+        errorMessage.setVisibility(View.GONE);
         findViewById(R.id.loadingAddingRoom).setVisibility(View.VISIBLE);
         findViewById(R.id.add_room_buttom_pair).setVisibility(View.GONE);
         newRoom = new Room(roomName);
@@ -83,11 +83,13 @@ public class AddRoomDialog extends Dialog {
                         Result<Room> result = response.body();
                         if(result != null) {
                             String temporalId = result.getResult().getId();
-                            linkNewRoomWithThisHome(v, temporalId);
+                            linkNewRoomWithThisHome(temporalId);
                         } else
-                            Snackbar.make(v, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
-                    } else
+                            addRoomFail();
+                    } else {
+                        addRoomFail();
                         ErrorHandler.handleError(response, context);
+                    }
                     findViewById(R.id.loadingAddingRoom).setVisibility(View.GONE);
                     findViewById(R.id.add_room_buttom_pair).setVisibility(View.VISIBLE);
                 }
@@ -95,13 +97,14 @@ public class AddRoomDialog extends Dialog {
                 public void onFailure(@NonNull Call<Result<Room>> call, @NonNull Throwable t) {
                     findViewById(R.id.loadingAddingRoom).setVisibility(View.GONE);
                     findViewById(R.id.add_room_buttom_pair).setVisibility(View.VISIBLE);
+                    addRoomFail();
                     ErrorHandler.handleUnexpectedError(t);
                 }
             });
         }).start();
     }
 
-    private void linkNewRoomWithThisHome(View v, String newRoomId) {
+    private void linkNewRoomWithThisHome(String newRoomId) {
         ApiClient.getInstance().linkRoomWithHome(homeId, newRoomId, new Callback<Result<Boolean>>() {
             @Override
             public void onResponse(@NonNull Call<Result<Boolean>> call, @NonNull Response<Result<Boolean>> response) {
@@ -111,17 +114,25 @@ public class AddRoomDialog extends Dialog {
                         fragmentInstance.notifyNewRoomAdded(newRoomId, roomName);
                         dismiss();
                     } else
-                        Snackbar.make(v, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
-                } else
+                        addRoomFail();
+                } else {
                     ErrorHandler.handleError(response, context);
+                    addRoomFail();
+                }
             }
 
             @Override
             public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
                 ErrorHandler.handleUnexpectedError(t);
+                addRoomFail();
                 // todo: faltaria eliminar la Room ya creada, ya que hubo error al linkearla con la home
             }
         });
+    }
+
+    private void addRoomFail() {
+        errorMessage.setVisibility(View.VISIBLE);
+        errorMessage.setText("Could not add new Room!");
     }
 }
 

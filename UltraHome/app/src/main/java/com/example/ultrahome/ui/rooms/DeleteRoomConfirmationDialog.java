@@ -39,7 +39,7 @@ public class DeleteRoomConfirmationDialog extends DialogFragment {
     public void onDismiss(@NonNull DialogInterface dialog) {
         super.onDismiss(dialog);
         if(mustRecoverRoom) {
-            containerFragment.recoverRemovedRoom();
+            containerFragment.recoverRemovedRoom(containerFragment.getView());
         }
     }
 }

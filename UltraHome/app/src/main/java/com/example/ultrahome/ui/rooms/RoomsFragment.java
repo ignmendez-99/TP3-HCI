@@ -52,6 +52,8 @@ public class RoomsFragment extends Fragment {
 
     private Snackbar deletingRoomSnackbar;
     private String homeId;   // this is the home that contains all rooms displayed in this screen
+    private boolean fragmentOnScreen = true;
+    private boolean deletingRoom = false;
     private ApiClient api;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -104,6 +106,12 @@ public class RoomsFragment extends Fragment {
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        fragmentOnScreen = false;
+    }
+
+    @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         // call superclass to save any view hierarchy
         super.onSaveInstanceState(outState);
@@ -117,6 +125,7 @@ public class RoomsFragment extends Fragment {
         }
     }
 
+    /* Called by RoomsAdapter, when a Card is clicked */
     void navigateToDevicesFragment(View view, int position) {
         // we send the roomId to the DevicesFragment, so that the correct Devices are loaded
         String idOfRoomClicked = roomIds.get(position);
@@ -143,12 +152,13 @@ public class RoomsFragment extends Fragment {
     void deleteRoom(View view) {
         deletingRoomSnackbar = Snackbar.make(view, "Room deleted!", Snackbar.LENGTH_SHORT);
         deletingRoomSnackbar.setAction("UNDO", new UndoDeleteRoomListener());
-        deletingRoomSnackbar.addCallback(new DeleteRoomSnackbarTimeout(view));
+        deletingRoom = true;
+        deletingRoomSnackbar.addCallback(new DeleteRoomSnackbarTimeout());
         deletingRoomSnackbar.show();
     }
 
     /* this method just puts the ""removed"" Room back on screen */
-    void recoverRemovedRoom() {
+    void recoverRemovedRoom(View v) {
         String roomToRetrieve = roomNamesBackupBeforeDeleting.get(0);
         roomNamesBackupBeforeDeleting.remove(0);
         roomNames.add(positionToDelete, roomToRetrieve);
@@ -194,22 +204,52 @@ public class RoomsFragment extends Fragment {
                                     }
                                 }
                             }
-                        } else
-                            Snackbar.make(v, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
-                    } else
+                            v.findViewById(R.id.button_show_AddRoomDialog).setVisibility(View.VISIBLE);
+                        } else {
+                            if (fragmentOnScreen)
+                                showGetRoomsError();
+                        }
+                    } else {
                         ErrorHandler.handleError(response, getContext());
+                        if(fragmentOnScreen)
+                            showGetRoomsError();
+                    }
                     v.findViewById(R.id.loadingRoomsList).setVisibility(View.GONE);
-                    v.findViewById(R.id.button_show_AddRoomDialog).setVisibility(View.VISIBLE);
                 }
 
                 @Override
                 public void onFailure(@NonNull Call<Result<List<Room>>> call, @NonNull Throwable t) {
-                    v.findViewById(R.id.loadingRoomsList).setVisibility(View.GONE);
-                    v.findViewById(R.id.button_show_AddRoomDialog).setVisibility(View.VISIBLE);
                     ErrorHandler.handleUnexpectedError(t);
+                    if (fragmentOnScreen)
+                        showGetRoomsError();
                 }
             });
         }).start();
+    }
+
+    private void showGetRoomsError() {
+        requireView().findViewById(R.id.get_rooms_failed).setVisibility(View.VISIBLE);
+        requireView().findViewById(R.id.button_get_rooms_again).setOnClickListener(RoomsFragment.this::getRoomsAgain);
+        requireView().findViewById(R.id.loadingRoomsList).setVisibility(View.GONE);
+    }
+
+    private void showDeleteRoomError() {
+        Snackbar s = Snackbar.make(requireView(), "Could not delete Room!", Snackbar.LENGTH_SHORT);
+        s.setAction("CLOSE", RoomsFragment.this::recoverRemovedRoom);
+        s.addCallback(new BaseTransientBottomBar.BaseCallback<Snackbar>() {
+            @Override
+            public void onDismissed(Snackbar transientBottomBar, int event) {
+                super.onDismissed(transientBottomBar, event);
+                RoomsFragment.this.recoverRemovedRoom(RoomsFragment.this.getView());
+            }
+        });
+        s.show();
+    }
+
+    private void getRoomsAgain(View v) {
+        requireView().findViewById(R.id.get_rooms_failed).setVisibility(View.GONE);
+        requireView().findViewById(R.id.loadingRoomsList).setVisibility(View.VISIBLE);
+        getAllRoomsOfThisHome(requireView());
     }
 
     /* this method deletes a Room which has no Home, therefore its useless in our App */
@@ -218,12 +258,9 @@ public class RoomsFragment extends Fragment {
         api.deleteRoom(r.getId(), new Callback<Result<Boolean>>() {
             @Override
             public void onResponse(@NonNull Call<Result<Boolean>> call, @NonNull Response<Result<Boolean>> response) {
-                if(response.isSuccessful()) {
-                    Result<Boolean> result = response.body();
-                    if(result == null || !result.getResult())
-                        Snackbar.make(v, "No se pudo eliminar una Room sin padre", Snackbar.LENGTH_LONG).show();
-                } else
+                if(!response.isSuccessful()) {
                     ErrorHandler.handleError(response, getContext());
+                }
             }
             @Override
             public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
@@ -249,37 +286,42 @@ public class RoomsFragment extends Fragment {
 
     /* In the moment that the delete-room-snackbar disappears, the Room is deleted from DataBase */
     private class DeleteRoomSnackbarTimeout extends BaseTransientBottomBar.BaseCallback<Snackbar> {
-        private View view;
-
-        DeleteRoomSnackbarTimeout(View v) {
-            view = v;
-        }
 
         @Override
         public void onDismissed(Snackbar transientBottomBar, int event) {
-            if(event == DISMISS_EVENT_TIMEOUT || event == DISMISS_EVENT_CONSECUTIVE) {
-                super.onDismissed(transientBottomBar, event);
-                new Thread(() -> {
-                    api.deleteRoom(roomIds.get(positionToDelete), new Callback<Result<Boolean>>() {
-                        @Override
-                        public void onResponse(@NonNull Call<Result<Boolean>> call, @NonNull Response<Result<Boolean>> response) {
-                            if (response.isSuccessful()) {
-                                Result<Boolean> result = response.body();
-                                if (result != null && result.getResult()) {
-                                    roomIds.remove(positionToDelete.intValue());
-                                    roomNamesBackupBeforeDeleting.remove(0);
-                                } else
-                                    Snackbar.make(view, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
-                            } else
-                                ErrorHandler.handleError(response, getContext());
-                        }
+            if(deletingRoom) {
+                deletingRoom = false;
+                if (event == DISMISS_EVENT_TIMEOUT || event == DISMISS_EVENT_CONSECUTIVE) {
+                    super.onDismissed(transientBottomBar, event);
+                    new Thread(() -> {
+                        api.deleteRoom(roomIds.get(positionToDelete), new Callback<Result<Boolean>>() {
+                            @Override
+                            public void onResponse(@NonNull Call<Result<Boolean>> call, @NonNull Response<Result<Boolean>> response) {
+                                if (response.isSuccessful()) {
+                                    Result<Boolean> result = response.body();
+                                    if (result != null && result.getResult()) {
+                                        roomIds.remove(positionToDelete.intValue());
+                                        roomNamesBackupBeforeDeleting.remove(0);
+                                    } else {
+                                        if(fragmentOnScreen)
+                                            showDeleteRoomError();
+                                    }
+                                } else {
+                                    ErrorHandler.handleError(response, getContext());
+                                    if(fragmentOnScreen)
+                                        showDeleteRoomError();
+                                }
+                            }
 
-                        @Override
-                        public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
-                            ErrorHandler.handleUnexpectedError(t);
-                        }
-                    });
-                }).start();
+                            @Override
+                            public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
+                                ErrorHandler.handleUnexpectedError(t);
+                                if(fragmentOnScreen)
+                                    showDeleteRoomError();
+                            }
+                        });
+                    }).start();
+                }
             }
         }
     }

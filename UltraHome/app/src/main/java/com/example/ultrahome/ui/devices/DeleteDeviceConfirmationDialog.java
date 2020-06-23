@@ -39,7 +39,7 @@ public class DeleteDeviceConfirmationDialog extends DialogFragment {
     public void onDismiss(@NonNull DialogInterface dialog) {
         super.onDismiss(dialog);
         if(mustRecoverDevice) {
-            containerFragment.recoverRemovedDevice();
+            containerFragment.recoverRemovedDevice(containerFragment.getView());
         }
     }
 }

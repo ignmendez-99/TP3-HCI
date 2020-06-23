@@ -54,7 +54,7 @@
         app:layout_constraintTop_toBottomOf="@+id/dialog_add_room_error_message">
 
         <Button
-            android:id="@+id/button_show_AddRoomDialog"
+            android:id="@+id/button_add_room"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -39,7 +39,7 @@ public class DeleteHomeConfirmationDialog extends DialogFragment {
     public void onDismiss(@NonNull DialogInterface dialog) {
         super.onDismiss(dialog);
         if(mustRecoverHome) {
-            containerFragment.recoverRemovedHome();
+            containerFragment.recoverRemovedHome(containerFragment.getView());
         }
     }
 

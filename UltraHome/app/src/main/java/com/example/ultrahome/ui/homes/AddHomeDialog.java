@@ -45,7 +45,7 @@ public class AddHomeDialog extends Dialog {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.dialog_add_home);
 
-        add_button = findViewById(R.id.button_show_AddHomeDialog);
+        add_button = findViewById(R.id.button_add_home);
         cancel_button = findViewById(R.id.button_close_add_home_dialog);
         homeNameEditText = findViewById(R.id.home_name_edit_text);
         errorMessage = findViewById(R.id.dialog_add_home_error_message);
@@ -64,12 +64,13 @@ public class AddHomeDialog extends Dialog {
                 errorMessage.setVisibility(View.VISIBLE);
                 errorMessage.setText("Name must only contain numbers, digits, spaces or _");
             } else {
-                addNewHome(v);
+                addNewHome();
             }
         }
     }
 
-    private void addNewHome(View v) {
+    private void addNewHome() {
+        errorMessage.setVisibility(View.GONE);
         findViewById(R.id.loadingAddingHome).setVisibility(View.VISIBLE);
         findViewById(R.id.add_home_buttom_pair).setVisibility(View.GONE);
         newHome = new Home(homeName);
@@ -83,9 +84,11 @@ public class AddHomeDialog extends Dialog {
                             fragmentInstance.notifyNewHomeAdded(result.getResult().getId(), homeName);
                             dismiss();
                         } else
-                            Snackbar.make(v, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
-                    } else
+                            addHomeFail();
+                    } else {
+                        addHomeFail();
                         ErrorHandler.handleError(response, context);
+                    }
                     findViewById(R.id.loadingAddingHome).setVisibility(View.GONE);
                     findViewById(R.id.add_home_buttom_pair).setVisibility(View.VISIBLE);
                 }
@@ -94,9 +97,15 @@ public class AddHomeDialog extends Dialog {
                 public void onFailure(@NonNull Call<Result<Home>> call, @NonNull Throwable t) {
                     findViewById(R.id.loadingAddingHome).setVisibility(View.GONE);
                     findViewById(R.id.add_home_buttom_pair).setVisibility(View.VISIBLE);
+                    addHomeFail();
                     ErrorHandler.handleUnexpectedError(t);
                 }
             });
         }).start();
+    }
+
+    private void addHomeFail() {
+        errorMessage.setVisibility(View.VISIBLE);
+        errorMessage.setText("Could not add new Home!");
     }
 }
