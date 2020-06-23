@@ -107,8 +107,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:visibility="gone"
         android:layout_marginEnd="24dp"
+        android:visibility="gone"
         android:layout_marginBottom="24dp"
         android:src="@drawable/add_button"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -122,10 +122,10 @@
         android:backgroundTint="#C6FF5353"
         android:visibility="gone"
         android:text="@string/delete_button"
+        android:layout_marginEnd="24dp"
         android:src="@mipmap/delete_icon_round"
         app:layout_constraintBottom_toBottomOf="@+id/edit_device_button"
         app:layout_constraintEnd_toStartOf="@+id/done_editing_device_button"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/edit_device_button" />
 
     <!-- Will appear when a device is displayed -->
@@ -133,12 +133,12 @@
         android:id="@+id/edit_device_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="100dp"
         android:visibility="gone"
         android:layout_marginBottom="24dp"
+        android:layout_marginEnd="24dp"
         android:clickable="false"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/button_show_AddDeviceDialog"
         app:srcCompat="@drawable/edit" />
 
     <!-- Will appear when a device is displayed -->
@@ -146,12 +146,12 @@
         android:id="@+id/done_editing_device_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="100dp"
-        android:visibility="gone"
+        android:layout_marginEnd="24dp"
         android:layout_marginBottom="24dp"
         android:clickable="false"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/button_show_AddDeviceDialog"
         app:srcCompat="@drawable/ok" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
