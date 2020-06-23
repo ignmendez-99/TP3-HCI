@@ -1,19 +1,14 @@
 package com.example.ultrahome.ui.devices.controllers;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Switch;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -24,7 +19,6 @@ import com.example.ultrahome.R;
 import com.example.ultrahome.apiConnection.ApiClient;
 import com.example.ultrahome.apiConnection.entities.Error;
 import com.example.ultrahome.apiConnection.entities.Result;
-import com.example.ultrahome.apiConnection.entities.deviceEntities.blinds.BlindsState;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.faucet.FaucetState;
 
 import retrofit2.Call;
@@ -54,6 +48,10 @@ public class FaucetControllerFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         readBundle(getArguments());
 
+        init(getView());
+    }
+
+    private void init(View view) {
         openCloseSwitch = view.findViewById(R.id.faucet_switch);
         dispenseExactAmountButton = view.findViewById(R.id.dispense_exact_amount_button);
         stopButton = view.findViewById(R.id.stop_button);
@@ -109,7 +107,6 @@ public class FaucetControllerFragment extends Fragment {
                 }
             });
         }
-
     }
 
     private void readBundle(Bundle bundle) {
@@ -130,6 +127,18 @@ public class FaucetControllerFragment extends Fragment {
         String LOG_TAG = "com.example.ultrahome";
         Log.e(LOG_TAG, t.toString());
         Toast.makeText(getContext(), "OOPS! THERE'S A PROBLEM ON OUR SIDE :(", Toast.LENGTH_LONG).show();
+    }
+
+    @NonNull
+    public static FaucetControllerFragment newInstance(String deviceId, int positionInRecyclerView) {
+        Bundle bundle = new Bundle();
+        bundle.putString("deviceId", deviceId);
+        bundle.putInt("positionInRecyclerView", positionInRecyclerView);
+
+        FaucetControllerFragment fragment = new FaucetControllerFragment();
+        fragment.setArguments(bundle);
+
+        return fragment;
     }
 
     private void openFaucet() {
@@ -256,19 +265,6 @@ public class FaucetControllerFragment extends Fragment {
                 handleUnexpectedError(t);
             }
         });
-    }
-
-
-    @NonNull
-    public static FaucetControllerFragment newInstance(String deviceId, int positionInRecyclerView) {
-        Bundle bundle = new Bundle();
-        bundle.putString("deviceId", deviceId);
-        bundle.putInt("positionInRecyclerView", positionInRecyclerView);
-
-        FaucetControllerFragment fragment = new FaucetControllerFragment();
-        fragment.setArguments(bundle);
-
-        return fragment;
     }
 }
 

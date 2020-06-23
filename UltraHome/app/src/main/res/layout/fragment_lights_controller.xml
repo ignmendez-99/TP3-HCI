@@ -229,7 +229,6 @@
         android:clickable="false"
         android:contextClickable="false"
         android:cursorVisible="false"
-        android:elevation="0dp"
         android:enabled="false"
         app:layout_constraintBottom_toBottomOf="@+id/textView16"
         app:layout_constraintEnd_toEndOf="parent"

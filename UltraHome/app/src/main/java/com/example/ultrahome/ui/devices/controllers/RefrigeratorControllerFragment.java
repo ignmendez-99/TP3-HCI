@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -18,7 +17,6 @@ import com.example.ultrahome.R;
 import com.example.ultrahome.apiConnection.ApiClient;
 import com.example.ultrahome.apiConnection.entities.Error;
 import com.example.ultrahome.apiConnection.entities.Result;
-import com.example.ultrahome.apiConnection.entities.deviceEntities.blinds.BlindsState;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.refrigerator.RefrigeratorState;
 
 import retrofit2.Call;
@@ -43,6 +41,10 @@ public class RefrigeratorControllerFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         readBundle(getArguments());
 
+        init(view);
+    }
+
+    public void init(View view) {
         modeSpinner = view.findViewById(R.id.mode_spinner);
         fridgeTempSpinner = view.findViewById(R.id.fridge_temp_spinner);
         freezerTempSpinner = view.findViewById(R.id.freezer_temp_spinner);
@@ -141,6 +143,18 @@ public class RefrigeratorControllerFragment extends Fragment {
         String LOG_TAG = "com.example.ultrahome";
         Log.e(LOG_TAG, t.toString());
         Toast.makeText(getContext(), "OOPS! THERE'S A PROBLEM ON OUR SIDE :(", Toast.LENGTH_LONG).show();
+    }
+
+    @NonNull
+    public static RefrigeratorControllerFragment newInstance(String deviceId, int positionInRecyclerView) {
+        Bundle bundle = new Bundle();
+        bundle.putString("deviceId", deviceId);
+        bundle.putInt("positionInRecyclerView", positionInRecyclerView);
+
+        RefrigeratorControllerFragment fragment = new RefrigeratorControllerFragment();
+        fragment.setArguments(bundle);
+
+        return fragment;
     }
 
     private void changeMode() {
@@ -253,17 +267,5 @@ public class RefrigeratorControllerFragment extends Fragment {
                 handleUnexpectedError(t);
             }
         });
-    }
-
-    @NonNull
-    public static RefrigeratorControllerFragment newInstance(String deviceId, int positionInRecyclerView) {
-        Bundle bundle = new Bundle();
-        bundle.putString("deviceId", deviceId);
-        bundle.putInt("positionInRecyclerView", positionInRecyclerView);
-
-        RefrigeratorControllerFragment fragment = new RefrigeratorControllerFragment();
-        fragment.setArguments(bundle);
-
-        return fragment;
     }
 }

@@ -50,6 +50,10 @@ public class BlindsControllerFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         readBundle(getArguments());
 
+        init(getView());
+    }
+
+    public void init(View view) {
         openButton = view.findViewById(R.id.open_blinds_button);
         closeButton = view.findViewById(R.id.close_blinds_button);
         levelSeekBar = view.findViewById(R.id.level_blinds_seekBar);
@@ -109,6 +113,13 @@ public class BlindsControllerFragment extends Fragment {
         });
     }
 
+    private void readBundle(Bundle bundle) {
+        if (bundle != null) {
+            deviceId = bundle.getString("deviceId");
+            positionInRecyclerView = bundle.getInt("positionInRecyclerView");
+        }
+    }
+
     private <T> void handleError(@NonNull Response<T> response) {
         Error error = ApiClient.getInstance().getError(response.errorBody());
         String text = "ERROR" + error.getDescription().get(0) + error.getCode();
@@ -122,11 +133,16 @@ public class BlindsControllerFragment extends Fragment {
         Toast.makeText(getContext(), "OOPS! THERE'S A PROBLEM ON OUR SIDE :(", Toast.LENGTH_LONG).show();
     }
 
-    private void readBundle(Bundle bundle) {
-        if (bundle != null) {
-            deviceId = bundle.getString("deviceId");
-            positionInRecyclerView = bundle.getInt("positionInRecyclerView");
-        }
+    @NonNull
+    public static BlindsControllerFragment newInstance(String deviceId, int positionInRecyclerView) {
+        Bundle bundle = new Bundle();
+        bundle.putString("deviceId", deviceId);
+        bundle.putInt("positionInRecyclerView", positionInRecyclerView);
+
+        BlindsControllerFragment fragment = new BlindsControllerFragment();
+        fragment.setArguments(bundle);
+
+        return fragment;
     }
 
     private void openBlinds(View view) {
@@ -266,18 +282,6 @@ public class BlindsControllerFragment extends Fragment {
                 });
             }
         }).start();
-    }
-
-    @NonNull
-    public static BlindsControllerFragment newInstance(String deviceId, int positionInRecyclerView) {
-        Bundle bundle = new Bundle();
-        bundle.putString("deviceId", deviceId);
-        bundle.putInt("positionInRecyclerView", positionInRecyclerView);
-
-        BlindsControllerFragment fragment = new BlindsControllerFragment();
-        fragment.setArguments(bundle);
-
-        return fragment;
     }
 }
 

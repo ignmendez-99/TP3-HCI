@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -14,14 +13,12 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 
 import com.example.ultrahome.R;
 import com.example.ultrahome.apiConnection.ApiClient;
 import com.example.ultrahome.apiConnection.entities.Error;
 import com.example.ultrahome.apiConnection.entities.Result;
-import com.example.ultrahome.apiConnection.entities.deviceEntities.blinds.BlindsState;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.lights.LightState;
 
 import java.util.HashMap;
@@ -53,6 +50,14 @@ public class LightsControllerFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_lights_controller, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        readBundle(getArguments());
+
+        init(getView());
     }
 
     private void initializeColorButtons(View view) {
@@ -137,48 +142,7 @@ public class LightsControllerFragment extends Fragment {
         colors.put("#000000", 0xFF000000);
     }
 
-    private void changeColor(View view, String newColor) {
-        if(currentColor == newColor)
-            return;
-        api.setLightColor(deviceId, newColor, new Callback<Result<String>>() {
-            @Override
-            public void onResponse(Call<Result<String>> call, Response<Result<String>> response) {
-                if(response.isSuccessful()) {
-                    Result<String> result = response.body();
-                    if(result != null) {
-                        currentColor = newColor;
-                        System.out.println("CURRENT COLOR: " + currentColor);
-                        colorDisplay.setBackgroundColor(colors.get(currentColor));
-                        Toast.makeText(getContext(),"COLOR CHANGED!", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    handleError(response);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Result<String>> call, Throwable t) {
-                handleUnexpectedError(t);
-            }
-        });
-
-    }
-
-    private static String asciiToHex(String asciiValue){
-        char[] chars = asciiValue.toCharArray();
-        StringBuffer hex = new StringBuffer();
-        for (int i = 0; i < chars.length; i++){
-            hex.append(Integer.toHexString((int) chars[i]));
-        }
-        return hex.toString();
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        readBundle(getArguments());
-
+    public void init(View view) {
         initializeColorButtons(view);
 
         onOffSwitch = view.findViewById(R.id.onOff_Switch);
@@ -240,6 +204,65 @@ public class LightsControllerFragment extends Fragment {
             if(!firstTime)
                 turnOnOrOff();
         });
+    }
+
+    private void readBundle(Bundle bundle) {
+        if (bundle != null) {
+            deviceId = bundle.getString("deviceId");
+            positionInRecyclerView = bundle.getInt("positionInRecyclerView");
+        }
+    }
+
+    private <T> void handleError(@NonNull Response<T> response) {
+        Error error = ApiClient.getInstance().getError(response.errorBody());
+        String text = "ERROR" + error.getDescription().get(0) + error.getCode();
+        Log.e("com.example.ultrahome", text);
+        Toast.makeText(getContext(), "OOPS! AN UNEXPECTED ERROR OCURRED :(", Toast.LENGTH_LONG).show();
+    }
+
+    private void handleUnexpectedError(@NonNull Throwable t) {
+        String LOG_TAG = "com.example.ultrahome";
+        Log.e(LOG_TAG, t.toString());
+        Toast.makeText(getContext(), "OOPS! THERE'S A PROBLEM ON OUR SIDE :(", Toast.LENGTH_LONG).show();
+    }
+
+    @NonNull
+    public static LightsControllerFragment newInstance(String deviceId, int positionInRecyclerView) {
+        Bundle bundle = new Bundle();
+        bundle.putString("deviceId", deviceId);
+        bundle.putInt("positionInRecyclerView", positionInRecyclerView);
+
+        LightsControllerFragment fragment = new LightsControllerFragment();
+        fragment.setArguments(bundle);
+
+        return fragment;
+    }
+
+    private void changeColor(View view, String newColor) {
+        if(currentColor == newColor)
+            return;
+        api.setLightColor(deviceId, newColor, new Callback<Result<String>>() {
+            @Override
+            public void onResponse(Call<Result<String>> call, Response<Result<String>> response) {
+                if(response.isSuccessful()) {
+                    Result<String> result = response.body();
+                    if(result != null) {
+                        currentColor = newColor;
+                        System.out.println("CURRENT COLOR: " + currentColor);
+                        colorDisplay.setBackgroundColor(colors.get(currentColor));
+                        Toast.makeText(getContext(),"COLOR CHANGED!", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    handleError(response);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Result<String>> call, Throwable t) {
+                handleUnexpectedError(t);
+            }
+        });
+
     }
 
     public void changeBrightness() {
@@ -313,35 +336,5 @@ public class LightsControllerFragment extends Fragment {
 
     }
 
-    private <T> void handleError(@NonNull Response<T> response) {
-        Error error = ApiClient.getInstance().getError(response.errorBody());
-        String text = "ERROR" + error.getDescription().get(0) + error.getCode();
-        Log.e("com.example.ultrahome", text);
-        Toast.makeText(getContext(), "OOPS! AN UNEXPECTED ERROR OCURRED :(", Toast.LENGTH_LONG).show();
-    }
 
-    private void handleUnexpectedError(@NonNull Throwable t) {
-        String LOG_TAG = "com.example.ultrahome";
-        Log.e(LOG_TAG, t.toString());
-        Toast.makeText(getContext(), "OOPS! THERE'S A PROBLEM ON OUR SIDE :(", Toast.LENGTH_LONG).show();
-    }
-
-    private void readBundle(Bundle bundle) {
-        if (bundle != null) {
-            deviceId = bundle.getString("deviceId");
-            positionInRecyclerView = bundle.getInt("positionInRecyclerView");
-        }
-    }
-
-    @NonNull
-    public static LightsControllerFragment newInstance(String deviceId, int positionInRecyclerView) {
-        Bundle bundle = new Bundle();
-        bundle.putString("deviceId", deviceId);
-        bundle.putInt("positionInRecyclerView", positionInRecyclerView);
-
-        LightsControllerFragment fragment = new LightsControllerFragment();
-        fragment.setArguments(bundle);
-
-        return fragment;
-    }
 }
