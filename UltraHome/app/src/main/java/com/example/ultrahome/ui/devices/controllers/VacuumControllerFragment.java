@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.ultrahome.R;
 import com.example.ultrahome.apiConnection.ApiClient;
+import com.example.ultrahome.apiConnection.ErrorHandler;
 import com.example.ultrahome.apiConnection.entities.Error;
 import com.example.ultrahome.apiConnection.entities.Result;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.blinds.BlindsState;
@@ -30,7 +31,6 @@ import retrofit2.Response;
 public class VacuumControllerFragment extends Fragment {
 
     private String deviceId;
-    private int positionInRecyclerView;
 
     private Button startButton, pauseButton, dockButton;
     private Switch modeSwitch;
@@ -51,7 +51,7 @@ public class VacuumControllerFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         readBundle(getArguments());
 
-        init(getView());
+        init(requireView());
     }
 
     @Override
@@ -74,7 +74,7 @@ public class VacuumControllerFragment extends Fragment {
 
         api.getVacuumState(deviceId, new Callback<Result<VacuumState>>() {
             @Override
-            public void onResponse(Call<Result<VacuumState>> call, Response<Result<VacuumState>> response) {
+            public void onResponse(@NonNull Call<Result<VacuumState>> call, @NonNull Response<Result<VacuumState>> response) {
                 if(response.isSuccessful()) {
                     Result<VacuumState> result = response.body();
                     if(result != null) {
@@ -92,15 +92,20 @@ public class VacuumControllerFragment extends Fragment {
 
 
 
+                    } else {
+                        ErrorHandler.handleError(response);
+                        // todo: falta mensaje amigable de error
                     }
                 } else {
-                    handleError(response);
+                    ErrorHandler.handleError(response);
+                    // todo: falta mensaje amigable de error
                 }
             }
 
             @Override
-            public void onFailure(Call<Result<VacuumState>> call, Throwable t) {
-                handleUnexpectedError(t);
+            public void onFailure(@NonNull Call<Result<VacuumState>> call, @NonNull Throwable t) {
+                ErrorHandler.handleUnexpectedError(t, requireView(), VacuumControllerFragment.this);
+                // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
             }
         });
 
@@ -133,21 +138,26 @@ public class VacuumControllerFragment extends Fragment {
 
         api.setVacuumMode(deviceId, newMode, new Callback<Result<String>>() {
             @Override
-            public void onResponse(Call<Result<String>> call, Response<Result<String>> response) {
+            public void onResponse(@NonNull Call<Result<String>> call, @NonNull Response<Result<String>> response) {
                 if(response.isSuccessful()) {
                     Result<String> result = response.body();
                     if(result != null) {
                         Toast.makeText(getContext(), "MODE CHANGED TO " + newMode.toUpperCase(), Toast.LENGTH_LONG).show();
                         mode = newMode;
+                    } else {
+                        ErrorHandler.handleError(response);
+                        // todo: falta mensaje amigable de error
                     }
                 } else {
-                    handleError(response);
+                    ErrorHandler.handleError(response);
+                    // todo: falta mensaje amigable de error
                 }
             }
 
             @Override
-            public void onFailure(Call<Result<String>> call, Throwable t) {
-                handleUnexpectedError(t);
+            public void onFailure(@NonNull Call<Result<String>> call, @NonNull Throwable t) {
+                ErrorHandler.handleUnexpectedError(t, requireView(), VacuumControllerFragment.this);
+                // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
             }
         });
     }
@@ -159,7 +169,7 @@ public class VacuumControllerFragment extends Fragment {
         if(newState == "start") {
             api.getVacuumState(deviceId, new Callback<Result<VacuumState>>() {
                 @Override
-                public void onResponse(Call<Result<VacuumState>> call, Response<Result<VacuumState>> response) {
+                public void onResponse(@NonNull Call<Result<VacuumState>> call, @NonNull Response<Result<VacuumState>> response) {
                     if(response.isSuccessful()) {
                         Result<VacuumState> result = response.body();
                         if(result != null) {
@@ -170,7 +180,7 @@ public class VacuumControllerFragment extends Fragment {
                             } else {
                                 api.setVacuumState(deviceId, newState, new Callback<Result<String>>() {
                                     @Override
-                                    public void onResponse(Call<Result<String>> call, Response<Result<String>> response) {
+                                    public void onResponse(@NonNull Call<Result<String>> call, @NonNull Response<Result<String>> response) {
                                         if(response.isSuccessful()) {
                                             Result<String> result = response.body();
                                             if(result != null) {
@@ -179,30 +189,35 @@ public class VacuumControllerFragment extends Fragment {
                                                 updateButtons();
                                             }
                                         } else {
-                                            handleError(response);
+                                            ErrorHandler.handleError(response);
                                         }
                                     }
 
                                     @Override
-                                    public void onFailure(Call<Result<String>> call, Throwable t) {
-                                        handleUnexpectedError(t);
+                                    public void onFailure(@NonNull Call<Result<String>> call, @NonNull Throwable t) {
+                                        ErrorHandler.handleUnexpectedError(t, requireView(), VacuumControllerFragment.this);
                                     }
                                 });
                             }
+                        } else {
+                            ErrorHandler.handleError(response);
+                            // todo: falta mensaje amigable de error
                         }
                     } else {
-                        handleError(response);
+                        ErrorHandler.handleError(response);
+                        // todo: falta mensaje amigable de error
                     }
                 }
                 @Override
-                public void onFailure(Call<Result<VacuumState>> call, Throwable t) {
-                    handleUnexpectedError(t);
+                public void onFailure(@NonNull Call<Result<VacuumState>> call, @NonNull Throwable t) {
+                    ErrorHandler.handleUnexpectedError(t, requireView(), VacuumControllerFragment.this);
+                    // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
                 }
             });
         } else {
             api.setVacuumState(deviceId, newState, new Callback<Result<String>>() {
                 @Override
-                public void onResponse(Call<Result<String>> call, Response<Result<String>> response) {
+                public void onResponse(@NonNull Call<Result<String>> call, @NonNull Response<Result<String>> response) {
                     if(response.isSuccessful()) {
                         Result<String> result = response.body();
                         if(result != null) {
@@ -216,15 +231,20 @@ public class VacuumControllerFragment extends Fragment {
                             }
                             Toast.makeText(getContext(), "STATUS CHANGED TO " + status.toUpperCase(), Toast.LENGTH_LONG).show();
                             updateButtons();
+                        } else {
+                            ErrorHandler.handleError(response);
+                            // todo: falta mensaje amigable de error
                         }
                     } else {
-                        handleError(response);
+                        ErrorHandler.handleError(response);
+                        // todo: falta mensaje amigable de error
                     }
                 }
 
                 @Override
-                public void onFailure(Call<Result<String>> call, Throwable t) {
-                    handleUnexpectedError(t);
+                public void onFailure(@NonNull Call<Result<String>> call, @NonNull Throwable t) {
+                    ErrorHandler.handleUnexpectedError(t, requireView(), VacuumControllerFragment.this);
+                    // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
                 }
             });
         }
@@ -233,28 +253,13 @@ public class VacuumControllerFragment extends Fragment {
     private void readBundle(Bundle bundle) {
         if (bundle != null) {
             deviceId = bundle.getString("deviceId");
-            positionInRecyclerView = bundle.getInt("positionInRecyclerView");
         }
     }
 
-    private <T> void handleError(@NonNull Response<T> response) {
-        Error error = ApiClient.getInstance().getError(response.errorBody());
-        String text = "ERROR" + error.getDescription().get(0) + error.getCode();
-        Log.e("com.example.ultrahome", text);
-        Toast.makeText(getContext(), "OOPS! AN UNEXPECTED ERROR OCURRED :(", Toast.LENGTH_LONG).show();
-    }
-
-    private void handleUnexpectedError(@NonNull Throwable t) {
-        String LOG_TAG = "com.example.ultrahome";
-        Log.e(LOG_TAG, t.toString());
-        Toast.makeText(getContext(), "OOPS! THERE'S A PROBLEM ON OUR SIDE :(", Toast.LENGTH_LONG).show();
-    }
-
     @NonNull
-    public static VacuumControllerFragment newInstance(String deviceId, int positionInRecyclerView) {
+    public static VacuumControllerFragment newInstance(String deviceId) {
         Bundle bundle = new Bundle();
         bundle.putString("deviceId", deviceId);
-        bundle.putInt("positionInRecyclerView", positionInRecyclerView);
 
         VacuumControllerFragment fragment = new VacuumControllerFragment();
         fragment.setArguments(bundle);
@@ -263,32 +268,32 @@ public class VacuumControllerFragment extends Fragment {
     }
 
     private void updateButtons() {
-        pauseButton.setBackgroundTintList(ContextCompat.getColorStateList(getContext(), android.R.color.darker_gray));
-        pauseButton.setTextColor(ContextCompat.getColorStateList(getContext(), android.R.color.black));
+        pauseButton.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), android.R.color.darker_gray));
+        pauseButton.setTextColor(ContextCompat.getColorStateList(requireContext(), android.R.color.black));
         pauseButton.setEnabled(true);
 
-        startButton.setBackgroundTintList(ContextCompat.getColorStateList(getContext(), android.R.color.darker_gray));
-        startButton.setTextColor(ContextCompat.getColorStateList(getContext(), android.R.color.black));
+        startButton.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), android.R.color.darker_gray));
+        startButton.setTextColor(ContextCompat.getColorStateList(requireContext(), android.R.color.black));
         startButton.setEnabled(true);
 
-        dockButton.setBackgroundTintList(ContextCompat.getColorStateList(getContext(), android.R.color.darker_gray));
-        dockButton.setTextColor(ContextCompat.getColorStateList(getContext(), android.R.color.black));
+        dockButton.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), android.R.color.darker_gray));
+        dockButton.setTextColor(ContextCompat.getColorStateList(requireContext(), android.R.color.black));
         dockButton.setEnabled(true);
 
         switch (status) {
             case "inactive":
-                pauseButton.setBackgroundTintList(ContextCompat.getColorStateList(getContext(), android.R.color.holo_blue_light));
-                pauseButton.setTextColor(ContextCompat.getColorStateList(getContext(), android.R.color.white));
+                pauseButton.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), android.R.color.holo_blue_light));
+                pauseButton.setTextColor(ContextCompat.getColorStateList(requireContext(), android.R.color.white));
                 pauseButton.setEnabled(false);
                 break;
             case "docked":
-                dockButton.setBackgroundTintList(ContextCompat.getColorStateList(getContext(), android.R.color.holo_blue_light));
-                dockButton.setTextColor(ContextCompat.getColorStateList(getContext(), android.R.color.white));
+                dockButton.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), android.R.color.holo_blue_light));
+                dockButton.setTextColor(ContextCompat.getColorStateList(requireContext(), android.R.color.white));
                 dockButton.setEnabled(false);
                 break;
             case "active":
-                startButton.setBackgroundTintList(ContextCompat.getColorStateList(getContext(), android.R.color.holo_blue_light));
-                startButton.setTextColor(ContextCompat.getColorStateList(getContext(), android.R.color.white));
+                startButton.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), android.R.color.holo_blue_light));
+                startButton.setTextColor(ContextCompat.getColorStateList(requireContext(), android.R.color.white));
                 startButton.setEnabled(false);
                 break;
         }
@@ -299,22 +304,27 @@ public class VacuumControllerFragment extends Fragment {
             while(runThreads) {
                 api.getVacuumState(deviceId, new Callback<Result<VacuumState>>() {
                     @Override
-                    public void onResponse(Call<Result<VacuumState>> call, Response<Result<VacuumState>> response) {
+                    public void onResponse(@NonNull Call<Result<VacuumState>> call, @NonNull Response<Result<VacuumState>> response) {
                         if(response.isSuccessful()) {
                             Result<VacuumState> result = response.body();
                             if(result != null) {
                                 VacuumState vacuumState = result.getResult();
                                 if(runThreads)
                                     batteryTextView.setText("BATTERY: " + vacuumState.getBatteryLevel() + "%");
+                            } else {
+//                                ErrorHandler.handleError(response);
+                                // todo: falta mensaje amigable de error
                             }
                         } else {
-//                            handleError(response);
+//                            ErrorHandler.handleError(response);
+                            // todo: falta mensaje amigable de error
                         }
                     }
 
                     @Override
-                    public void onFailure(Call<Result<VacuumState>> call, Throwable t) {
-//                        handleUnexpectedError(t);
+                    public void onFailure(@NonNull Call<Result<VacuumState>> call, @NonNull Throwable t) {
+//                        ErrorHandler.handleUnexpectedError(t, requireView, VacuumControllerFragment.this);
+                        // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
                     }
                 });
 

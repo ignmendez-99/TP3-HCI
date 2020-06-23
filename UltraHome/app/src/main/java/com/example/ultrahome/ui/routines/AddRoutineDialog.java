@@ -45,7 +45,6 @@ import retrofit2.Response;
 public class AddRoutineDialog extends Dialog {
 
     private RoutinesFragment fragmentInstance;
-    private Context context;
     private Button add_button;
     private Button cancel_button;
     private Button addAction;
@@ -78,7 +77,6 @@ public class AddRoutineDialog extends Dialog {
 
     public AddRoutineDialog(@NonNull Context context, RoutinesFragment routinesFragment) {
         super(context);
-        this.context = context;
         fragmentInstance = routinesFragment;
     }
 
@@ -220,15 +218,19 @@ public class AddRoutineDialog extends Dialog {
                                 }
                             }
                         } else {
-                            Snackbar.make(getCurrentFocus(), "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
+                            ErrorHandler.handleError(response);
+                            // todo: falta mensaje amigable de error
                         }
-                    } else
-                        ErrorHandler.handleError(response, getContext());
+                    } else {
+                        ErrorHandler.handleError(response);
+                        // todo: falta mensaje amigable de error
+                    }
                 }
 
                 @Override
                 public void onFailure(@NonNull Call<Result<List<Device>>> call, @NonNull Throwable t) {
-                    ErrorHandler.handleUnexpectedError(t);
+                    ErrorHandler.handleUnexpectedErrorInDialog(t);
+                    // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
                 }
             });
     }
@@ -237,7 +239,7 @@ public class AddRoutineDialog extends Dialog {
 //        List<String> actionsAux = new ArrayList<>();
         ApiClient.getInstance().getDeviceType(id, new Callback<Result<DeviceTypeComplete>>() {
             @Override
-            public void onResponse(Call<Result<DeviceTypeComplete>> call, Response<Result<DeviceTypeComplete>> response) {
+            public void onResponse(@NonNull Call<Result<DeviceTypeComplete>> call, @NonNull Response<Result<DeviceTypeComplete>> response) {
                 if(response.isSuccessful()){
                     Result<DeviceTypeComplete> result = response.body();
                     if(result != null){
@@ -248,16 +250,20 @@ public class AddRoutineDialog extends Dialog {
 //                        deviceTypeActions.put(id, auxList);
                     }
                     else{
-                        Snackbar.make(getCurrentFocus(),"ERROR tipo 1", Snackbar.LENGTH_LONG).show();
+                        //Snackbar.make(getCurrentFocus(),"ERROR tipo 1", Snackbar.LENGTH_LONG).show();
+                        ErrorHandler.handleError(response);
+                        // todo: falta mensaje amigable de error
                     }
                 } else {
-                    ErrorHandler.handleError(response, context);
+                    ErrorHandler.handleError(response);
+                    // todo: falta mensaje amigable de error
                 }
             }
 
             @Override
-            public void onFailure(Call<Result<DeviceTypeComplete>> call, Throwable t) {
-                ErrorHandler.handleUnexpectedError(t);
+            public void onFailure(@NonNull Call<Result<DeviceTypeComplete>> call, @NonNull Throwable t) {
+                ErrorHandler.handleUnexpectedErrorInDialog(t);
+                // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
             }
         });
     }

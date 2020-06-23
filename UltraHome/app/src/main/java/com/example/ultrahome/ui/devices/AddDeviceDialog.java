@@ -34,14 +34,12 @@ import retrofit2.Response;
 public class AddDeviceDialog extends Dialog {
 
     private DevicesListFragment fragmentInstance;
-    private Context context;
     private Button add_button;
     private Button cancel_button;
     private EditText deviceNameEditText;
     private TextView inputErrorMessage;
     private TextView apiErrorMessage;
     private String deviceName;
-    private Device newDevice;
     private String roomId;
 
     // RadioButtons
@@ -57,9 +55,8 @@ public class AddDeviceDialog extends Dialog {
             "ofglvd9gqx8yfl3l", "go46xmbqeomjrsjr", "c89b94e8581855bc", "rnizejqr2di0okho"};
 
 
-    public AddDeviceDialog(@NonNull Context context, String roomId, DevicesListFragment devicesListFragment) {
+    AddDeviceDialog(@NonNull Context context, String roomId, DevicesListFragment devicesListFragment) {
         super(context);
-        this.context = context;
         this.roomId = roomId;
         fragmentInstance = devicesListFragment;
     }
@@ -160,11 +157,13 @@ public class AddDeviceDialog extends Dialog {
                         if(result != null) {
                             String temporalId = result.getResult().getId();
                             linkNewDeviceWithThisRoom(temporalId, deviceTypeId);
-                        } else
+                        } else {
                             addDeviceFail();
+                            ErrorHandler.handleError(response);
+                        }
                     } else {
                         addDeviceFail();
-                        ErrorHandler.handleError(response, context);
+                        ErrorHandler.handleError(response);
                     }
                     findViewById(R.id.loadingAddingDevice).setVisibility(View.GONE);
                     findViewById(R.id.add_device_buttom_pair).setVisibility(View.VISIBLE);
@@ -174,7 +173,7 @@ public class AddDeviceDialog extends Dialog {
                     findViewById(R.id.loadingAddingDevice).setVisibility(View.GONE);
                     findViewById(R.id.add_device_buttom_pair).setVisibility(View.VISIBLE);
                     addDeviceFail();
-                    ErrorHandler.handleUnexpectedError(t);
+                    ErrorHandler.handleUnexpectedErrorInDialog(t);
                 }
             });
         }).start();
@@ -189,17 +188,19 @@ public class AddDeviceDialog extends Dialog {
                     if(result != null && result.getResult()) {
                         fragmentInstance.notifyNewDeviceAdded(deviceId, deviceName, deviceTypeId);
                         dismiss();
-                    } else
+                    } else {
+                        ErrorHandler.handleError(response);
                         addDeviceFail();
+                    }
                 } else {
-                    ErrorHandler.handleError(response, getContext());
+                    ErrorHandler.handleError(response);
                     addDeviceFail();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
-                ErrorHandler.handleUnexpectedError(t);
+                ErrorHandler.handleUnexpectedErrorInDialog(t);
                 addDeviceFail();
             }
         });

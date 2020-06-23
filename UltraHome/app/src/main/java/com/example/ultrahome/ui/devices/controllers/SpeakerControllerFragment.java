@@ -15,7 +15,6 @@ import com.example.ultrahome.R;
 public class SpeakerControllerFragment extends Fragment {
 
     private String deviceId;
-    private int positionInRecyclerView;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_speaker_controller, container, false);
@@ -30,15 +29,13 @@ public class SpeakerControllerFragment extends Fragment {
     private void readBundle(Bundle bundle) {
         if (bundle != null) {
             deviceId = bundle.getString("deviceId");
-            positionInRecyclerView = bundle.getInt("positionInRecyclerView");
         }
     }
 
     @NonNull
-    public static SpeakerControllerFragment newInstance(String deviceId, int positionInRecyclerView) {
+    public static SpeakerControllerFragment newInstance(String deviceId) {
         Bundle bundle = new Bundle();
         bundle.putString("deviceId", deviceId);
-        bundle.putInt("positionInRecyclerView", positionInRecyclerView);
 
         SpeakerControllerFragment fragment = new SpeakerControllerFragment();
         fragment.setArguments(bundle);

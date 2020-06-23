@@ -17,9 +17,12 @@ import androidx.fragment.app.Fragment;
 
 import com.example.ultrahome.R;
 import com.example.ultrahome.apiConnection.ApiClient;
+import com.example.ultrahome.apiConnection.ErrorHandler;
 import com.example.ultrahome.apiConnection.entities.Error;
 import com.example.ultrahome.apiConnection.entities.Result;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.blinds.BlindsState;
+
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -28,7 +31,6 @@ import retrofit2.Response;
 public class BlindsControllerFragment extends Fragment {
 
     private String deviceId;
-    private int positionInRecyclerView;
 
     private Button openButton, closeButton;
     private SeekBar levelSeekBar;
@@ -51,7 +53,7 @@ public class BlindsControllerFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         readBundle(getArguments());
 
-        init(getView());
+        init(requireView());
     }
 
     @Override
@@ -61,7 +63,7 @@ public class BlindsControllerFragment extends Fragment {
         runThreads = false;
     }
 
-    public void init(View view) {
+    private void init(@NonNull View view) {
         openButton = view.findViewById(R.id.open_blinds_button);
         closeButton = view.findViewById(R.id.close_blinds_button);
         levelSeekBar = view.findViewById(R.id.level_blinds_seekBar);
@@ -81,7 +83,7 @@ public class BlindsControllerFragment extends Fragment {
 
         api.getBlindsState(deviceId, new Callback<Result<BlindsState>>() {
             @Override
-            public void onResponse(Call<Result<BlindsState>> call, Response<Result<BlindsState>> response) {
+            public void onResponse(@NonNull Call<Result<BlindsState>> call, @NonNull Response<Result<BlindsState>> response) {
                 if (response.isSuccessful()) {
                     Result<BlindsState> result = response.body();
                     if (result != null) {
@@ -97,15 +99,20 @@ public class BlindsControllerFragment extends Fragment {
                             closeButton.setEnabled(false);
                         else if (currentLevel == 0)
                             openButton.setEnabled(false);
+                    } else {
+                        ErrorHandler.handleError(response);
+                        // todo: falta mensaje amigable de error
                     }
                 } else {
-                    handleError(response);
+                    ErrorHandler.handleError(response);
+                    // todo: falta mensaje amigable de error
                 }
             }
 
             @Override
-            public void onFailure(Call<Result<BlindsState>> call, Throwable t) {
-                handleUnexpectedError(t);
+            public void onFailure(@NonNull Call<Result<BlindsState>> call, @NonNull Throwable t) {
+                ErrorHandler.handleUnexpectedError(t, requireView(), BlindsControllerFragment.this);
+                // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
             }
         });
 
@@ -129,28 +136,13 @@ public class BlindsControllerFragment extends Fragment {
     private void readBundle(Bundle bundle) {
         if (bundle != null) {
             deviceId = bundle.getString("deviceId");
-            positionInRecyclerView = bundle.getInt("positionInRecyclerView");
         }
     }
 
-    private <T> void handleError(@NonNull Response<T> response) {
-        Error error = ApiClient.getInstance().getError(response.errorBody());
-        String text = "ERROR" + error.getDescription().get(0) + error.getCode();
-        Log.e("com.example.ultrahome", text);
-        Toast.makeText(getContext(), "OOPS! AN UNEXPECTED ERROR OCURRED :(", Toast.LENGTH_LONG).show();
-    }
-
-    private void handleUnexpectedError(@NonNull Throwable t) {
-        String LOG_TAG = "com.example.ultrahome";
-        Log.e(LOG_TAG, t.toString());
-        Toast.makeText(getContext(), "OOPS! THERE'S A PROBLEM ON OUR SIDE :(", Toast.LENGTH_LONG).show();
-    }
-
     @NonNull
-    public static BlindsControllerFragment newInstance(String deviceId, int positionInRecyclerView) {
+    public static BlindsControllerFragment newInstance(String deviceId) {
         Bundle bundle = new Bundle();
         bundle.putString("deviceId", deviceId);
-        bundle.putInt("positionInRecyclerView", positionInRecyclerView);
 
         BlindsControllerFragment fragment = new BlindsControllerFragment();
         fragment.setArguments(bundle);
@@ -166,22 +158,27 @@ public class BlindsControllerFragment extends Fragment {
 
         api.openBlinds(deviceId, new Callback<Result<Boolean>>() {
             @Override
-            public void onResponse(Call<Result<Boolean>> call, Response<Result<Boolean>> response) {
+            public void onResponse(@NonNull Call<Result<Boolean>> call, @NonNull Response<Result<Boolean>> response) {
                 if (response.isSuccessful()) {
                     Result<Boolean> result = response.body();
                     if (result != null) {
                         Toast.makeText(getContext(), "OPENING COMPLETELY", Toast.LENGTH_SHORT).show();
                         runThreads = true;
                         updateProgressBar();
+                    } else {
+                        ErrorHandler.handleError(response);
+                        // todo: falta mensaje amigable de error
                     }
                 } else {
-                    handleError(response);
+                    ErrorHandler.handleError(response);
+                    // todo: falta mensaje amigable de error
                 }
             }
 
             @Override
-            public void onFailure(Call<Result<Boolean>> call, Throwable t) {
-                handleUnexpectedError(t);
+            public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
+                ErrorHandler.handleUnexpectedError(t, requireView(), BlindsControllerFragment.this);
+                // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
             }
         });
     }
@@ -194,22 +191,27 @@ public class BlindsControllerFragment extends Fragment {
 
         api.closeBlinds(deviceId, new Callback<Result<Boolean>>() {
             @Override
-            public void onResponse(Call<Result<Boolean>> call, Response<Result<Boolean>> response) {
+            public void onResponse(@NonNull Call<Result<Boolean>> call, @NonNull Response<Result<Boolean>> response) {
                 if (response.isSuccessful()) {
                     Result<Boolean> result = response.body();
                     if (result != null) {
                         Toast.makeText(getContext(), "CLOSING COMPLETELY", Toast.LENGTH_SHORT).show();
                         runThreads = true;
                         updateProgressBar();
+                    } else {
+                        ErrorHandler.handleError(response);
+                        // todo: falta mensaje amigable de error
                     }
                 } else {
-                    handleError(response);
+                    ErrorHandler.handleError(response);
+                    // todo: falta mensaje amigable de error
                 }
             }
 
             @Override
-            public void onFailure(Call<Result<Boolean>> call, Throwable t) {
-                handleUnexpectedError(t);
+            public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
+                ErrorHandler.handleUnexpectedError(t, requireView(), BlindsControllerFragment.this);
+                // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
             }
         });
     }
@@ -222,7 +224,7 @@ public class BlindsControllerFragment extends Fragment {
 
         api.setBlindsLevel(deviceId, newLevel, new Callback<Result<Integer>>() {
             @Override
-            public void onResponse(Call<Result<Integer>> call, Response<Result<Integer>> response) {
+            public void onResponse(@NonNull Call<Result<Integer>> call, @NonNull Response<Result<Integer>> response) {
                 if (response.isSuccessful()) {
                     Result<Integer> result = response.body();
                     if (result != null) {
@@ -230,15 +232,20 @@ public class BlindsControllerFragment extends Fragment {
                         level = newLevel;
                         runThreads = true;
                         updateProgressBar();
+                    } else {
+                        ErrorHandler.handleError(response);
+                        // todo: falta mensaje amigable de error
                     }
                 } else {
-                    handleError(response);
+                    ErrorHandler.handleError(response);
+                    // todo: falta mensaje amigable de error
                 }
             }
 
             @Override
-            public void onFailure(Call<Result<Integer>> call, Throwable t) {
-                handleUnexpectedError(t);
+            public void onFailure(@NonNull Call<Result<Integer>> call, @NonNull Throwable t) {
+                ErrorHandler.handleUnexpectedError(t, requireView(), BlindsControllerFragment.this);
+                // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
             }
         });
     }
@@ -248,7 +255,7 @@ public class BlindsControllerFragment extends Fragment {
             while (runThreads) {
                 api.getBlindsState(deviceId, new Callback<Result<BlindsState>>() {
                     @Override
-                    public void onResponse(Call<Result<BlindsState>> call, Response<Result<BlindsState>> response) {
+                    public void onResponse(@NonNull Call<Result<BlindsState>> call, @NonNull Response<Result<BlindsState>> response) {
                         if (response.isSuccessful()) {
                             Result<BlindsState> result = response.body();
                             if (result != null && runThreads) {
@@ -297,15 +304,20 @@ public class BlindsControllerFragment extends Fragment {
 
                                 }
                                 currentLevelProgressBar.setProgress(currentLevel);
+                            } else {
+                                ErrorHandler.handleError(response);
+                                // todo: falta mensaje amigable de error
                             }
                         } else {
-                            handleError(response);
+                            ErrorHandler.handleError(response);
+                            // todo: falta mensaje amigable de error
                         }
                     }
 
                     @Override
-                    public void onFailure(Call<Result<BlindsState>> call, Throwable t) {
-                        handleUnexpectedError(t);
+                    public void onFailure(@NonNull Call<Result<BlindsState>> call, @NonNull Throwable t) {
+                        ErrorHandler.handleUnexpectedError(t, requireView(), BlindsControllerFragment.this);
+                        // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
                     }
                 });
                 try {

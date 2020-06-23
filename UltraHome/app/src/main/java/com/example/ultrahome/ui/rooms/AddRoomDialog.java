@@ -24,7 +24,6 @@ import retrofit2.Response;
 public class AddRoomDialog extends Dialog {
 
     private RoomsFragment fragmentInstance;
-    private Context context;
     private Button add_button;
     private Button cancel_button;
     private EditText roomNameEditText;
@@ -33,9 +32,8 @@ public class AddRoomDialog extends Dialog {
     private Room newRoom;
     private String homeId;
 
-    public AddRoomDialog(@NonNull Context context, String homeId, RoomsFragment homesFragment) {
+    AddRoomDialog(@NonNull Context context, String homeId, RoomsFragment homesFragment) {
         super(context);
-        this.context = context;
         this.homeId = homeId;
         fragmentInstance = homesFragment;
     }
@@ -84,11 +82,13 @@ public class AddRoomDialog extends Dialog {
                         if(result != null) {
                             String temporalId = result.getResult().getId();
                             linkNewRoomWithThisHome(temporalId);
-                        } else
+                        } else {
                             addRoomFail();
+                            ErrorHandler.handleError(response);
+                        }
                     } else {
                         addRoomFail();
-                        ErrorHandler.handleError(response, context);
+                        ErrorHandler.handleError(response);
                     }
                     findViewById(R.id.loadingAddingRoom).setVisibility(View.GONE);
                     findViewById(R.id.add_room_buttom_pair).setVisibility(View.VISIBLE);
@@ -98,7 +98,7 @@ public class AddRoomDialog extends Dialog {
                     findViewById(R.id.loadingAddingRoom).setVisibility(View.GONE);
                     findViewById(R.id.add_room_buttom_pair).setVisibility(View.VISIBLE);
                     addRoomFail();
-                    ErrorHandler.handleUnexpectedError(t);
+                    ErrorHandler.handleUnexpectedErrorInDialog(t);
                 }
             });
         }).start();
@@ -113,17 +113,19 @@ public class AddRoomDialog extends Dialog {
                     if(result != null && result.getResult()) {
                         fragmentInstance.notifyNewRoomAdded(newRoomId, roomName);
                         dismiss();
-                    } else
+                    } else {
+                        ErrorHandler.handleError(response);
                         addRoomFail();
+                    }
                 } else {
-                    ErrorHandler.handleError(response, context);
+                    ErrorHandler.handleError(response);
                     addRoomFail();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
-                ErrorHandler.handleUnexpectedError(t);
+                ErrorHandler.handleUnexpectedErrorInDialog(t);
                 addRoomFail();
             }
         });

@@ -25,7 +25,6 @@ import retrofit2.Response;
 public class AddHomeDialog extends Dialog {
 
     private HomesFragment fragmentInstance;
-    private Context context;
     private Button add_button;
     private Button cancel_button;
     private EditText homeNameEditText;
@@ -35,7 +34,6 @@ public class AddHomeDialog extends Dialog {
 
     public AddHomeDialog(@NonNull Context context, HomesFragment homesFragment) {
         super(context);
-        this.context = context;
         fragmentInstance = homesFragment;
     }
 
@@ -83,11 +81,13 @@ public class AddHomeDialog extends Dialog {
                         if (result != null) {
                             fragmentInstance.notifyNewHomeAdded(result.getResult().getId(), homeName);
                             dismiss();
-                        } else
+                        } else {
                             addHomeFail();
+                            ErrorHandler.handleError(response);
+                        }
                     } else {
                         addHomeFail();
-                        ErrorHandler.handleError(response, context);
+                        ErrorHandler.handleError(response);
                     }
                     findViewById(R.id.loadingAddingHome).setVisibility(View.GONE);
                     findViewById(R.id.add_home_buttom_pair).setVisibility(View.VISIBLE);
@@ -98,7 +98,7 @@ public class AddHomeDialog extends Dialog {
                     findViewById(R.id.loadingAddingHome).setVisibility(View.GONE);
                     findViewById(R.id.add_home_buttom_pair).setVisibility(View.VISIBLE);
                     addHomeFail();
-                    ErrorHandler.handleUnexpectedError(t);
+                    ErrorHandler.handleUnexpectedErrorInDialog(t);
                 }
             });
         }).start();

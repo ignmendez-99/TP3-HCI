@@ -206,7 +206,7 @@ public class HomesFragment extends Fragment{
                                 showGetHomesError();
                         }
                     } else {
-                        ErrorHandler.handleError(response, getContext());
+                        ErrorHandler.handleError(response);
                         if(fragmentOnScreen)
                             showGetHomesError();
                     }
@@ -215,7 +215,7 @@ public class HomesFragment extends Fragment{
 
                 @Override
                 public void onFailure(@NonNull Call<Result<List<Home>>> call, @NonNull Throwable t) {
-                    ErrorHandler.handleUnexpectedError(t);
+                    ErrorHandler.handleUnexpectedError(t, requireView(), HomesFragment.this);
                     if(fragmentOnScreen)
                         showGetHomesError();
                 }
@@ -288,7 +288,7 @@ public class HomesFragment extends Fragment{
                                             showDeleteHomeError();
                                     }
                                 } else {
-                                    ErrorHandler.handleError(response, getContext());
+                                    ErrorHandler.handleError(response);
                                     if(fragmentOnScreen)
                                         showDeleteHomeError();
                                 }
@@ -296,7 +296,6 @@ public class HomesFragment extends Fragment{
 
                             @Override
                             public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
-                                ErrorHandler.handleUnexpectedError(t);
                                 if(fragmentOnScreen)
                                     showDeleteHomeError();
                             }

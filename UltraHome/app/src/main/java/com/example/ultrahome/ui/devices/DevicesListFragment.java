@@ -360,11 +360,13 @@ public class DevicesListFragment extends Fragment {
                             } else
                                 view.findViewById(R.id.zero_devices).setVisibility(View.VISIBLE);
                             view.findViewById(R.id.button_show_AddDeviceDialog).setVisibility(View.VISIBLE);
-                        } else
-                            if(fragmentOnScreen)
+                        } else {
+                            ErrorHandler.handleError(response);
+                            if (fragmentOnScreen)
                                 showGetDevicesError();
+                        }
                     } else {
-                        ErrorHandler.handleError(response, getContext());
+                        ErrorHandler.handleError(response);
                         if(fragmentOnScreen)
                             showGetDevicesError();
                     }
@@ -373,7 +375,7 @@ public class DevicesListFragment extends Fragment {
 
                 @Override
                 public void onFailure(@NonNull Call<Result<List<Device>>> call, @NonNull Throwable t) {
-                    ErrorHandler.handleUnexpectedError(t);
+                    ErrorHandler.handleUnexpectedError(t, requireView(), DevicesListFragment.this);
                     if(fragmentOnScreen)
                         showGetDevicesError();
                 }
@@ -413,12 +415,12 @@ public class DevicesListFragment extends Fragment {
             @Override
             public void onResponse(@NonNull Call<Result<Boolean>> call, @NonNull Response<Result<Boolean>> response) {
                 if(!response.isSuccessful()) {
-                    ErrorHandler.handleError(response, getContext());
+                    ErrorHandler.handleError(response);
                 }
             }
             @Override
             public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
-                ErrorHandler.handleUnexpectedError(t);
+                ErrorHandler.handleUnexpectedError(t, requireView(), DevicesListFragment.this);
             }
         });
     }
@@ -445,25 +447,25 @@ public class DevicesListFragment extends Fragment {
                 }
                 switch (layoutToChoose) {
                     case R.layout.fragment_lights_controller:
-                        childFragment = LightsControllerFragment.newInstance(deviceId, positionInRecyclerView);
+                        childFragment = LightsControllerFragment.newInstance(deviceId);
                         break;
                     case R.layout.fragment_blinds_controller:
-                        childFragment = BlindsControllerFragment.newInstance(deviceId, positionInRecyclerView);
+                        childFragment = BlindsControllerFragment.newInstance(deviceId);
                         break;
                     case R.layout.fragment_door_controller:
-                        childFragment = DoorControllerFragment.newInstance(deviceId, positionInRecyclerView);
+                        childFragment = DoorControllerFragment.newInstance(deviceId);
                         break;
                     case R.layout.fragment_faucet_controller:
-                        childFragment = FaucetControllerFragment.newInstance(deviceId, positionInRecyclerView);
+                        childFragment = FaucetControllerFragment.newInstance(deviceId);
                         break;
                     case R.layout.fragment_refrigerator_controller:
-                        childFragment = RefrigeratorControllerFragment.newInstance(deviceId, positionInRecyclerView);
+                        childFragment = RefrigeratorControllerFragment.newInstance(deviceId);
                         break;
                     case R.layout.fragment_speaker_controller:
-                        childFragment = SpeakerControllerFragment.newInstance(deviceId, positionInRecyclerView);
+                        childFragment = SpeakerControllerFragment.newInstance(deviceId);
                         break;
                     case R.layout.fragment_vacuum_controller:
-                        childFragment = VacuumControllerFragment.newInstance(deviceId, positionInRecyclerView);
+                        childFragment = VacuumControllerFragment.newInstance(deviceId);
                         break;
                     default:
                         throw new IllegalStateException("Unexpected value: " + layoutToChoose);
@@ -521,12 +523,13 @@ public class DevicesListFragment extends Fragment {
                                         if(devicesIds.size() == 0)
                                             DevicesListFragment.this.requireView().findViewById(R.id.zero_devices).setVisibility(View.VISIBLE);
                                     } else {
+                                        ErrorHandler.handleError(response);
                                         if(fragmentOnScreen)
                                             showDeleteDeviceError();
                                     }
 
                                 } else {
-                                    ErrorHandler.handleError(response, getContext());
+                                    ErrorHandler.handleError(response);
                                     if(fragmentOnScreen)
                                         showDeleteDeviceError();
                                 }
@@ -534,7 +537,6 @@ public class DevicesListFragment extends Fragment {
 
                             @Override
                             public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
-                                ErrorHandler.handleUnexpectedError(t);
                                 if(fragmentOnScreen)
                                     showDeleteDeviceError();
                             }

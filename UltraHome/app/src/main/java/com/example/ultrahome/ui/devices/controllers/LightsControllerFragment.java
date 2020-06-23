@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.ultrahome.R;
 import com.example.ultrahome.apiConnection.ApiClient;
+import com.example.ultrahome.apiConnection.ErrorHandler;
 import com.example.ultrahome.apiConnection.entities.Error;
 import com.example.ultrahome.apiConnection.entities.Result;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.lights.LightState;
@@ -44,7 +45,6 @@ public class LightsControllerFragment extends Fragment {
 
 
     private String deviceId;
-    private int positionInRecyclerView;
 
     private Map<String, Integer> colors;
 
@@ -142,7 +142,7 @@ public class LightsControllerFragment extends Fragment {
         colors.put("#000000", 0xFF000000);
     }
 
-    public void init(View view) {
+    private void init(View view) {
         initializeColorButtons(view);
 
         onOffSwitch = view.findViewById(R.id.onOff_Switch);
@@ -155,7 +155,7 @@ public class LightsControllerFragment extends Fragment {
 
         api.getLightState(deviceId, new Callback<Result<LightState>>() {
             @Override
-            public void onResponse(Call<Result<LightState>> call, Response<Result<LightState>> response) {
+            public void onResponse(@NonNull Call<Result<LightState>> call, @NonNull Response<Result<LightState>> response) {
                 if(response.isSuccessful()) {
                     Result<LightState> result = response.body();
                     if(result != null) {
@@ -172,15 +172,20 @@ public class LightsControllerFragment extends Fragment {
                         colorDisplay.setBackgroundColor(colors.get(currentColor));
 
                         firstTime = false;
+                    } else {
+                        ErrorHandler.handleError(response);
+                        // todo: falta mensaje amigable de error
                     }
                 } else {
-                    handleError(response);
+                    ErrorHandler.handleError(response);
+                    // todo: falta mensaje amigable de error
                 }
             }
 
             @Override
-            public void onFailure(Call<Result<LightState>> call, Throwable t) {
-                handleUnexpectedError(t);
+            public void onFailure(@NonNull Call<Result<LightState>> call, @NonNull Throwable t) {
+                ErrorHandler.handleUnexpectedError(t, requireView(), LightsControllerFragment.this);
+                // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
             }
         });
 
@@ -209,28 +214,13 @@ public class LightsControllerFragment extends Fragment {
     private void readBundle(Bundle bundle) {
         if (bundle != null) {
             deviceId = bundle.getString("deviceId");
-            positionInRecyclerView = bundle.getInt("positionInRecyclerView");
         }
     }
 
-    private <T> void handleError(@NonNull Response<T> response) {
-        Error error = ApiClient.getInstance().getError(response.errorBody());
-        String text = "ERROR" + error.getDescription().get(0) + error.getCode();
-        Log.e("com.example.ultrahome", text);
-        Toast.makeText(getContext(), "OOPS! AN UNEXPECTED ERROR OCURRED :(", Toast.LENGTH_LONG).show();
-    }
-
-    private void handleUnexpectedError(@NonNull Throwable t) {
-        String LOG_TAG = "com.example.ultrahome";
-        Log.e(LOG_TAG, t.toString());
-        Toast.makeText(getContext(), "OOPS! THERE'S A PROBLEM ON OUR SIDE :(", Toast.LENGTH_LONG).show();
-    }
-
     @NonNull
-    public static LightsControllerFragment newInstance(String deviceId, int positionInRecyclerView) {
+    public static LightsControllerFragment newInstance(String deviceId) {
         Bundle bundle = new Bundle();
         bundle.putString("deviceId", deviceId);
-        bundle.putInt("positionInRecyclerView", positionInRecyclerView);
 
         LightsControllerFragment fragment = new LightsControllerFragment();
         fragment.setArguments(bundle);
@@ -243,7 +233,7 @@ public class LightsControllerFragment extends Fragment {
             return;
         api.setLightColor(deviceId, newColor, new Callback<Result<String>>() {
             @Override
-            public void onResponse(Call<Result<String>> call, Response<Result<String>> response) {
+            public void onResponse(@NonNull Call<Result<String>> call, @NonNull Response<Result<String>> response) {
                 if(response.isSuccessful()) {
                     Result<String> result = response.body();
                     if(result != null) {
@@ -251,85 +241,105 @@ public class LightsControllerFragment extends Fragment {
                         System.out.println("CURRENT COLOR: " + currentColor);
                         colorDisplay.setBackgroundColor(colors.get(currentColor));
                         Toast.makeText(getContext(),"COLOR CHANGED!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        ErrorHandler.handleError(response);
+                        // todo: falta mensaje amigable de error
                     }
                 } else {
-                    handleError(response);
+                    ErrorHandler.handleError(response);
+                    // todo: falta mensaje amigable de error
                 }
             }
 
             @Override
-            public void onFailure(Call<Result<String>> call, Throwable t) {
-                handleUnexpectedError(t);
+            public void onFailure(@NonNull Call<Result<String>> call, @NonNull Throwable t) {
+                ErrorHandler.handleUnexpectedError(t, requireView(), LightsControllerFragment.this);
+                // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
             }
         });
 
     }
 
-    public void changeBrightness() {
+    private void changeBrightness() {
         if(currentBrightness == brightnessSeekBar.getProgress())
             return;
         api.setLightBrightness(deviceId, brightnessSeekBar.getProgress(), new Callback<Result<Integer>>() {
             @Override
-            public void onResponse(Call<Result<Integer>> call, Response<Result<Integer>> response) {
+            public void onResponse(@NonNull Call<Result<Integer>> call, @NonNull Response<Result<Integer>> response) {
                 if(response.isSuccessful()) {
                     Result<Integer> result = response.body();
                     if(result != null) {
                         currentBrightness = brightnessSeekBar.getProgress();
                         brightnessTextView.setText(currentBrightness + "%");
                         Toast.makeText(getContext(),"BRGIHTNESS SET TO " + brightnessSeekBar.getProgress(), Toast.LENGTH_SHORT).show();
+                    } else {
+                        ErrorHandler.handleError(response);
+                        // todo: falta mensaje amigable de error
                     }
                 } else {
-                    handleError(response);
+                    ErrorHandler.handleError(response);
+                    // todo: falta mensaje amigable de error
                 }
             }
 
             @Override
-            public void onFailure(Call<Result<Integer>> call, Throwable t) {
-                handleUnexpectedError(t);
+            public void onFailure(@NonNull Call<Result<Integer>> call, @NonNull Throwable t) {
+                ErrorHandler.handleUnexpectedError(t, requireView(), LightsControllerFragment.this);
+                // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
             }
         });
 
     }
 
-    public void turnOnOrOff() {
+    private void turnOnOrOff() {
         if(!isOn) {
             api.turnOnLight(deviceId, new Callback<Result<Boolean>>() {
                 @Override
-                public void onResponse(Call<Result<Boolean>> call, Response<Result<Boolean>> response) {
+                public void onResponse(@NonNull Call<Result<Boolean>> call, @NonNull Response<Result<Boolean>> response) {
                     if(response.isSuccessful()) {
                         Result<Boolean> result = response.body();
                         if(result != null) {
                             Toast.makeText(getContext(),"TURNED ON", Toast.LENGTH_SHORT).show();
                             isOn = true;
+                        } else {
+                            ErrorHandler.handleError(response);
+                            // todo: falta mensaje amigable de error
                         }
                     } else {
-                        handleError(response);
+                        ErrorHandler.handleError(response);
+                        // todo: falta mensaje amigable de error
                     }
                 }
 
                 @Override
-                public void onFailure(Call<Result<Boolean>> call, Throwable t) {
-                    handleUnexpectedError(t);
+                public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
+                    ErrorHandler.handleUnexpectedError(t, requireView(), LightsControllerFragment.this);
+                    // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
                 }
             });
         } else {
             api.turnOffLight(deviceId, new Callback<Result<Boolean>>() {
                 @Override
-                public void onResponse(Call<Result<Boolean>> call, Response<Result<Boolean>> response) {
+                public void onResponse(@NonNull Call<Result<Boolean>> call, @NonNull Response<Result<Boolean>> response) {
                     if(response.isSuccessful()) {
                         Result<Boolean> result = response.body();
                         if(result != null) {
                             Toast.makeText(getContext(),"TURNED OFF", Toast.LENGTH_SHORT).show();
                             isOn = false;
+                        } else {
+                            ErrorHandler.handleError(response);
+                            // todo: falta mensaje amigable de error
                         }
                     } else {
-                        handleError(response);
+                        ErrorHandler.handleError(response);
+                        // todo: falta mensaje amigable de error
                     }
                 }
 
                 @Override
-                public void onFailure(Call<Result<Boolean>> call, Throwable t) {
-                    handleUnexpectedError(t);
+                public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
+                    ErrorHandler.handleUnexpectedError(t, requireView(), LightsControllerFragment.this);
+                    // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
                 }
             });
         }

@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.ultrahome.R;
 import com.example.ultrahome.apiConnection.ApiClient;
+import com.example.ultrahome.apiConnection.ErrorHandler;
 import com.example.ultrahome.apiConnection.entities.Error;
 import com.example.ultrahome.apiConnection.entities.Result;
 import com.example.ultrahome.apiConnection.entities.Routine.ActionsItem;
@@ -144,17 +145,6 @@ public class RoutinesFragment extends Fragment {
         }
     }
 
-    private <T> void handleError(@NonNull Response<T> response) {
-        Error error = ApiClient.getInstance().getError(response.errorBody());
-        String text = "ERROR" + error.getDescription().get(0) + error.getCode();
-        Toast.makeText(getContext(), text, Toast.LENGTH_LONG).show();
-    }
-
-    private void handleUnexpectedError(@NonNull Throwable t) {
-        String LOG_TAG = "com.example.ultrahome";
-        Log.e(LOG_TAG, t.toString());
-    }
-
     void notifyNewRoutineAdded(String routineId, String routineName) {
         routineIds.add(routineId);
         routineNames.add(routineName);
@@ -230,14 +220,21 @@ public class RoutinesFragment extends Fragment {
                             if (result != null && result.getResult()) {
                                 routineIds.remove(positionToDelete.intValue());
                                 routineNamesBackupBeforeDeleting.remove(0);
-                            } else
-                                Snackbar.make(view, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
-                        } else
-                            handleError(response);
+                            } else {
+                                ErrorHandler.handleError(response);
+                                // todo: aca se deberia volver a poner la Routine en la lista
+                                // todo: (si hay dudas, miren como lo hice en el onDismissed de FragmentHomes
+                            }
+                        } else {
+                            ErrorHandler.handleError(response);
+                            // todo: aca se deberia volver a poner la Routine en la lista
+                            // todo: (si hay dudas, miren como lo hice en el onDismissed de FragmentHomes
+                        }
                     }
                     @Override
                     public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
-                        handleUnexpectedError(t);
+                        // todo: aca se deberia volver a poner la Routine en la lista
+                        // todo: (si hay dudas, miren como lo hice en el onDismissed de FragmentHomes
                     }
                 });
             }
@@ -258,15 +255,20 @@ public class RoutinesFragment extends Fragment {
                             routines.add(h);
                             adapter.notifyItemInserted(routineNames.size() - 1);
                         }
-                    } else
-                        Snackbar.make(v, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
-                } else
-                    handleError(response);
+                    } else {
+                        ErrorHandler.handleError(response);
+                        // todo: falta mensaje amigable de error
+                    }
+                } else {
+                    ErrorHandler.handleError(response);
+                    // todo: falta mensaje amigable de error
+                }
             }
 
             @Override
             public void onFailure(@NonNull Call<Result<List<Routine>>> call, @NonNull Throwable t) {
-                handleUnexpectedError(t);
+                ErrorHandler.handleUnexpectedError(t, requireView(), RoutinesFragment.this);
+                // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
             }
         });
     }
@@ -274,30 +276,36 @@ public class RoutinesFragment extends Fragment {
     public void executeRoutine(View v, String routineId){
         api.executeRoutine(routineId, new Callback<Result<List<Boolean>>>() {
             @Override
-            public void onResponse(Call<Result<List<Boolean>>> call, Response<Result<List<Boolean>>> response) {
-                if(response.isSuccessful()){
+            public void onResponse(@NonNull Call<Result<List<Boolean>>> call, @NonNull Response<Result<List<Boolean>>> response) {
+                if(response.isSuccessful()) {
                     Result<List<Boolean>> result = response.body();
-                    List<Boolean> resultRoutine = result.getResult();
-                    Boolean notFail = true;
-                    for(Boolean actionResult : resultRoutine){
-                        if(!actionResult){
-                            notFail = false;
+                    if (result != null) {
+                        List<Boolean> resultRoutine = result.getResult();
+                        Boolean notFail = true;
+                        for (Boolean actionResult : resultRoutine) {
+                            if (!actionResult) {
+                                notFail = false;
+                            }
                         }
-                    }
-                    if(notFail){
-                        Toast.makeText(getContext(), "Routine Executed", Toast.LENGTH_SHORT);
-                    }
-                    else{
-                        Toast.makeText(getContext(), "Routine Fail", Toast.LENGTH_SHORT);
+                        if (notFail) {
+                            Toast.makeText(getContext(), "Routine Executed", Toast.LENGTH_SHORT);
+                        } else {
+                            Toast.makeText(getContext(), "Routine Fail", Toast.LENGTH_SHORT);
+                        }
+                    } else {
+                        ErrorHandler.handleError(response);
+                        // todo: falta mensaje amigable de error
                     }
                 }else{
-                    handleError(response);
+                    ErrorHandler.handleError(response);
+                    // todo: falta mensaje amigable de error
                 }
             }
 
             @Override
-            public void onFailure(Call<Result<List<Boolean>>> call, Throwable t) {
-                handleUnexpectedError(t);
+            public void onFailure(@NonNull Call<Result<List<Boolean>>> call, @NonNull Throwable t) {
+                ErrorHandler.handleUnexpectedError(t, requireView(), RoutinesFragment.this);
+                // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
             }
         });
     }

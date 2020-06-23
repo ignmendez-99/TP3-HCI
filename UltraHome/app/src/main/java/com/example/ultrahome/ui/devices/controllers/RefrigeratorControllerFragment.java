@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.ultrahome.R;
 import com.example.ultrahome.apiConnection.ApiClient;
+import com.example.ultrahome.apiConnection.ErrorHandler;
 import com.example.ultrahome.apiConnection.entities.Error;
 import com.example.ultrahome.apiConnection.entities.Result;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.refrigerator.RefrigeratorState;
@@ -26,7 +27,6 @@ import retrofit2.Response;
 public class RefrigeratorControllerFragment extends Fragment {
 
     private String deviceId;
-    private int positionInRecyclerView;
 
     private Spinner modeSpinner, fridgeTempSpinner, freezerTempSpinner;
 
@@ -44,7 +44,7 @@ public class RefrigeratorControllerFragment extends Fragment {
         init(view);
     }
 
-    public void init(View view) {
+    private void init(@NonNull View view) {
         modeSpinner = view.findViewById(R.id.mode_spinner);
         fridgeTempSpinner = view.findViewById(R.id.fridge_temp_spinner);
         freezerTempSpinner = view.findViewById(R.id.freezer_temp_spinner);
@@ -53,7 +53,7 @@ public class RefrigeratorControllerFragment extends Fragment {
 
         api.getRefrigeratorState(deviceId, new Callback<Result<RefrigeratorState>>() {
             @Override
-            public void onResponse(Call<Result<RefrigeratorState>> call, Response<Result<RefrigeratorState>> response) {
+            public void onResponse(@NonNull Call<Result<RefrigeratorState>> call, @NonNull Response<Result<RefrigeratorState>> response) {
                 if(response.isSuccessful()) {
                     Result<RefrigeratorState> result = response.body();
                     if(result != null) {
@@ -79,15 +79,20 @@ public class RefrigeratorControllerFragment extends Fragment {
                                 break;
                         }
 
+                    } else {
+                        ErrorHandler.handleError(response);
+                        // todo: falta mensaje amigable de error
                     }
                 } else {
-                    handleError(response);
+                    ErrorHandler.handleError(response);
+                    // todo: falta mensaje amigable de error
                 }
             }
 
             @Override
-            public void onFailure(Call<Result<RefrigeratorState>> call, Throwable t) {
-                handleUnexpectedError(t);
+            public void onFailure(@NonNull Call<Result<RefrigeratorState>> call, @NonNull Throwable t) {
+                ErrorHandler.handleUnexpectedError(t, requireView(), RefrigeratorControllerFragment.this);
+                // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
             }
         });
 
@@ -128,28 +133,13 @@ public class RefrigeratorControllerFragment extends Fragment {
     private void readBundle(Bundle bundle) {
         if (bundle != null) {
             deviceId = bundle.getString("deviceId");
-            positionInRecyclerView = bundle.getInt("positionInRecyclerView");
         }
     }
 
-    private <T> void handleError(@NonNull Response<T> response) {
-        Error error = ApiClient.getInstance().getError(response.errorBody());
-        String text = "ERROR" + error.getDescription().get(0) + error.getCode();
-        Log.e("com.example.ultrahome", text);
-        Toast.makeText(getContext(), "OOPS! AN UNEXPECTED ERROR OCURRED :(", Toast.LENGTH_LONG).show();
-    }
-
-    private void handleUnexpectedError(@NonNull Throwable t) {
-        String LOG_TAG = "com.example.ultrahome";
-        Log.e(LOG_TAG, t.toString());
-        Toast.makeText(getContext(), "OOPS! THERE'S A PROBLEM ON OUR SIDE :(", Toast.LENGTH_LONG).show();
-    }
-
     @NonNull
-    public static RefrigeratorControllerFragment newInstance(String deviceId, int positionInRecyclerView) {
+    public static RefrigeratorControllerFragment newInstance(String deviceId) {
         Bundle bundle = new Bundle();
         bundle.putString("deviceId", deviceId);
-        bundle.putInt("positionInRecyclerView", positionInRecyclerView);
 
         RefrigeratorControllerFragment fragment = new RefrigeratorControllerFragment();
         fragment.setArguments(bundle);
@@ -160,20 +150,25 @@ public class RefrigeratorControllerFragment extends Fragment {
     private void changeMode() {
         api.changeRefrigeratorMode(deviceId, modeSpinner.getSelectedItem().toString().toLowerCase(), new Callback<Result<Boolean>>() {
             @Override
-            public void onResponse(Call<Result<Boolean>> call, Response<Result<Boolean>> response) {
+            public void onResponse(@NonNull Call<Result<Boolean>> call, @NonNull Response<Result<Boolean>> response) {
                 if(response.isSuccessful()) {
                     Result<Boolean> result = response.body();
                     if(result != null) {
                         updateSpinners();
+                    } else {
+                        ErrorHandler.handleError(response);
+                        // todo: falta mensaje amigable de error
                     }
                 } else {
-                    handleError(response);
+                    ErrorHandler.handleError(response);
+                    // todo: falta mensaje amigable de error
                 }
             }
 
             @Override
-            public void onFailure(Call<Result<Boolean>> call, Throwable t) {
-                handleUnexpectedError(t);
+            public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
+                ErrorHandler.handleUnexpectedError(t, requireView(), RefrigeratorControllerFragment.this);
+                // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
             }
         });
     }
@@ -181,20 +176,25 @@ public class RefrigeratorControllerFragment extends Fragment {
     private void changeFridgeTemp() {
         api.setFridgeTemp(deviceId, Integer.parseInt(fridgeTempSpinner.getSelectedItem().toString()), new Callback<Result<Integer>>() {
             @Override
-            public void onResponse(Call<Result<Integer>> call, Response<Result<Integer>> response) {
+            public void onResponse(@NonNull Call<Result<Integer>> call, @NonNull Response<Result<Integer>> response) {
                 if(response.isSuccessful()) {
                     Result<Integer> result = response.body();
                     if(result != null) {
                         updateSpinners();
+                    } else {
+                        ErrorHandler.handleError(response);
+                        // todo: falta mensaje amigable de error
                     }
                 } else {
-                    handleError(response);
+                    ErrorHandler.handleError(response);
+                    // todo: falta mensaje amigable de error
                 }
             }
 
             @Override
-            public void onFailure(Call<Result<Integer>> call, Throwable t) {
-                handleUnexpectedError(t);
+            public void onFailure(@NonNull Call<Result<Integer>> call, @NonNull Throwable t) {
+                ErrorHandler.handleUnexpectedError(t, requireView(), RefrigeratorControllerFragment.this);
+                // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
             }
         });
     }
@@ -202,20 +202,25 @@ public class RefrigeratorControllerFragment extends Fragment {
     private void changeFreezerTemp() {
         api.setFreezerTemp(deviceId, Integer.parseInt(freezerTempSpinner.getSelectedItem().toString()), new Callback<Result<Integer>>() {
             @Override
-            public void onResponse(Call<Result<Integer>> call, Response<Result<Integer>> response) {
+            public void onResponse(@NonNull Call<Result<Integer>> call, @NonNull Response<Result<Integer>> response) {
                 if(response.isSuccessful()) {
                     Result<Integer> result = response.body();
                     if(result != null) {
                         updateSpinners();
+                    } else {
+                        ErrorHandler.handleError(response);
+                        // todo: falta mensaje amigable de error
                     }
                 } else {
-                    handleError(response);
+                    ErrorHandler.handleError(response);
+                    // todo: falta mensaje amigable de error
                 }
             }
 
             @Override
-            public void onFailure(Call<Result<Integer>> call, Throwable t) {
-                handleUnexpectedError(t);
+            public void onFailure(@NonNull Call<Result<Integer>> call, @NonNull Throwable t) {
+                ErrorHandler.handleUnexpectedError(t, requireView(), RefrigeratorControllerFragment.this);
+                // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
             }
         });
     }
@@ -232,7 +237,7 @@ public class RefrigeratorControllerFragment extends Fragment {
     private void updateSpinners() {
         api.getRefrigeratorState(deviceId, new Callback<Result<RefrigeratorState>>() {
             @Override
-            public void onResponse(Call<Result<RefrigeratorState>> call, Response<Result<RefrigeratorState>> response) {
+            public void onResponse(@NonNull Call<Result<RefrigeratorState>> call, @NonNull Response<Result<RefrigeratorState>> response) {
                 if(response.isSuccessful()) {
                     Result<RefrigeratorState> result = response.body();
                     if(result != null) {
@@ -256,15 +261,20 @@ public class RefrigeratorControllerFragment extends Fragment {
                                 break;
                         }
 
+                    } else {
+                        ErrorHandler.handleError(response);
+                        // todo: falta mensaje amigable de error
                     }
                 } else {
-                    handleError(response);
+                    ErrorHandler.handleError(response);
+                    // todo: falta mensaje amigable de error
                 }
             }
 
             @Override
-            public void onFailure(Call<Result<RefrigeratorState>> call, Throwable t) {
-                handleUnexpectedError(t);
+            public void onFailure(@NonNull Call<Result<RefrigeratorState>> call, @NonNull Throwable t) {
+                ErrorHandler.handleUnexpectedError(t, requireView(), RefrigeratorControllerFragment.this);
+                // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
             }
         });
     }

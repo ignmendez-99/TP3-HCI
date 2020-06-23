@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.ultrahome.R;
 import com.example.ultrahome.apiConnection.ApiClient;
+import com.example.ultrahome.apiConnection.ErrorHandler;
 import com.example.ultrahome.apiConnection.entities.Error;
 import com.example.ultrahome.apiConnection.entities.Result;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.door.DoorState;
@@ -27,7 +28,6 @@ public class DoorControllerFragment extends Fragment {
     private ApiClient api;
 
     private String deviceId;
-    private int positionInRecyclerView;
 
     private Switch openCloseSwitch, lockUnlockSwitch;
 
@@ -42,10 +42,10 @@ public class DoorControllerFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         readBundle(getArguments());
 
-        init(getView());
+        init(requireView());
     }
 
-    public void init(View view) {
+    private void init(View view) {
         api = ApiClient.getInstance();
 
         openCloseSwitch = view.findViewById(R.id.open_switch);
@@ -53,7 +53,7 @@ public class DoorControllerFragment extends Fragment {
 
         api.getDoorState(deviceId, new Callback<Result<DoorState>>() {
             @Override
-            public void onResponse(Call<Result<DoorState>> call, Response<Result<DoorState>> response) {
+            public void onResponse(@NonNull Call<Result<DoorState>> call, @NonNull Response<Result<DoorState>> response) {
                 if(response.isSuccessful()) {
                     Result<DoorState> result = response.body();
                     if(result != null) {
@@ -84,15 +84,20 @@ public class DoorControllerFragment extends Fragment {
                                 }
                             });
                         }
+                    } else {
+                        ErrorHandler.handleError(response);
+                        // todo: falta mensaje amigable de error
                     }
                 } else {
-                    handleError(response);
+                    ErrorHandler.handleError(response);
+                    // todo: falta mensaje amigable de error
                 }
             }
 
             @Override
-            public void onFailure(Call<Result<DoorState>> call, Throwable t) {
-                handleUnexpectedError(t);
+            public void onFailure(@NonNull Call<Result<DoorState>> call, @NonNull Throwable t) {
+                ErrorHandler.handleUnexpectedError(t, requireView(), DoorControllerFragment.this);
+                // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
             }
         });
     }
@@ -100,28 +105,13 @@ public class DoorControllerFragment extends Fragment {
     private void readBundle(Bundle bundle) {
         if (bundle != null) {
             deviceId = bundle.getString("deviceId");
-            positionInRecyclerView = bundle.getInt("positionInRecyclerView");
         }
     }
 
-    private <T> void handleError(@NonNull Response<T> response) {
-        Error error = ApiClient.getInstance().getError(response.errorBody());
-        String text = "ERROR" + error.getDescription().get(0) + error.getCode();
-        Log.e("com.example.ultrahome", text);
-        Toast.makeText(getContext(), "OOPS! AN UNEXPECTED ERROR OCURRED :(", Toast.LENGTH_LONG).show();
-    }
-
-    private void handleUnexpectedError(@NonNull Throwable t) {
-        String LOG_TAG = "com.example.ultrahome";
-        Log.e(LOG_TAG, t.toString());
-        Toast.makeText(getContext(), "OOPS! THERE'S A PROBLEM ON OUR SIDE :(", Toast.LENGTH_LONG).show();
-    }
-
     @NonNull
-    public static DoorControllerFragment newInstance(String deviceId, int positionInRecyclerView) {
+    public static DoorControllerFragment newInstance(String deviceId) {
         Bundle bundle = new Bundle();
         bundle.putString("deviceId", deviceId);
-        bundle.putInt("positionInRecyclerView", positionInRecyclerView);
 
         DoorControllerFragment fragment = new DoorControllerFragment();
         fragment.setArguments(bundle);
@@ -141,22 +131,27 @@ public class DoorControllerFragment extends Fragment {
 
         api.openDoor(deviceId, new Callback<Result<Boolean>>() {
             @Override
-            public void onResponse(Call<Result<Boolean>> call, Response<Result<Boolean>> response) {
+            public void onResponse(@NonNull Call<Result<Boolean>> call, @NonNull Response<Result<Boolean>> response) {
                 if(response.isSuccessful()) {
                     Result<Boolean> result = response.body();
                     if(result != null) {
                         Toast.makeText(getContext(), "OPENING DOOR", Toast.LENGTH_LONG).show();
                         isOpen = true;
                         lockUnlockSwitch.setEnabled(false);
+                    } else {
+                        ErrorHandler.handleError(response);
+                        // todo: falta mensaje amigable de error
                     }
                 } else {
-                    handleError(response);
+                    ErrorHandler.handleError(response);
+                    // todo: falta mensaje amigable de error
                 }
             }
 
             @Override
-            public void onFailure(Call<Result<Boolean>> call, Throwable t) {
-                handleUnexpectedError(t);
+            public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
+                ErrorHandler.handleUnexpectedError(t, requireView(), DoorControllerFragment.this);
+                // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
             }
         });
     }
@@ -168,22 +163,27 @@ public class DoorControllerFragment extends Fragment {
         }
         api.closeDoor(deviceId, new Callback<Result<Boolean>>() {
             @Override
-            public void onResponse(Call<Result<Boolean>> call, Response<Result<Boolean>> response) {
+            public void onResponse(@NonNull Call<Result<Boolean>> call, @NonNull Response<Result<Boolean>> response) {
                 if(response.isSuccessful()) {
                     Result<Boolean> result = response.body();
                     if(result != null) {
                         Toast.makeText(getContext(), "CLOSING DOOR", Toast.LENGTH_LONG).show();
                         isOpen = false;
                         lockUnlockSwitch.setEnabled(true);
+                    } else {
+                        ErrorHandler.handleError(response);
+                        // todo: falta mensaje amigable de error
                     }
                 } else {
-                    handleError(response);
+                    ErrorHandler.handleError(response);
+                    // todo: falta mensaje amigable de error
                 }
             }
 
             @Override
-            public void onFailure(Call<Result<Boolean>> call, Throwable t) {
-                handleUnexpectedError(t);
+            public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
+                ErrorHandler.handleUnexpectedError(t, requireView(), DoorControllerFragment.this);
+                // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
             }
         });
     }
@@ -200,22 +200,27 @@ public class DoorControllerFragment extends Fragment {
 
         api.lockDoor(deviceId, new Callback<Result<Boolean>>() {
             @Override
-            public void onResponse(Call<Result<Boolean>> call, Response<Result<Boolean>> response) {
+            public void onResponse(@NonNull Call<Result<Boolean>> call, @NonNull Response<Result<Boolean>> response) {
                 if(response.isSuccessful()) {
                     Result<Boolean> result = response.body();
                     if(result != null) {
                         Toast.makeText(getContext(), "LOCKING DOOR", Toast.LENGTH_LONG).show();
                         isLocked = true;
                         openCloseSwitch.setEnabled(false);
+                    } else {
+                        ErrorHandler.handleError(response);
+                        // todo: falta mensaje amigable de error
                     }
                 } else {
-                    handleError(response);
+                    ErrorHandler.handleError(response);
+                    // todo: falta mensaje amigable de error
                 }
             }
 
             @Override
-            public void onFailure(Call<Result<Boolean>> call, Throwable t) {
-                handleUnexpectedError(t);
+            public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
+                ErrorHandler.handleUnexpectedError(t, requireView(), DoorControllerFragment.this);
+                // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
             }
         });
     }
@@ -228,22 +233,27 @@ public class DoorControllerFragment extends Fragment {
 
         api.unlockDoor(deviceId, new Callback<Result<Boolean>>() {
             @Override
-            public void onResponse(Call<Result<Boolean>> call, Response<Result<Boolean>> response) {
+            public void onResponse(@NonNull Call<Result<Boolean>> call, @NonNull Response<Result<Boolean>> response) {
                 if(response.isSuccessful()) {
                     Result<Boolean> result = response.body();
                     if(result != null) {
                         Toast.makeText(getContext(), "UNLOCKING DOOR", Toast.LENGTH_LONG).show();
                         isLocked = false;
                         openCloseSwitch.setEnabled(true);
+                    } else {
+                        ErrorHandler.handleError(response);
+                        // todo: falta mensaje amigable de error
                     }
                 } else {
-                    handleError(response);
+                    ErrorHandler.handleError(response);
+                    // todo: falta mensaje amigable de error
                 }
             }
 
             @Override
-            public void onFailure(Call<Result<Boolean>> call, Throwable t) {
-                handleUnexpectedError(t);
+            public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
+                ErrorHandler.handleUnexpectedError(t, requireView(), DoorControllerFragment.this);
+                // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
             }
         });
     }

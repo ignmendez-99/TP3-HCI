@@ -124,5 +124,7 @@
     <string name="delete_button">Delete</string>
     <string name="done_button">Done</string>
 
+    <string name="handle_unexpected_error">OOPS! THERE\'S A PROBLEM ON OUR SIDE :(</string>
+
     <string name="delete_device_confirmation">Are you sure you want to delete the device?</string>
 </resources>
