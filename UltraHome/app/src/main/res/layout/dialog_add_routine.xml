@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="350dp"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/dialog_add_routine_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add Routine"
+        android:textSize="25sp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/dialog_add_routine_subtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Choose a new name for your Routine"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="@+id/dialog_add_routine_title"
+        app:layout_constraintTop_toBottomOf="@+id/dialog_add_routine_title" />
+
+    <EditText
+        android:id="@+id/routine_name_edit_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:hint="New Name"
+        android:maxLength="65"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dialog_add_routine_subtitle" />
+
+    <TextView
+        android:id="@+id/devices_to_select"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Choose a set of devices"
+        android:textSize="20sp"
+        android:paddingTop="10dp"
+        app:layout_constraintStart_toStartOf="@+id/routine_name_edit_text"
+        app:layout_constraintTop_toBottomOf="@+id/routine_name_edit_text" />
+
+    <Spinner
+        android:id="@+id/devices_spinner"
+        android:layout_width="fill_parent"
+        android:layout_height="40dp"
+        android:prompt="@string/app_name"
+        android:textColor="#000000"
+        app:layout_constraintStart_toStartOf="@+id/devices_to_select"
+        app:layout_constraintTop_toBottomOf="@+id/devices_to_select"/>
+
+    <LinearLayout
+        android:id="@+id/add_routine_buttom_pair"
+        style="?android:attr/buttonBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/devices_spinner">
+
+        <Button
+            android:id="@+id/button_show_AddRoutineDialog"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ADD NEW Routine" />
+
+        <Button
+            android:id="@+id/button_close_add_routine_dialog"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CANCEL" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/verficar_id"
+        app:layout_constraintStart_toStartOf="@+id/add_routine_buttom_pair"
+        app:layout_constraintTop_toBottomOf="@+id/add_routine_buttom_pair"/>
+
+
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

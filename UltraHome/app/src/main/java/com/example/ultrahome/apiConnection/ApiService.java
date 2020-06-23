@@ -3,8 +3,11 @@ package com.example.ultrahome.apiConnection;
 import com.example.ultrahome.apiConnection.entities.Home;
 import com.example.ultrahome.apiConnection.entities.Result;
 import com.example.ultrahome.apiConnection.entities.Room;
+import com.example.ultrahome.apiConnection.entities.Routine.Routine;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.Device;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.DeviceState;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.DeviceType;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.DeviceTypeComplete;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.blinds.BlindsState;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.door.DoorState;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.faucet.FaucetState;
@@ -80,6 +83,13 @@ public interface ApiService {
 
 //    TODO: UNUSED AS IT DIDN'T WORK
 
+    ////////////// DEVICE-TYPE CONTROLS ////////////////////
+    @GET("devicetypes")
+    Call<Result<List<DeviceTypeComplete>>> getAllDeviceTypes();
+
+    @GET("devicetypes/{deviceTypeId}")
+    Call<Result<DeviceTypeComplete>> getDeviceType(@Path("deviceTypeId") String deviceTypeId);
+
     ////////////// HOME-ROOM CONTROLS ////////////////////
 
     @GET("homes/{homeId}/rooms")
@@ -97,6 +107,29 @@ public interface ApiService {
     @POST("rooms/{roomId}/devices/{deviceId}")
     @Headers("Content-Type: application/json")
     Call<Result<Boolean>> linkDeviceWithHome(@Path("roomId") String roomId, @Path("deviceId") String deviceId);
+
+    ////////////// ROUTINES CONTROLS ////////////////////
+
+    @GET("routines")
+    Call<Result<List<Routine>>> getRoutines();
+
+    @POST("routines")
+    @Headers("Content-Type: application/json")
+    Call<Result<Routine>> addRoutine(@Body Routine routine);
+
+    @DELETE("routines/{routineId}")
+    Call<Result<Boolean>> deleteRoutine(@Path("routineId") String routineId);
+
+    @GET("routines/{routineId}")
+    Call<Result<Routine>> getRoutine(@Path("routineId") String routineId);
+
+    @PUT("routines/{routineId}")
+    @Headers("Content-Type: application/json")
+    Call<Result<Boolean>> modifyRoutine(@Path("routineId") String routineId, @Body Routine routine);
+
+    @PUT("routines/{routineId}/execute")
+    @Headers("Content-Type: application/json")
+    Call<Result<List<Boolean>>> executeRoutine(@Path("routineId") String routineId);
 
     ////////////// DOOR CONTROLS ////////////////////
 

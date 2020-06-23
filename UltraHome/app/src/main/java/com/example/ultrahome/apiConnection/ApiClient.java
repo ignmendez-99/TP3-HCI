@@ -1,7 +1,10 @@
 package com.example.ultrahome.apiConnection;
 
+import com.example.ultrahome.apiConnection.entities.Routine.Routine;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.Device;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.DeviceState;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.DeviceType;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.DeviceTypeComplete;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.blinds.BlindsState;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.door.Door;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.door.DoorState;
@@ -33,7 +36,7 @@ public class ApiClient {
     private static ApiClient instance = null;
     // Use IP 10.0.2.2 instead of 127.0.0.1 when running Android emulator in the
     // same computer that runs the API.
-    private final String BaseURL = "http://10.0.2.2:8080/api/";
+    private final String BaseURL = "http://10.0.2.2:8081/api/";
 
     private ApiClient() {
         retrofit = new Retrofit.Builder()
@@ -139,6 +142,14 @@ public class ApiClient {
         return call;
     }
 
+    ////////////// DEVICE-TYPE CALLS ////////////////////
+
+    public Call<Result<DeviceTypeComplete>> getDeviceType(String deviceTypeId, Callback<Result<DeviceTypeComplete>> callback){
+        Call<Result<DeviceTypeComplete>> call = this.service.getDeviceType(deviceTypeId);
+        call.enqueue(callback);
+        return call;
+    }
+
     ////////////// HOME-ROOM CALLS ////////////////////
 
     public Call<Result<List<Room>>> getRoomsInThisHome(String homeId, Callback<Result<List<Room>>> callback) {
@@ -163,6 +174,44 @@ public class ApiClient {
 
     public Call<Result<Boolean>> linkDeviceWithRoom(String roomId, String deviceId, Callback<Result<Boolean>> callback) {
         Call<Result<Boolean>> call = this.service.linkDeviceWithHome(roomId, deviceId);
+        call.enqueue(callback);
+        return call;
+    }
+
+    ////////////// ROUTINE CALLS ////////////////////
+
+    public Call<Result<List<Routine>>> getRoutines(Callback<Result<List<Routine>>> callback){
+        Call<Result<List<Routine>>> call = this.service.getRoutines();
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<Routine>> addRoutine(Routine routine, Callback<Result<Routine>> callback){
+        Call<Result<Routine>> call = this.service.addRoutine(routine);
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<Boolean>> deleteRoutine(String routineId, Callback<Result<Boolean>> callback){
+        Call<Result<Boolean>> call = this.service.deleteRoutine(routineId);
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<Boolean>> getRoutine(String routineId, Callback<Result<Boolean>> callback){
+        Call<Result<Boolean>> call = this.service.deleteRoutine(routineId);
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<Boolean>> modifyRoutine(String routineId, Routine routine, Callback<Result<Boolean>> callback){
+        Call<Result<Boolean>> call = this.service.modifyRoutine(routineId, routine);
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<List<Boolean>>> executeRoutine(String routineId, Callback<Result<List<Boolean>>> callback){
+        Call<Result<List<Boolean>>> call = this.service.executeRoutine(routineId);
         call.enqueue(callback);
         return call;
     }

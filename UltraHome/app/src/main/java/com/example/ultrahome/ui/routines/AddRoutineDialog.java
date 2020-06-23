@@ -1,0 +1,224 @@
+package com.example.ultrahome.ui.routines;
+
+import android.app.Dialog;
+import android.content.Context;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+
+import com.example.ultrahome.R;
+import com.example.ultrahome.apiConnection.ApiClient;
+import com.example.ultrahome.apiConnection.ErrorHandler;
+import com.example.ultrahome.apiConnection.entities.Result;
+import com.example.ultrahome.apiConnection.entities.Routine.ActionsItem;
+import com.example.ultrahome.apiConnection.entities.Routine.Routine;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.Device;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.DeviceType;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.DeviceTypeAction;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.DeviceTypeComplete;
+import com.example.ultrahome.ui.devices.DevicesListFragment;
+import com.google.android.material.snackbar.Snackbar;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class AddRoutineDialog extends Dialog {
+
+    private RoutinesFragment fragmentInstance;
+    private Context context;
+    private Button add_button;
+    private Button cancel_button;
+    private EditText routineNameEditText;
+    private TextView errorMessage;
+    private String routineName;
+    private Routine newRoutine;
+    private List<ActionsItem> actions;
+    private Spinner spinner;
+
+    private TextView hola;
+
+    /////////// devices ///////////
+    private List<String> deviceNames;
+    private List<String> deviceIds;
+    private List<String> allDeviceTypes;
+    private Map<String, List<String>> deviceTypeActions;
+    private List<String> allDevices;
+
+    public AddRoutineDialog(@NonNull Context context, RoutinesFragment routinesFragment) {
+        super(context);
+        this.context = context;
+        fragmentInstance = routinesFragment;
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        setContentView(R.layout.dialog_add_routine);
+
+        add_button = findViewById(R.id.button_show_AddRoutineDialog);
+        cancel_button = findViewById(R.id.button_close_add_routine_dialog);
+        routineNameEditText = findViewById(R.id.routine_name_edit_text);
+        spinner = findViewById(R.id.devices_spinner);
+
+        hola = findViewById(R.id.verficar_id);
+
+        deviceNames = new ArrayList<>();
+        deviceIds = new ArrayList<>();
+        allDeviceTypes = new ArrayList<>();
+        allDevices = new ArrayList<>();
+        deviceTypeActions = new HashMap<>();
+
+        getAllDevices(allDeviceTypes);
+
+        for(String id : allDeviceTypes){
+            getActions(id);
+        }
+
+
+
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this.getContext(), android.R.layout.simple_spinner_item, deviceNames);
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(arrayAdapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
+
+        cancel_button.setOnClickListener(v -> dismiss());
+    }
+
+    private void checkCorrectInput(View v) {
+        routineName = routineNameEditText.getText().toString();
+        if(routineName.length() > 60 || routineName.length() < 3) {
+            errorMessage.setVisibility(View.VISIBLE);
+            errorMessage.setText("Name must be between 3 and 60 characters");
+        } else {
+            if (!routineName.matches("^[a-zA-Z0-9_ ]{3,60}")) {
+                errorMessage.setVisibility(View.VISIBLE);
+                errorMessage.setText("Name must only contain numbers, digits, spaces or _");
+            } else {
+                addNewRoutine(v);
+            }
+        }
+    }
+
+    private void getAllDevices(List<String> ids) {
+            ApiClient.getInstance().getDevices(new Callback<Result<List<Device>>>() {
+                @Override
+                public void onResponse(@NonNull Call<Result<List<Device>>> call, @NonNull Response<Result<List<Device>>> response) {
+                    if (response.isSuccessful()) {
+                        Result<List<Device>> result = response.body();
+                        if (result != null) {
+                            List<Device> deviceList = result.getResult();
+                            if (deviceList.size() != 0) {
+                                for (Device device : deviceList) {
+                                    deviceIds.add(device.getId());
+                                    deviceNames.add(device.getName());
+                                    String deviceTypeId = device.getType().getId();
+                                    if(!ids.contains(deviceTypeId)) {
+                                        ids.add(deviceTypeId);
+                                    }
+//                                    if(!deviceTypeActions.keySet().contains(deviceTypeId)){
+//                                        getActions(deviceTypeId);
+//                                    }
+                                }
+                            }
+                        } else {
+                            Snackbar.make(getCurrentFocus(), "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
+                        }
+                    } else
+                        ErrorHandler.handleError(response, getContext());
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<Result<List<Device>>> call, @NonNull Throwable t) {
+                    ErrorHandler.handleUnexpectedError(t);
+                }
+            });
+    }
+
+    private void getActions(String id){
+        List<String> actionsAux = new ArrayList<>();
+        ApiClient.getInstance().getDeviceType(id, new Callback<Result<DeviceTypeComplete>>() {
+            @Override
+            public void onResponse(Call<Result<DeviceTypeComplete>> call, Response<Result<DeviceTypeComplete>> response) {
+                if(response.isSuccessful()){
+                    Result<DeviceTypeComplete> result = response.body();
+                    if(result != null){
+                        DeviceTypeComplete deviceType = result.getResult();
+                        for(DeviceTypeAction action : deviceType.getActions()){
+                            actionsAux.add(action.getName());
+                        }
+                        deviceTypeActions.put(id, actionsAux);
+                    }
+                    else{
+                        Snackbar.make(getCurrentFocus(),"ERROR tipo 1", Snackbar.LENGTH_LONG).show();
+                    }
+                } else {
+                    ErrorHandler.handleError(response, context);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Result<DeviceTypeComplete>> call, Throwable t) {
+                ErrorHandler.handleUnexpectedError(t);
+            }
+        });
+    }
+
+
+    private void addNewRoutine(View v) {
+        findViewById(R.id.loadingAddingHome).setVisibility(View.VISIBLE);
+        findViewById(R.id.add_home_buttom_pair).setVisibility(View.GONE);
+//        newRoutine = new Routine(routineName, actions);
+//        new Thread(() -> {
+//            ApiClient.getInstance().addRoutine(newRoutine, new Callback<Result<Routine>>() {
+//                @Override
+//                public void onResponse(@NonNull Call<Result<Routine>> call, @NonNull Response<Result<Routine>> response) {
+//                    if (response.isSuccessful()) {
+//                        Result<Routine> result = response.body();
+//                        if (result != null) {
+//                            fragmentInstance.notifyNewRoutineAdded(result.getResult().getId(), routineName);
+//                            dismiss();
+//                        } else
+//                            Snackbar.make(v, "ERROR tipo 1", Snackbar.LENGTH_LONG).show();
+//                    } else
+//                        ErrorHandler.handleError(response, context);
+//                    findViewById(R.id.loadingAddingHome).setVisibility(View.GONE);
+//                    findViewById(R.id.add_home_buttom_pair).setVisibility(View.VISIBLE);
+//                }
+//
+//                @Override
+//                public void onFailure(@NonNull Call<Result<Routine>> call, @NonNull Throwable t) {
+//                    findViewById(R.id.loadingAddingHome).setVisibility(View.GONE);
+//                    findViewById(R.id.add_home_buttom_pair).setVisibility(View.VISIBLE);
+//                    ErrorHandler.handleUnexpectedError(t);
+//                }
+//            });
+//        }).start();
+    }
+}
