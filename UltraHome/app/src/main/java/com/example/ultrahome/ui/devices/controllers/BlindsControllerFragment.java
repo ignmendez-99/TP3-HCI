@@ -6,7 +6,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -18,7 +20,6 @@ import com.example.ultrahome.apiConnection.ApiClient;
 import com.example.ultrahome.apiConnection.entities.Error;
 import com.example.ultrahome.apiConnection.entities.Result;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.blinds.BlindsState;
-import com.example.ultrahome.apiConnection.entities.deviceEntities.door.DoorState;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -30,9 +31,13 @@ public class BlindsControllerFragment extends Fragment {
     private int positionInRecyclerView;
 
     private Button openButton, closeButton;
-    private SeekBar percentageSeekBar;
+    private SeekBar levelSeekBar;
+    private ProgressBar currentLevelProgressBar;
+    private TextView levelTextView;
 
-    private int currentPercentage;
+    private int currentLevel;
+    private int level;
+    private String status;
 
     private ApiClient api;
 
@@ -45,9 +50,15 @@ public class BlindsControllerFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         readBundle(getArguments());
 
+        init(getView());
+    }
+
+    public void init(View view) {
         openButton = view.findViewById(R.id.open_blinds_button);
         closeButton = view.findViewById(R.id.close_blinds_button);
-        percentageSeekBar = view.findViewById(R.id.percentage_blinds_seekBar);
+        levelSeekBar = view.findViewById(R.id.level_blinds_seekBar);
+        currentLevelProgressBar = view.findViewById(R.id.currentLevel_progressBar);
+        levelTextView = view.findViewById(R.id.max_level);
 
         openButton.setOnClickListener(this::openBlinds);
         closeButton.setOnClickListener(this::closeBlinds);
@@ -61,12 +72,16 @@ public class BlindsControllerFragment extends Fragment {
                     Result<BlindsState> result = response.body();
                     if(result != null) {
                         BlindsState blindsState = result.getResult();
-                        currentPercentage = blindsState.getCurrentLevel();
-                        percentageSeekBar.setMax(100);
-                        percentageSeekBar.setProgress(100 - currentPercentage);
-                        if(currentPercentage == 100)
+                        status = blindsState.getStatus();
+                        currentLevel = blindsState.getCurrentLevel();
+                        currentLevelProgressBar.setProgress(currentLevel);
+                        level = blindsState.getLevel();
+                        levelTextView.setText(level + "%");
+                        levelSeekBar.setMax(100);
+                        levelSeekBar.setProgress(level);
+                        if(currentLevel == level)
                             closeButton.setEnabled(false);
-                        else if(currentPercentage == 0)
+                        else if(currentLevel == 0)
                             openButton.setEnabled(false);
                     }
                 } else {
@@ -81,7 +96,7 @@ public class BlindsControllerFragment extends Fragment {
         });
 
 
-        percentageSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        levelSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 // ACA PODRIA LLAMAR A LA API EN TIEMPO REAL PERO ES UNA LOCURA
@@ -93,9 +108,16 @@ public class BlindsControllerFragment extends Fragment {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                setPercentage(percentageSeekBar.getProgress());
+                setLevel(levelSeekBar.getProgress());
             }
         });
+    }
+
+    private void readBundle(Bundle bundle) {
+        if (bundle != null) {
+            deviceId = bundle.getString("deviceId");
+            positionInRecyclerView = bundle.getInt("positionInRecyclerView");
+        }
     }
 
     private <T> void handleError(@NonNull Response<T> response) {
@@ -111,15 +133,20 @@ public class BlindsControllerFragment extends Fragment {
         Toast.makeText(getContext(), "OOPS! THERE'S A PROBLEM ON OUR SIDE :(", Toast.LENGTH_LONG).show();
     }
 
-    private void readBundle(Bundle bundle) {
-        if (bundle != null) {
-            deviceId = bundle.getString("deviceId");
-            positionInRecyclerView = bundle.getInt("positionInRecyclerView");
-        }
+    @NonNull
+    public static BlindsControllerFragment newInstance(String deviceId, int positionInRecyclerView) {
+        Bundle bundle = new Bundle();
+        bundle.putString("deviceId", deviceId);
+        bundle.putInt("positionInRecyclerView", positionInRecyclerView);
+
+        BlindsControllerFragment fragment = new BlindsControllerFragment();
+        fragment.setArguments(bundle);
+
+        return fragment;
     }
 
     private void openBlinds(View view) {
-        if(currentPercentage == 0) {
+        if(currentLevel == 0) {
             Toast.makeText(getContext(),"ALREADY FULLY OPEN!", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -131,10 +158,12 @@ public class BlindsControllerFragment extends Fragment {
                     Result<Boolean> result = response.body();
                     if(result != null) {
                         Toast.makeText(getContext(),"OPENING COMPLETELY", Toast.LENGTH_SHORT).show();
-                        currentPercentage = 0;
-                        percentageSeekBar.setProgress(100);
+                        currentLevel = 0;
+                        currentLevelProgressBar.setProgress(0);
                         closeButton.setEnabled(true);
                         openButton.setEnabled(false);
+                        status = "opened";
+//                        updateProgressBar();
                     }
                 } else {
                     handleError(response);
@@ -149,8 +178,8 @@ public class BlindsControllerFragment extends Fragment {
     }
 
     private void closeBlinds(View view) {
-        if(currentPercentage == 100) {
-            Toast.makeText(getContext(),"ALREADY FULLY CLOSED!", Toast.LENGTH_SHORT).show();
+        if(currentLevel == level) {
+            Toast.makeText(getContext(),"ALREADY CLOSED TO MAX LEVEL!", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -161,10 +190,12 @@ public class BlindsControllerFragment extends Fragment {
                     Result<Boolean> result = response.body();
                     if(result != null) {
                         Toast.makeText(getContext(),"CLOSING COMPLETELY", Toast.LENGTH_SHORT).show();
-                        currentPercentage = 100;
-                        percentageSeekBar.setProgress(0);
+                        currentLevel = level;
+                        currentLevelProgressBar.setProgress(level);
                         closeButton.setEnabled(false);
                         openButton.setEnabled(true);
+                        status = "closed";
+//                        updateProgressBar();
                     }
                 } else {
                     handleError(response);
@@ -178,52 +209,79 @@ public class BlindsControllerFragment extends Fragment {
         });
     }
 
-    private void setPercentage(int newPercentage) {         // todo: DOESN'T WORK
-        if((currentPercentage == 100 && newPercentage == 0) || (currentPercentage == 0 && newPercentage == 100))
+    private void setLevel(int newLevel) {
+        if(newLevel == level)
             return;
-        if(newPercentage == 100)
-            openBlinds(getView());
-        else if(newPercentage == 0)
-            closeBlinds(getView());
-        else {
-            api.setBlindsLevel(deviceId, newPercentage, new Callback<Result<Integer>>() {
-                @Override
-                public void onResponse(Call<Result<Integer>> call, Response<Result<Integer>> response) {
-                    if(response.isSuccessful()) {
-                        Result<Integer> result = response.body();
-                        if(result != null) {
-                            Toast.makeText(getContext(),"OPENING AT PERCENTAGE " + newPercentage, Toast.LENGTH_SHORT).show();
-                            currentPercentage = newPercentage;
-                            percentageSeekBar.setProgress(newPercentage);
-                            closeButton.setEnabled(true);
-                            openButton.setEnabled(true);
-                        }
-                    } else {
-                        handleError(response);
+
+        if(status.equals("closed"))
+            currentLevelProgressBar.setProgress(newLevel);
+
+        levelTextView.setText(newLevel + "%");
+
+        api.setBlindsLevel(deviceId, newLevel, new Callback<Result<Integer>>() {
+            @Override
+            public void onResponse(Call<Result<Integer>> call, Response<Result<Integer>> response) {
+                if(response.isSuccessful()) {
+                    Result<Integer> result = response.body();
+                    if(result != null) {
+                        Toast.makeText(getContext(),"NEW MAX LEVEL SET AT  " + newLevel + "%", Toast.LENGTH_SHORT).show();
+                        level = newLevel;
                     }
+                } else {
+                    handleError(response);
                 }
+            }
 
-                @Override
-                public void onFailure(Call<Result<Integer>> call, Throwable t) {
-                    handleUnexpectedError(t);
-                }
-            });
-        }
-
-
-
+            @Override
+            public void onFailure(Call<Result<Integer>> call, Throwable t) {
+                handleUnexpectedError(t);
+            }
+        });
     }
 
-    @NonNull
-    public static BlindsControllerFragment newInstance(String deviceId, int positionInRecyclerView) {
-        Bundle bundle = new Bundle();
-        bundle.putString("deviceId", deviceId);
-        bundle.putInt("positionInRecyclerView", positionInRecyclerView);
+    private void updateProgressBar() {  // todo: DOESN'T WORK
 
-        BlindsControllerFragment fragment = new BlindsControllerFragment();
-        fragment.setArguments(bundle);
 
-        return fragment;
+        new Thread(() -> {
+            final boolean[] keepOnUpdating = {true};
+
+            while(keepOnUpdating[0]) {
+                api.getBlindsState(deviceId, new Callback<Result<BlindsState>>() {
+                    @Override
+                    public void onResponse(Call<Result<BlindsState>> call, Response<Result<BlindsState>> response) {
+                        if(response.isSuccessful()) {
+                            Result<BlindsState> result = response.body();
+                            if(result != null) {
+                                BlindsState blindsState = result.getResult();
+                                currentLevel = blindsState.getCurrentLevel();
+                                levelSeekBar.setProgress(currentLevel);
+                                if(currentLevel == 0) {
+                                    closeButton.setEnabled(true);
+                                    openButton.setEnabled(false);
+                                    keepOnUpdating[0] = false;
+                                } else if(currentLevel == level) {
+                                    closeButton.setEnabled(false);
+                                    openButton.setEnabled(true);
+                                    keepOnUpdating[0] = false;
+                                }
+                                try {
+                                    Thread.sleep(1000);
+                                } catch (Exception e) {
+                                    System.out.println("ERROR SLEEPING WHEN UPDATING SEEKBAR: " + e);
+                                }
+                            }
+                        } else {
+                            handleError(response);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Result<BlindsState>> call, Throwable t) {
+                        handleUnexpectedError(t);
+                    }
+                });
+            }
+        }).start();
     }
 }
 

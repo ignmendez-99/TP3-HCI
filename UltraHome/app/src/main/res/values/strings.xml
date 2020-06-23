@@ -14,5 +14,47 @@
     <string name="delete_button">Delete</string>
     <string name="done_button">Done</string>
 
+    <string-array name="units">
+        <item>ml</item>
+        <item>cl</item>
+        <item>dl</item>
+        <item>l</item>
+        <item>dal</item>
+        <item>hl</item>
+        <item>kl</item>
+    </string-array>
+
+    <string-array name="fridge_temps">
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+    </string-array>
+
+    <string-array name="freezer_temps">
+        <item>-20</item>
+        <item>-19</item>
+        <item>-18</item>
+        <item>-17</item>
+        <item>-16</item>
+        <item>-15</item>
+        <item>-14</item>
+        <item>-13</item>
+        <item>-12</item>
+        <item>-11</item>
+        <item>-10</item>
+        <item>-9</item>
+        <item>-8</item>
+    </string-array>
+
+    <string-array name="refrigerator_modes">
+        <item>DEFAULT</item>
+        <item>VACATION</item>
+        <item>PARTY</item>
+    </string-array>
+
     <string name="delete_device_confirmation">Are you sure you want to delete the device?</string>
 </resources>

@@ -16,7 +16,6 @@ import com.example.ultrahome.R;
 import com.example.ultrahome.apiConnection.ApiClient;
 import com.example.ultrahome.apiConnection.entities.Error;
 import com.example.ultrahome.apiConnection.entities.Result;
-import com.example.ultrahome.apiConnection.entities.deviceEntities.DeviceState;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.door.DoorState;
 
 import retrofit2.Call;
@@ -43,12 +42,14 @@ public class DoorControllerFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         readBundle(getArguments());
 
+        init(getView());
+    }
+
+    public void init(View view) {
         api = ApiClient.getInstance();
 
         openCloseSwitch = view.findViewById(R.id.open_switch);
         lockUnlockSwitch = view.findViewById(R.id.lock_switch);
-
-
 
         api.getDoorState(deviceId, new Callback<Result<DoorState>>() {
             @Override
@@ -94,8 +95,13 @@ public class DoorControllerFragment extends Fragment {
                 handleUnexpectedError(t);
             }
         });
+    }
 
-
+    private void readBundle(Bundle bundle) {
+        if (bundle != null) {
+            deviceId = bundle.getString("deviceId");
+            positionInRecyclerView = bundle.getInt("positionInRecyclerView");
+        }
     }
 
     private <T> void handleError(@NonNull Response<T> response) {
@@ -111,11 +117,16 @@ public class DoorControllerFragment extends Fragment {
         Toast.makeText(getContext(), "OOPS! THERE'S A PROBLEM ON OUR SIDE :(", Toast.LENGTH_LONG).show();
     }
 
-    private void readBundle(Bundle bundle) {
-        if (bundle != null) {
-            deviceId = bundle.getString("deviceId");
-            positionInRecyclerView = bundle.getInt("positionInRecyclerView");
-        }
+    @NonNull
+    public static DoorControllerFragment newInstance(String deviceId, int positionInRecyclerView) {
+        Bundle bundle = new Bundle();
+        bundle.putString("deviceId", deviceId);
+        bundle.putInt("positionInRecyclerView", positionInRecyclerView);
+
+        DoorControllerFragment fragment = new DoorControllerFragment();
+        fragment.setArguments(bundle);
+
+        return fragment;
     }
 
     private void openDoor() {
@@ -235,18 +246,6 @@ public class DoorControllerFragment extends Fragment {
                 handleUnexpectedError(t);
             }
         });
-    }
-
-    @NonNull
-    public static DoorControllerFragment newInstance(String deviceId, int positionInRecyclerView) {
-        Bundle bundle = new Bundle();
-        bundle.putString("deviceId", deviceId);
-        bundle.putInt("positionInRecyclerView", positionInRecyclerView);
-
-        DoorControllerFragment fragment = new DoorControllerFragment();
-        fragment.setArguments(bundle);
-
-        return fragment;
     }
 }
 

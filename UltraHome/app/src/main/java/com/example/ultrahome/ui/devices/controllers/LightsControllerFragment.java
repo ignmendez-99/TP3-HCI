@@ -1,31 +1,52 @@
 package com.example.ultrahome.ui.devices.controllers;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 
 import com.example.ultrahome.R;
+import com.example.ultrahome.apiConnection.ApiClient;
+import com.example.ultrahome.apiConnection.entities.Error;
+import com.example.ultrahome.apiConnection.entities.Result;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.lights.LightState;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class LightsControllerFragment extends Fragment {
 
     private Switch onOffSwitch;
-    private TextView onOffText;
     private SeekBar brightnessSeekBar;
-    private CardView colorSelector;
-    private int[] colorRGB;
+    private TextView brightnessTextView;
+    private Button redBtn, greenBtn, blueBtn, yellowBtn, warmWhiteBtn, purpleBtn, darkGreenBtn, orangeBtn, violetBtn, coolWhiteBtn, whiteBtn, lightGreyBtn, greyBtn, darkGreyBtn, blackBtn;
+    private Button colorDisplay;
+
+    private ApiClient api;
+
+    private int currentBrightness;
+    private boolean isOn, firstTime = true;
+    private String currentColor;
+
+
     private String deviceId;
     private int positionInRecyclerView;
+
+    private Map<String, Integer> colors;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_lights_controller, container, false);
@@ -34,53 +55,155 @@ public class LightsControllerFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        onOffSwitch = view.findViewById(R.id.lights_switch);
-        onOffText = view.findViewById(R.id.lights_state_text);
-        brightnessSeekBar = view.findViewById(R.id.brightness_seekbar);
-        colorSelector = view.findViewById(R.id.lights_color_selector);
-
         readBundle(getArguments());
 
-        // todo: this should look for data in the DataBase !!!!!
-        updateState();
+        init(getView());
+    }
+
+    private void initializeColorButtons(View view) {
+        redBtn = view.findViewById(R.id.red_color_button);
+        greenBtn = view.findViewById(R.id.green_color_button);
+        blueBtn = view.findViewById(R.id.blue_color_button);
+        yellowBtn = view.findViewById(R.id.yellow_color_button);
+        warmWhiteBtn = view.findViewById(R.id.warmWhite_color_button);
+        purpleBtn = view.findViewById(R.id.purple_color_button);
+        darkGreenBtn = view.findViewById(R.id.darkGreen_color_button);
+        orangeBtn = view.findViewById(R.id.orange_color_button);
+        violetBtn = view.findViewById(R.id.violet_color_button);
+        coolWhiteBtn = view.findViewById(R.id.coolWhite_color_button);
+        whiteBtn = view.findViewById(R.id.white_color_button);
+        lightGreyBtn = view.findViewById(R.id.lighGrey_color_button);
+        greyBtn = view.findViewById(R.id.grey_color_button);
+        darkGreyBtn = view.findViewById(R.id.darkGrey_color_button);
+        blackBtn = view.findViewById(R.id.black_color_button);
+
+        redBtn.setOnClickListener(v -> {
+            changeColor(v, "#F44336");
+        });
+        greenBtn.setOnClickListener(v -> {
+            changeColor(v, "#4CFF00");
+        });
+        blueBtn.setOnClickListener(v -> {
+            changeColor(v, "#0036FF");
+        });
+        yellowBtn.setOnClickListener(v -> {
+            changeColor(v, "#FFDD00");
+        });
+        warmWhiteBtn.setOnClickListener(v -> {
+            changeColor(v, "#FFFADA");
+        });
+        purpleBtn.setOnClickListener(v -> {
+            changeColor(v, "#9C27B0");
+        });
+        darkGreenBtn.setOnClickListener(v -> {
+            changeColor(v, "#39813C");
+        });
+        orangeBtn.setOnClickListener(v -> {
+            changeColor(v, "#FF9800");
+        });
+        violetBtn.setOnClickListener(v -> {
+            changeColor(v, "#673AB7");
+        });
+        coolWhiteBtn.setOnClickListener(v -> {
+            changeColor(v, "#E9F8FF");
+        });
+        whiteBtn.setOnClickListener(v -> {
+            changeColor(v, "#FFFFFF");
+        });
+        lightGreyBtn.setOnClickListener(v -> {
+            changeColor(v, "#D8D8D8");
+        });
+        greyBtn.setOnClickListener(v -> {
+            changeColor(v, "#939393");
+        });
+        darkGreyBtn.setOnClickListener(v -> {
+            changeColor(v, "#4E4E4E");
+        });
+        blackBtn.setOnClickListener(v -> {
+            changeColor(v, "#000000");
+        });
+
+        colors = new HashMap<>();
+
+        colors.put("#F44336", 0xFFF44336);
+        colors.put("#4CFF00", 0xFF4CFF00);
+        colors.put("#0036FF", 0xFF0036FF);
+        colors.put("#FFDD00", 0xFFFFDD00);
+        colors.put("#FFFADA", 0xFFFFFADA);
+        colors.put("#9C27B0", 0xFF9C27B0);
+        colors.put("#39813C", 0xFF39813C);
+        colors.put("#FF9800", 0xFFFF9800);
+        colors.put("#673AB7", 0xFF673AB7);
+        colors.put("#E9F8FF", 0xFFE9F8FF);
+        colors.put("#FFFFFF", 0xFFFFFFFF);
+        colors.put("#D8D8D8", 0xFFD8D8D8);
+        colors.put("#939393", 0xFF939393);
+        colors.put("#4E4E4E", 0xFF4E4E4E);
+        colors.put("#000000", 0xFF000000);
+    }
+
+    public void init(View view) {
+        initializeColorButtons(view);
+
+        onOffSwitch = view.findViewById(R.id.onOff_Switch);
+        brightnessSeekBar = view.findViewById(R.id.brightness_seekbar);
+        brightnessTextView = view.findViewById(R.id.brightness_textView);
+
+        colorDisplay = view.findViewById(R.id.color_show);
+
+        api = ApiClient.getInstance();
+
+        api.getLightState(deviceId, new Callback<Result<LightState>>() {
+            @Override
+            public void onResponse(Call<Result<LightState>> call, Response<Result<LightState>> response) {
+                if(response.isSuccessful()) {
+                    Result<LightState> result = response.body();
+                    if(result != null) {
+                        LightState lightState = result.getResult();
+
+                        currentBrightness = lightState.getBrightness();
+                        brightnessTextView.setText(currentBrightness + "%");
+                        brightnessSeekBar.setProgress(currentBrightness);
+
+                        isOn = lightState.isOn();
+                        onOffSwitch.setChecked(isOn);
+
+                        currentColor = lightState.getColor();
+                        colorDisplay.setBackgroundColor(colors.get(currentColor));
+
+                        firstTime = false;
+                    }
+                } else {
+                    handleError(response);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Result<LightState>> call, Throwable t) {
+                handleUnexpectedError(t);
+            }
+        });
 
         brightnessSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            int progressChangedValue = 0;
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                progressChangedValue = progress;
+                //
             }
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                // nothing
+                //
             }
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                // todo: call DataBase and update brightness !!!
+                if(!firstTime)
+                    changeBrightness();
             }
         });
 
-        onOffSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                changeTextDependingOnState();
-            }
+        onOffSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if(!firstTime)
+                turnOnOrOff();
         });
-    }
-
-    // HARDCODEADO
-    private void updateState() {
-        changeTextDependingOnState();
-    }
-
-    // HARDCODEADO
-    private void changeTextDependingOnState() {
-        if(onOffSwitch.isChecked()) {
-            onOffText.setText("ON");
-        } else {
-            onOffText.setText("OFF");
-        }
     }
 
     private void readBundle(Bundle bundle) {
@@ -88,6 +211,19 @@ public class LightsControllerFragment extends Fragment {
             deviceId = bundle.getString("deviceId");
             positionInRecyclerView = bundle.getInt("positionInRecyclerView");
         }
+    }
+
+    private <T> void handleError(@NonNull Response<T> response) {
+        Error error = ApiClient.getInstance().getError(response.errorBody());
+        String text = "ERROR" + error.getDescription().get(0) + error.getCode();
+        Log.e("com.example.ultrahome", text);
+        Toast.makeText(getContext(), "OOPS! AN UNEXPECTED ERROR OCURRED :(", Toast.LENGTH_LONG).show();
+    }
+
+    private void handleUnexpectedError(@NonNull Throwable t) {
+        String LOG_TAG = "com.example.ultrahome";
+        Log.e(LOG_TAG, t.toString());
+        Toast.makeText(getContext(), "OOPS! THERE'S A PROBLEM ON OUR SIDE :(", Toast.LENGTH_LONG).show();
     }
 
     @NonNull
@@ -101,4 +237,104 @@ public class LightsControllerFragment extends Fragment {
 
         return fragment;
     }
+
+    private void changeColor(View view, String newColor) {
+        if(currentColor == newColor)
+            return;
+        api.setLightColor(deviceId, newColor, new Callback<Result<String>>() {
+            @Override
+            public void onResponse(Call<Result<String>> call, Response<Result<String>> response) {
+                if(response.isSuccessful()) {
+                    Result<String> result = response.body();
+                    if(result != null) {
+                        currentColor = newColor;
+                        System.out.println("CURRENT COLOR: " + currentColor);
+                        colorDisplay.setBackgroundColor(colors.get(currentColor));
+                        Toast.makeText(getContext(),"COLOR CHANGED!", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    handleError(response);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Result<String>> call, Throwable t) {
+                handleUnexpectedError(t);
+            }
+        });
+
+    }
+
+    public void changeBrightness() {
+        if(currentBrightness == brightnessSeekBar.getProgress())
+            return;
+        api.setLightBrightness(deviceId, brightnessSeekBar.getProgress(), new Callback<Result<Integer>>() {
+            @Override
+            public void onResponse(Call<Result<Integer>> call, Response<Result<Integer>> response) {
+                if(response.isSuccessful()) {
+                    Result<Integer> result = response.body();
+                    if(result != null) {
+                        currentBrightness = brightnessSeekBar.getProgress();
+                        brightnessTextView.setText(currentBrightness + "%");
+                        Toast.makeText(getContext(),"BRGIHTNESS SET TO " + brightnessSeekBar.getProgress(), Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    handleError(response);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Result<Integer>> call, Throwable t) {
+                handleUnexpectedError(t);
+            }
+        });
+
+    }
+
+    public void turnOnOrOff() {
+        if(!isOn) {
+            api.turnOnLight(deviceId, new Callback<Result<Boolean>>() {
+                @Override
+                public void onResponse(Call<Result<Boolean>> call, Response<Result<Boolean>> response) {
+                    if(response.isSuccessful()) {
+                        Result<Boolean> result = response.body();
+                        if(result != null) {
+                            Toast.makeText(getContext(),"TURNED ON", Toast.LENGTH_SHORT).show();
+                            isOn = true;
+                        }
+                    } else {
+                        handleError(response);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Result<Boolean>> call, Throwable t) {
+                    handleUnexpectedError(t);
+                }
+            });
+        } else {
+            api.turnOffLight(deviceId, new Callback<Result<Boolean>>() {
+                @Override
+                public void onResponse(Call<Result<Boolean>> call, Response<Result<Boolean>> response) {
+                    if(response.isSuccessful()) {
+                        Result<Boolean> result = response.body();
+                        if(result != null) {
+                            Toast.makeText(getContext(),"TURNED OFF", Toast.LENGTH_SHORT).show();
+                            isOn = false;
+                        }
+                    } else {
+                        handleError(response);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Result<Boolean>> call, Throwable t) {
+                    handleUnexpectedError(t);
+                }
+            });
+        }
+
+    }
+
+
 }

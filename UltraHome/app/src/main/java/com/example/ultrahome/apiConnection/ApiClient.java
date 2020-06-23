@@ -5,15 +5,19 @@ import com.example.ultrahome.apiConnection.entities.deviceEntities.DeviceState;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.blinds.BlindsState;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.door.Door;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.door.DoorState;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.faucet.FaucetState;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.lights.LightState;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.lights.Lights;
 import com.example.ultrahome.apiConnection.entities.Error;
 import com.example.ultrahome.apiConnection.entities.ErrorResult;
 import com.example.ultrahome.apiConnection.entities.Home;
 import com.example.ultrahome.apiConnection.entities.Result;
 import com.example.ultrahome.apiConnection.entities.Room;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.refrigerator.RefrigeratorState;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.ResponseBody;
@@ -215,8 +219,113 @@ public class ApiClient {
         return call;
     }
 
-    public Call<Result<Integer>> setBlindsLevel(String deviceId, int newLevel, Callback<Result<Integer>> callback) {
-        Call<Result<Integer>> call = this.service.changeBlindsLevel(deviceId, "setLevel");
+    public Call<Result<Integer>> setBlindsLevel(String deviceId, Integer newLevel, Callback<Result<Integer>> callback) {
+        Integer [] aux = new Integer[1];
+        aux[0] = newLevel;
+
+        Call<Result<Integer>> call = this.service.changeBlindsLevel(deviceId, "setLevel", aux);
+        call.enqueue(callback);
+        return call;
+    }
+
+    ////////////// FAUCET CALLS ////////////////////
+
+    public Call<Result<FaucetState>> getFaucetState(String deviceId, Callback<Result<FaucetState>> callback) {
+        Call<Result<FaucetState>> call = this.service.getFaucetState(deviceId);
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<Boolean>> openFaucet(String deviceId, Callback<Result<Boolean>> callback) {
+        Call<Result<Boolean>> call = this.service.openOrCloseFaucet(deviceId, "open");
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<Boolean>> closeFaucet(String deviceId, Callback<Result<Boolean>> callback) {
+        Call<Result<Boolean>> call = this.service.openOrCloseFaucet(deviceId, "close");
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<Boolean>> dispenseExactAmount(String deviceId, Integer amount, String unit, Callback<Result<Boolean>> callback) {    // TODO: FIX THIS WITH HELP OF ENGINEER ALBERTO
+        ArrayList<Object> aux = new ArrayList<>();
+        aux.add(amount);
+        aux.add(unit);
+        Call<Result<Boolean>> call = this.service.dispenseExactAmount(deviceId, "setLevel", aux);
+        call.enqueue(callback);
+        return call;
+    }
+
+    ////////////// REFRIGERATOR CALLS ////////////////////
+
+    public Call<Result<RefrigeratorState>> getRefrigeratorState(String deviceId, Callback<Result<RefrigeratorState>> callback) {
+        Call<Result<RefrigeratorState>> call = this.service.getRefrigeratorState(deviceId);
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<Boolean>> changeRefrigeratorMode(String deviceId, String newMode, Callback<Result<Boolean>> callback) {
+        String [] aux = new String[1];
+        aux[0] = newMode;
+
+        Call<Result<Boolean>> call = this.service.changeRefrigeratorMode(deviceId, "setMode", aux);
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<Integer>> setFridgeTemp(String deviceId, Integer newTemp, Callback<Result<Integer>> callback) {
+        Integer [] aux = new Integer[1];
+        aux[0] = newTemp;
+
+        Call<Result<Integer>> call = this.service.setFridgeTemp(deviceId, "setTemperature", aux);
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<Integer>> setFreezerTemp(String deviceId, Integer newTemp, Callback<Result<Integer>> callback) {
+        Integer [] aux = new Integer[1];
+        aux[0] = newTemp;
+
+        Call<Result<Integer>> call = this.service.setFreezerTemp(deviceId, "setFreezerTemperature", aux);
+        call.enqueue(callback);
+        return call;
+    }
+
+    ////////////// LIGHT CALLS ////////////////////
+
+    public Call<Result<LightState>> getLightState(String deviceId, Callback<Result<LightState>> callback) {
+        Call<Result<LightState>> call = this.service.getLightState(deviceId);
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<Boolean>> turnOnLight(String deviceId, Callback<Result<Boolean>> callback) {
+        Call<Result<Boolean>> call = this.service.turnOnOrOffLight(deviceId, "turnOn");
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<Boolean>> turnOffLight(String deviceId, Callback<Result<Boolean>> callback) {
+        Call<Result<Boolean>> call = this.service.turnOnOrOffLight(deviceId, "turnOff");
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<Integer>> setLightBrightness(String deviceId, Integer newBrightness, Callback<Result<Integer>> callback) {
+        Integer [] aux = new Integer[1];
+        aux[0] = newBrightness;
+
+        Call<Result<Integer>> call = this.service.setLightBrightness(deviceId, "setBrightness", aux);
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<String>> setLightColor(String deviceId, String newColor, Callback<Result<String>> callback) {
+        String [] aux = new String[1];
+        aux[0] = newColor;
+
+        Call<Result<String>> call = this.service.setLightColor(deviceId, "setColor", aux);
         call.enqueue(callback);
         return call;
     }

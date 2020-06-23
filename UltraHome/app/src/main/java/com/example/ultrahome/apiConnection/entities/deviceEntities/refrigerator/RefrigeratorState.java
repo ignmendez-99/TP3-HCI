@@ -17,4 +17,16 @@ public class RefrigeratorState extends DeviceState {
     @SerializedName("mode")
     @Expose
     private String mode;
+
+    public Integer getFreezerTemperature() {
+        return freezerTemperature;
+    }
+
+    public Integer getTemperature() {
+        return temperature;
+    }
+
+    public String getMode() {
+        return mode;
+    }
 }
