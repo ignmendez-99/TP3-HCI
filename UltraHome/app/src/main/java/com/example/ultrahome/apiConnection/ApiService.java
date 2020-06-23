@@ -13,6 +13,7 @@ import com.example.ultrahome.apiConnection.entities.deviceEntities.door.DoorStat
 import com.example.ultrahome.apiConnection.entities.deviceEntities.faucet.FaucetState;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.lights.LightState;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.refrigerator.RefrigeratorState;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.vacuum.VacuumState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -199,4 +200,22 @@ public interface ApiService {
     @PUT("devices/{deviceId}/{actionName}")
     @Headers("Content-Type: application/json")
     Call<Result<String>> setLightColor(@Path("deviceId") String deviceId, @Path("actionName") String actionName, @Body String [] data);
+
+    ////////////// VACUUM CONTROLS ////////////////////
+
+    @GET("devices/{deviceId}/state")
+    Call<Result<VacuumState>> getVacuumState(@Path("deviceId") String deviceId);
+
+    @PUT("devices/{deviceId}/{actionName}")
+    @Headers("Content-Type: application/json")
+    Call<Result<Boolean>> startPauseOrDockVacuum(@Path("deviceId") String deviceId, @Path("actionName") String actionName);
+
+    @PUT("devices/{deviceId}/{actionName}")
+    @Headers("Content-Type: application/json")
+    Call<Result<String>> setVacuumMode(@Path("deviceId") String deviceId, @Path("actionName") String actionName);
+
+    @PUT("devices/{deviceId}/{actionName}")
+    @Headers("Content-Type: application/json")
+    Call<Result<String>> setVacuumLocation(@Path("deviceId") String deviceId, @Path("actionName") String actionName, @Body String [] data);
+
 }

@@ -6,6 +6,24 @@ import com.google.gson.annotations.SerializedName;
 
 public class VacuumState extends DeviceState {
 
+    private class Location {
+        @SerializedName("id")
+        @Expose
+        private String id;
+
+        @SerializedName("name")
+        @Expose
+        private String name;
+
+        public String getId() {
+            return id;
+        }
+
+        public String getName() {
+            return name;
+        }
+    }
+
     @SerializedName("status")
     @Expose
     private String status;
@@ -20,5 +38,21 @@ public class VacuumState extends DeviceState {
 
     @SerializedName("location")
     @Expose
-    private Integer location;
+    private Location location;
+
+    public String getStatus() {
+        return status;
+    }
+
+    public String getMode() {
+        return mode;
+    }
+
+    public Integer getBatteryLevel() {
+        return batteryLevel;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
 }

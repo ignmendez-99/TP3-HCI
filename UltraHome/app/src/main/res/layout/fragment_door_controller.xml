@@ -9,17 +9,17 @@
         android:id="@+id/open_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
         app:layout_constraintBottom_toBottomOf="@+id/textView2"
-        app:layout_constraintStart_toEndOf="@+id/textView2"
+        app:layout_constraintStart_toStartOf="@+id/lock_switch"
         app:layout_constraintTop_toTopOf="@+id/textView2" />
 
     <Switch
         android:id="@+id/lock_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
         app:layout_constraintBottom_toBottomOf="@+id/textView5"
-        app:layout_constraintStart_toStartOf="@+id/open_switch"
+        app:layout_constraintStart_toEndOf="@+id/textView5"
         app:layout_constraintTop_toTopOf="@+id/textView5" />
 
     <TextView
@@ -28,7 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="48dp"
-        android:text="Open"
+        android:text="@string/open_string"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -37,7 +37,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:text="Close"
+        android:text="@string/close_string"
         app:layout_constraintBottom_toBottomOf="@+id/open_switch"
         app:layout_constraintStart_toEndOf="@+id/open_switch"
         app:layout_constraintTop_toTopOf="@+id/open_switch" />
@@ -47,7 +47,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:text="Lock"
+        android:text="@string/lock_string"
         app:layout_constraintBottom_toBottomOf="@+id/lock_switch"
         app:layout_constraintStart_toEndOf="@+id/lock_switch"
         app:layout_constraintTop_toTopOf="@+id/lock_switch" />
@@ -58,7 +58,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="48dp"
-        android:text="Unlock"
+        android:text="@string/unlock_string"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView2" />
 </androidx.constraintlayout.widget.ConstraintLayout>

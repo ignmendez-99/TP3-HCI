@@ -17,6 +17,7 @@ import com.example.ultrahome.apiConnection.entities.Home;
 import com.example.ultrahome.apiConnection.entities.Result;
 import com.example.ultrahome.apiConnection.entities.Room;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.refrigerator.RefrigeratorState;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.vacuum.VacuumState;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -36,7 +37,7 @@ public class ApiClient {
     private static ApiClient instance = null;
     // Use IP 10.0.2.2 instead of 127.0.0.1 when running Android emulator in the
     // same computer that runs the API.
-    private final String BaseURL = "http://10.0.2.2:8081/api/";
+    private final String BaseURL = "http://10.0.2.2:8080/api/";
 
     private ApiClient() {
         retrofit = new Retrofit.Builder()
@@ -375,6 +376,53 @@ public class ApiClient {
         aux[0] = newColor;
 
         Call<Result<String>> call = this.service.setLightColor(deviceId, "setColor", aux);
+        call.enqueue(callback);
+        return call;
+    }
+
+    ////////////// VACUUM CALLS ////////////////////
+
+    public Call<Result<VacuumState>> getVacuumState(String deviceId, Callback<Result<VacuumState>> callback) {
+        Call<Result<VacuumState>> call = this.service.getVacuumState(deviceId);
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<String>> setVacuumMode(String deviceId, String newMode, Callback<Result<String>> callback) {
+        String [] aux = new String[1];
+        aux[0] = newMode;
+
+        Call<Result<String>> call = this.service.setLightColor(deviceId, "setMode", aux);
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<String>> setVacuumState(String deviceId, String newState, Callback<Result<String>> callback) {
+        Call<Result<String>> call;
+        switch (newState) {
+            case "start":
+                call = this.service.setVacuumMode(deviceId, "start");
+                break;
+            case "pause":
+                call = this.service.setVacuumMode(deviceId, "pause");
+                break;
+            case "dock":
+                call = this.service.setVacuumMode(deviceId, "dock");
+                break;
+            default:
+                call = this.service.setVacuumMode(deviceId, "start");
+                break;
+
+        }
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<String>> setVacuumLocation(String deviceId, String newLocation, Callback<Result<String>> callback) {
+        String [] aux = new String[1];
+        aux[0] = newLocation;
+
+        Call<Result<String>> call = this.service.setLightColor(deviceId, "setLocation", aux);
         call.enqueue(callback);
         return call;
     }
