@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -26,6 +27,7 @@ import com.example.ultrahome.apiConnection.entities.Error;
 import com.example.ultrahome.apiConnection.entities.Result;
 import com.example.ultrahome.apiConnection.entities.Routine.ActionsItem;
 import com.example.ultrahome.apiConnection.entities.Routine.Routine;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.Device;
 import com.example.ultrahome.ui.homes.HomesAdapterGrid;
 import com.example.ultrahome.ui.homes.HomesAdapterLinear;
 import com.example.ultrahome.ui.rooms.SwipeToDeleteRoomCallback;
@@ -33,6 +35,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,18 +50,20 @@ public class RoutinesFragment extends Fragment {
     private RecyclerView recyclerView;
     private Integer positionToDelete;
     private LinearLayoutManager layoutManager;
+    private LinearLayout executeEditLayout;
     private GridLayoutManager gridLayoutManager;
     private RoutinesAdapter adapter;
 
     private List<String> routineNames;
     private List<String> routineIds;
     private List<String> routineNamesBackupBeforeDeleting;
+    private List<Routine> routines;
 
     private ApiClient api;
     private Snackbar deletingRoutineSnackbar;
 
-    LinearLayout layout;
-    Button expand_button;
+    private LinearLayout layout;
+
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_routines, container, false);
@@ -73,8 +78,10 @@ public class RoutinesFragment extends Fragment {
         routineNamesBackupBeforeDeleting = new ArrayList<>();
         api = ApiClient.getInstance();
 
+        routines = new ArrayList<>();
 
         buttonAddRoutine = view.findViewById(R.id.button_add_routine);
+
         buttonAddRoutine.setOnClickListener(this::showAddRoutineDialog);
 
         recyclerView = view.findViewById(R.id.routines_recycler_view);
@@ -104,25 +111,25 @@ public class RoutinesFragment extends Fragment {
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteRoutineCallback(adapter));
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
-//        expand_button = view.findViewById(R.id.button_expand);
-//        layout = view.findViewById(R.id.expanded_layout);
-//
-//        expand_button.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if(layout.getVisibility()==View.GONE){
-//                    layout.setVisibility(View.VISIBLE);
-//                    expand_button.setBackgroundResource(R.drawable.ic_keyboard_arrow_up_black_24dp);
-//                }
-//                else{
-//                    layout.setVisibility(View.GONE);
-//                    expand_button.setBackgroundResource(R.drawable.ic_keyboard_arrow_down_black_24dp);
-//                }
-//            }
-//        });
+    }
+
+    public void execute(View v, int position){
+        String idOfRoutineClicked = routineIds.get(position);
+        executeRoutine(v, idOfRoutineClicked);
 
     }
 
+    public void expand(View v, TextView textview, int position){
+        String idOfRoutineClicked = routineIds.get(position);
+        String routineDescription = "";
+        Routine routineClicked = routines.get(position);
+        for(ActionsItem actions : routineClicked.getActions()){
+            String deviceName = actions.getDevice().getName();
+            String actionName = actions.getActionName();
+            routineDescription = routineDescription + "\n" + deviceName + " --> " + actionName;
+        }
+        textview.setText(routineDescription);
+    }
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         // call superclass to save any view hierarchy
@@ -248,6 +255,7 @@ public class RoutinesFragment extends Fragment {
                         for (Routine h: homeList) {
                             routineIds.add(h.getId());
                             routineNames.add(h.getName());
+                            routines.add(h);
                             adapter.notifyItemInserted(routineNames.size() - 1);
                         }
                     } else
@@ -263,6 +271,36 @@ public class RoutinesFragment extends Fragment {
         });
     }
 
+    public void executeRoutine(View v, String routineId){
+        api.executeRoutine(routineId, new Callback<Result<List<Boolean>>>() {
+            @Override
+            public void onResponse(Call<Result<List<Boolean>>> call, Response<Result<List<Boolean>>> response) {
+                if(response.isSuccessful()){
+                    Result<List<Boolean>> result = response.body();
+                    List<Boolean> resultRoutine = result.getResult();
+                    Boolean notFail = true;
+                    for(Boolean actionResult : resultRoutine){
+                        if(!actionResult){
+                            notFail = false;
+                        }
+                    }
+                    if(notFail){
+                        Toast.makeText(getContext(), "Routine Executed", Toast.LENGTH_SHORT);
+                    }
+                    else{
+                        Toast.makeText(getContext(), "Routine Fail", Toast.LENGTH_SHORT);
+                    }
+                }else{
+                    handleError(response);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Result<List<Boolean>>> call, Throwable t) {
+                handleUnexpectedError(t);
+            }
+        });
+    }
 
 
 }

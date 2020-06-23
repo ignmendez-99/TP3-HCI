@@ -12,11 +12,13 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 
 import com.example.ultrahome.R;
 import com.example.ultrahome.apiConnection.ApiClient;
@@ -46,21 +48,33 @@ public class AddRoutineDialog extends Dialog {
     private Context context;
     private Button add_button;
     private Button cancel_button;
-    private EditText routineNameEditText;
+    private Button addAction;
     private TextView errorMessage;
-    private String routineName;
-    private Routine newRoutine;
-    private List<ActionsItem> actions;
-    private Spinner spinner;
+    private TextView routineDescription;
 
-    private TextView hola;
+    /////////// routine ///////////
+    private EditText routineNameEditText;
+    private Routine newRoutine;
+    private String routineName;
+    private ActionsItem newAction;
+    private List<ActionsItem> listActions;
+
+    /////////// spinners //////////
+    private Spinner spinner_devices;
+    private Spinner spinner_actions;
+    private LinearLayout action_layout;
+    private Device selectedDevice;
+    private String selectedDeviceName;
+    private String selectedActionName;
 
     /////////// devices ///////////
     private List<String> deviceNames;
     private List<String> deviceIds;
     private List<String> allDeviceTypes;
+    private List<String> deviceTypeIds;
+    private List<Device> devices;
     private Map<String, List<String>> deviceTypeActions;
-    private List<String> allDevices;
+
 
     public AddRoutineDialog(@NonNull Context context, RoutinesFragment routinesFragment) {
         super(context);
@@ -77,38 +91,94 @@ public class AddRoutineDialog extends Dialog {
         add_button = findViewById(R.id.button_show_AddRoutineDialog);
         cancel_button = findViewById(R.id.button_close_add_routine_dialog);
         routineNameEditText = findViewById(R.id.routine_name_edit_text);
-        spinner = findViewById(R.id.devices_spinner);
-
-        hola = findViewById(R.id.verficar_id);
+        spinner_devices = findViewById(R.id.devices_spinner);
+        spinner_actions = findViewById(R.id.actions_spinner);
+        addAction = findViewById(R.id.button_add_action);
+        routineDescription = findViewById(R.id.selected_action);
+        action_layout = findViewById(R.id.action_selection);
 
         deviceNames = new ArrayList<>();
         deviceIds = new ArrayList<>();
+        deviceTypeIds = new ArrayList<>();
+        devices = new ArrayList<>();
+
+        //Aca va a estar la lista de actionsItem que conforman la routine
+        listActions = new ArrayList<>();
+
         allDeviceTypes = new ArrayList<>();
-        allDevices = new ArrayList<>();
         deviceTypeActions = new HashMap<>();
 
-        getAllDevices(allDeviceTypes);
-
-        for(String id : allDeviceTypes){
-            getActions(id);
-        }
+        getAllDevices();
+        List<String> auxList = new ArrayList<>();
 
 
 
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this.getContext(), android.R.layout.simple_spinner_item, deviceNames);
-        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(arrayAdapter);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        ArrayAdapter<String> adapterDevices = new ArrayAdapter<String>(this.getContext(), android.R.layout.simple_spinner_item, deviceNames);
+        adapterDevices.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner_devices.setAdapter(adapterDevices);
+        spinner_devices.setSelection(0);
+        spinner_devices.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                selectedDeviceName = spinner_devices.getSelectedItem().toString();
+                selectedDevice = devices.get(position);
+                if(action_layout.getVisibility()==View.GONE){
+                    action_layout.setVisibility(View.VISIBLE);
+                }
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
 
+        ArrayAdapter<String> adapterActions = new ArrayAdapter<String>(this.getContext(), android.R.layout.simple_spinner_item , deviceTypeIds);
+        adapterActions.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner_actions.setAdapter(adapterActions);
+        spinner_actions.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if(position == 0){
+                    ((TextView) view).setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimaryDark));
+                    selectedActionName = (String) parent.getItemAtPosition(position);
+                }
+                else{
+                    ((TextView) view).setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimaryDark));
+                }
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        addAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addActionToDialog(v);
+            }
+        });
 
         cancel_button.setOnClickListener(v -> dismiss());
+    }
+
+    private int getIndex(Spinner spinner, String myString){
+        for (int i = 0; i < spinner.getCount(); i++){
+            if (spinner.getItemAtPosition(i).toString().equalsIgnoreCase(myString)){
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private void addActionToDialog(View v){
+//        newAction = new ActionsItem(selectedDevice, selectedActionName, params);
+//        listActions.add(newAction);
+        CharSequence oldString = routineDescription.getText();
+        CharSequence newString = oldString + "\n" + selectedDeviceName + "  --->  " + selectedActionName;
+        routineDescription.setText(newString);
+        if(routineDescription.getVisibility()==View.GONE){
+            routineDescription.setVisibility(View.VISIBLE);
+        }
     }
 
     private void checkCorrectInput(View v) {
@@ -126,7 +196,7 @@ public class AddRoutineDialog extends Dialog {
         }
     }
 
-    private void getAllDevices(List<String> ids) {
+    private void getAllDevices() {
             ApiClient.getInstance().getDevices(new Callback<Result<List<Device>>>() {
                 @Override
                 public void onResponse(@NonNull Call<Result<List<Device>>> call, @NonNull Response<Result<List<Device>>> response) {
@@ -138,9 +208,11 @@ public class AddRoutineDialog extends Dialog {
                                 for (Device device : deviceList) {
                                     deviceIds.add(device.getId());
                                     deviceNames.add(device.getName());
+                                    devices.add(device);
                                     String deviceTypeId = device.getType().getId();
-                                    if(!ids.contains(deviceTypeId)) {
-                                        ids.add(deviceTypeId);
+                                    deviceTypeIds.add(deviceTypeId);
+                                    if(!allDeviceTypes.contains(deviceTypeId)) {
+                                        allDeviceTypes.add(deviceTypeId);
                                     }
 //                                    if(!deviceTypeActions.keySet().contains(deviceTypeId)){
 //                                        getActions(deviceTypeId);
@@ -161,8 +233,8 @@ public class AddRoutineDialog extends Dialog {
             });
     }
 
-    private void getActions(String id){
-        List<String> actionsAux = new ArrayList<>();
+    private void getActions(String id, List<String> auxList){
+//        List<String> actionsAux = new ArrayList<>();
         ApiClient.getInstance().getDeviceType(id, new Callback<Result<DeviceTypeComplete>>() {
             @Override
             public void onResponse(Call<Result<DeviceTypeComplete>> call, Response<Result<DeviceTypeComplete>> response) {
@@ -171,9 +243,9 @@ public class AddRoutineDialog extends Dialog {
                     if(result != null){
                         DeviceTypeComplete deviceType = result.getResult();
                         for(DeviceTypeAction action : deviceType.getActions()){
-                            actionsAux.add(action.getName());
+                            auxList.add(action.getName());
                         }
-                        deviceTypeActions.put(id, actionsAux);
+//                        deviceTypeActions.put(id, auxList);
                     }
                     else{
                         Snackbar.make(getCurrentFocus(),"ERROR tipo 1", Snackbar.LENGTH_LONG).show();
@@ -194,7 +266,7 @@ public class AddRoutineDialog extends Dialog {
     private void addNewRoutine(View v) {
         findViewById(R.id.loadingAddingHome).setVisibility(View.VISIBLE);
         findViewById(R.id.add_home_buttom_pair).setVisibility(View.GONE);
-//        newRoutine = new Routine(routineName, actions);
+//        newRoutine = new Routine(routineName, listActions);
 //        new Thread(() -> {
 //            ApiClient.getInstance().addRoutine(newRoutine, new Callback<Result<Routine>>() {
 //                @Override

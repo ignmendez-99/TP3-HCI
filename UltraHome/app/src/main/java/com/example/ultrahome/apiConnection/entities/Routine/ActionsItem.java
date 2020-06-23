@@ -24,4 +24,12 @@ public class ActionsItem {
     @SerializedName("meta")
     @Expose
     private Object meta = new Object();
+
+    public Device getDevice() {
+        return device;
+    }
+
+    public String getActionName() {
+        return actionName;
+    }
 }

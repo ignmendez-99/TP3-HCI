@@ -24,7 +24,7 @@ public class SwipeToDeleteRoutineCallback extends ItemTouchHelper.SimpleCallback
     public SwipeToDeleteRoutineCallback(RoutinesAdapter adapter) {
         super(0, ItemTouchHelper.LEFT);
         mAdapter = adapter;
-        icon = ContextCompat.getDrawable(mAdapter.getContext(), R.drawable.delete_icon_background);
+        icon = ContextCompat.getDrawable(mAdapter.getContext(), R.drawable.delete_icon_foreground);
         background = new ColorDrawable(Color.RED);
     }
 
