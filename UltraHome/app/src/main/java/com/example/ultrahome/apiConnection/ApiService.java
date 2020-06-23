@@ -8,6 +8,7 @@ import com.example.ultrahome.apiConnection.entities.deviceEntities.DeviceState;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.blinds.BlindsState;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.door.DoorState;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.faucet.FaucetState;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.lights.LightState;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.refrigerator.RefrigeratorState;
 
 import java.util.ArrayList;
@@ -148,4 +149,21 @@ public interface ApiService {
     @PUT("devices/{deviceId}/{actionName}")
     @Headers("Content-Type: application/json")
     Call<Result<Integer>> setFreezerTemp(@Path("deviceId") String deviceId, @Path("actionName") String actionName, @Body Integer [] data);
+
+    ////////////// LIGHT CONTROLS ////////////////////
+
+    @GET("devices/{deviceId}/state")
+    Call<Result<LightState>> getLightState(@Path("deviceId") String deviceId);
+
+    @PUT("devices/{deviceId}/{actionName}")
+    @Headers("Content-Type: application/json")
+    Call<Result<Boolean>> turnOnOrOffLight(@Path("deviceId") String deviceId, @Path("actionName") String actionName);
+
+    @PUT("devices/{deviceId}/{actionName}")
+    @Headers("Content-Type: application/json")
+    Call<Result<Integer>> setLightBrightness(@Path("deviceId") String deviceId, @Path("actionName") String actionName, @Body Integer [] data);
+
+    @PUT("devices/{deviceId}/{actionName}")
+    @Headers("Content-Type: application/json")
+    Call<Result<String>> setLightColor(@Path("deviceId") String deviceId, @Path("actionName") String actionName, @Body String [] data);
 }

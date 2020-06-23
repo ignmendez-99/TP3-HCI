@@ -6,6 +6,7 @@ import com.example.ultrahome.apiConnection.entities.deviceEntities.blinds.Blinds
 import com.example.ultrahome.apiConnection.entities.deviceEntities.door.Door;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.door.DoorState;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.faucet.FaucetState;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.lights.LightState;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.lights.Lights;
 import com.example.ultrahome.apiConnection.entities.Error;
 import com.example.ultrahome.apiConnection.entities.ErrorResult;
@@ -287,6 +288,44 @@ public class ApiClient {
         aux[0] = newTemp;
 
         Call<Result<Integer>> call = this.service.setFreezerTemp(deviceId, "setFreezerTemperature", aux);
+        call.enqueue(callback);
+        return call;
+    }
+
+    ////////////// LIGHT CALLS ////////////////////
+
+    public Call<Result<LightState>> getLightState(String deviceId, Callback<Result<LightState>> callback) {
+        Call<Result<LightState>> call = this.service.getLightState(deviceId);
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<Boolean>> turnOnLight(String deviceId, Callback<Result<Boolean>> callback) {
+        Call<Result<Boolean>> call = this.service.turnOnOrOffLight(deviceId, "turnOn");
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<Boolean>> turnOffLight(String deviceId, Callback<Result<Boolean>> callback) {
+        Call<Result<Boolean>> call = this.service.turnOnOrOffLight(deviceId, "turnOff");
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<Integer>> setLightBrightness(String deviceId, Integer newBrightness, Callback<Result<Integer>> callback) {
+        Integer [] aux = new Integer[1];
+        aux[0] = newBrightness;
+
+        Call<Result<Integer>> call = this.service.setLightBrightness(deviceId, "setBrightness", aux);
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<String>> setLightColor(String deviceId, String newColor, Callback<Result<String>> callback) {
+        String [] aux = new String[1];
+        aux[0] = newColor;
+
+        Call<Result<String>> call = this.service.setLightColor(deviceId, "setColor", aux);
         call.enqueue(callback);
         return call;
     }
