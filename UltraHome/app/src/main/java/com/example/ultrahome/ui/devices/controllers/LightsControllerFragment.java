@@ -1,7 +1,6 @@
 package com.example.ultrahome.ui.devices.controllers;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +17,6 @@ import androidx.fragment.app.Fragment;
 import com.example.ultrahome.R;
 import com.example.ultrahome.apiConnection.ApiClient;
 import com.example.ultrahome.apiConnection.ErrorHandler;
-import com.example.ultrahome.apiConnection.entities.Error;
 import com.example.ultrahome.apiConnection.entities.Result;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.lights.LightState;
 
@@ -77,51 +75,21 @@ public class LightsControllerFragment extends Fragment {
         darkGreyBtn = view.findViewById(R.id.darkGrey_color_button);
         blackBtn = view.findViewById(R.id.black_color_button);
 
-        redBtn.setOnClickListener(v -> {
-            changeColor(v, "#F44336");
-        });
-        greenBtn.setOnClickListener(v -> {
-            changeColor(v, "#4CFF00");
-        });
-        blueBtn.setOnClickListener(v -> {
-            changeColor(v, "#0036FF");
-        });
-        yellowBtn.setOnClickListener(v -> {
-            changeColor(v, "#FFDD00");
-        });
-        warmWhiteBtn.setOnClickListener(v -> {
-            changeColor(v, "#FFFADA");
-        });
-        purpleBtn.setOnClickListener(v -> {
-            changeColor(v, "#9C27B0");
-        });
-        darkGreenBtn.setOnClickListener(v -> {
-            changeColor(v, "#39813C");
-        });
-        orangeBtn.setOnClickListener(v -> {
-            changeColor(v, "#FF9800");
-        });
-        violetBtn.setOnClickListener(v -> {
-            changeColor(v, "#673AB7");
-        });
-        coolWhiteBtn.setOnClickListener(v -> {
-            changeColor(v, "#E9F8FF");
-        });
-        whiteBtn.setOnClickListener(v -> {
-            changeColor(v, "#FFFFFF");
-        });
-        lightGreyBtn.setOnClickListener(v -> {
-            changeColor(v, "#D8D8D8");
-        });
-        greyBtn.setOnClickListener(v -> {
-            changeColor(v, "#939393");
-        });
-        darkGreyBtn.setOnClickListener(v -> {
-            changeColor(v, "#4E4E4E");
-        });
-        blackBtn.setOnClickListener(v -> {
-            changeColor(v, "#000000");
-        });
+        redBtn.setOnClickListener(v -> changeColor(v, "#F44336"));
+        greenBtn.setOnClickListener(v -> changeColor(v, "#4CFF00"));
+        blueBtn.setOnClickListener(v -> changeColor(v, "#0036FF"));
+        yellowBtn.setOnClickListener(v -> changeColor(v, "#FFDD00"));
+        warmWhiteBtn.setOnClickListener(v -> changeColor(v, "#FFFADA"));
+        purpleBtn.setOnClickListener(v -> changeColor(v, "#9C27B0"));
+        darkGreenBtn.setOnClickListener(v -> changeColor(v, "#39813C"));
+        orangeBtn.setOnClickListener(v -> changeColor(v, "#FF9800"));
+        violetBtn.setOnClickListener(v -> changeColor(v, "#673AB7"));
+        coolWhiteBtn.setOnClickListener(v -> changeColor(v, "#E9F8FF"));
+        whiteBtn.setOnClickListener(v -> changeColor(v, "#FFFFFF"));
+        lightGreyBtn.setOnClickListener(v -> changeColor(v, "#D8D8D8"));
+        greyBtn.setOnClickListener(v -> changeColor(v, "#939393"));
+        darkGreyBtn.setOnClickListener(v -> changeColor(v, "#4E4E4E"));
+        blackBtn.setOnClickListener(v -> changeColor(v, "#000000"));
 
         colors = new HashMap<>();
 
@@ -173,19 +141,16 @@ public class LightsControllerFragment extends Fragment {
 
                         firstTime = false;
                     } else {
-                        ErrorHandler.handleError(response, requireView(), "MENSAJE");
-// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
+                        ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                     }
                 } else {
-                    ErrorHandler.handleError(response, requireView(), "MENSAJE");
-// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
+                    ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<Result<LightState>> call, @NonNull Throwable t) {
                 ErrorHandler.handleUnexpectedError(t, requireView(), LightsControllerFragment.this);
-                // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
             }
         });
 
@@ -238,23 +203,19 @@ public class LightsControllerFragment extends Fragment {
                     Result<String> result = response.body();
                     if(result != null) {
                         currentColor = newColor;
-                        System.out.println("CURRENT COLOR: " + currentColor);
                         colorDisplay.setBackgroundColor(colors.get(currentColor));
-                        Toast.makeText(getContext(),"COLOR CHANGED!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(),getString(R.string.color_changed_string), Toast.LENGTH_SHORT).show();
                     } else {
-                        ErrorHandler.handleError(response, requireView(), "MENSAJE");
-// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
+                        ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                     }
                 } else {
-                    ErrorHandler.handleError(response, requireView(), "MENSAJE");
-// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
+                    ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<Result<String>> call, @NonNull Throwable t) {
                 ErrorHandler.handleUnexpectedError(t, requireView(), LightsControllerFragment.this);
-                // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
             }
         });
 
@@ -271,21 +232,18 @@ public class LightsControllerFragment extends Fragment {
                     if(result != null) {
                         currentBrightness = brightnessSeekBar.getProgress();
                         brightnessTextView.setText(currentBrightness + "%");
-                        Toast.makeText(getContext(),"BRGIHTNESS SET TO " + brightnessSeekBar.getProgress(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), getString(R.string.intensity_set_to_string) + " " + brightnessSeekBar.getProgress(), Toast.LENGTH_SHORT).show();
                     } else {
-                        ErrorHandler.handleError(response, requireView(), "MENSAJE");
-// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
+                        ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                     }
                 } else {
-                    ErrorHandler.handleError(response, requireView(), "MENSAJE");
-// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
+                    ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<Result<Integer>> call, @NonNull Throwable t) {
                 ErrorHandler.handleUnexpectedError(t, requireView(), LightsControllerFragment.this);
-                // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
             }
         });
 
@@ -299,22 +257,19 @@ public class LightsControllerFragment extends Fragment {
                     if(response.isSuccessful()) {
                         Result<Boolean> result = response.body();
                         if(result != null) {
-                            Toast.makeText(getContext(),"TURNED ON", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(),getString(R.string.turned_on_string), Toast.LENGTH_SHORT).show();
                             isOn = true;
                         } else {
-                            ErrorHandler.handleError(response, requireView(), "MENSAJE");
-// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
+                            ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                         }
                     } else {
-                        ErrorHandler.handleError(response, requireView(), "MENSAJE");
-// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
+                        ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                     }
                 }
 
                 @Override
                 public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
                     ErrorHandler.handleUnexpectedError(t, requireView(), LightsControllerFragment.this);
-                    // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
                 }
             });
         } else {
@@ -324,22 +279,19 @@ public class LightsControllerFragment extends Fragment {
                     if(response.isSuccessful()) {
                         Result<Boolean> result = response.body();
                         if(result != null) {
-                            Toast.makeText(getContext(),"TURNED OFF", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(),getString(R.string.turned_off_string), Toast.LENGTH_SHORT).show();
                             isOn = false;
                         } else {
-                            ErrorHandler.handleError(response, requireView(), "MENSAJE");
-// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
+                            ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                         }
                     } else {
-                        ErrorHandler.handleError(response, requireView(), "MENSAJE");
-// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
+                        ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                     }
                 }
 
                 @Override
                 public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
                     ErrorHandler.handleUnexpectedError(t, requireView(), LightsControllerFragment.this);
-                    // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
                 }
             });
         }

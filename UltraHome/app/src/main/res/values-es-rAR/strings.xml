@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">UltraHome</string>
-    <string name="max_level_string">NIVEL MAX.:</string>
+    <string name="max_level_string">NIVEL:</string>
     <string name="current_level_string">NIVEL ACTUAL</string>
     <string name="open_completely_string">ABRIR</string>
     <string name="close_completely_string">CERRAR</string>
@@ -72,4 +72,31 @@
     <string name="done_button">Listo</string>
     <string name="handle_unexpected_error">Ups! Hay un problema en nuestro lado :(</string>
     <string name="delete_device_confirmation">¿Estás seguro que quieres borrar el dispositivo?</string>
+    <string name="error_1_string">Ups! Algo salió mal :(</string>
+    <string name="error_2_string">Por ahora sin usar</string>
+    <string name="already_fully_open_string">¡Ya está abierto!</string>
+    <string name="already_fully_closed_string">¡Ya está cerrado!</string>
+    <string name="opening_string">Abriendo…</string>
+    <string name="closing_string">Cerrando…</string>
+    <string name="new_max_level_set_at_string">Nuevo nivel puesto en</string>
+    <string name="finished_opening_string">¡Terminó de abrirse!</string>
+    <string name="finished_closing_string">¡Terminó de cerrarse!</string>
+    <string name="next_genre_string">SIG. GÉN.</string>
+    <string name="opening_faucet_string">Abriendo grifo…</string>
+    <string name="closing_faucet_string">Cerrando grifo…</string>
+    <string name="enter_amount_string">¡Tienes que indicar una cantidad!</string>
+    <string name="cant_be_nothing_string">¡No puedes dispensar nada!</string>
+    <string name="dispensing_string">Dispensando</string>
+    <string name="opening_door_string">Abriendo puerta…</string>
+    <string name="closing_door_string">Cerrando puerta…</string>
+    <string name="locking_door_string">Trabando puerta…</string>
+    <string name="unlocking_door_string">Destrabando puerta…</string>
+    <string name="battery_string">Batería:</string>
+    <string name="mode_changed_string">¡Modo cambiado!</string>
+    <string name="status_changed_string">¡Estado cambiado!</string>
+    <string name="battery_too_low_to_start_string">Imposible encender, batería muy baja :(</string>
+    <string name="color_changed_string">¡Color cambiado!</string>
+    <string name="intensity_set_to_string">"Intensidad configurada en "</string>
+    <string name="turned_on_string">¡Encendido!</string>
+    <string name="turned_off_string">¡Apagado!</string>
 </resources>

@@ -1,7 +1,6 @@
 package com.example.ultrahome.ui.devices.controllers;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +17,6 @@ import androidx.fragment.app.Fragment;
 import com.example.ultrahome.R;
 import com.example.ultrahome.apiConnection.ApiClient;
 import com.example.ultrahome.apiConnection.ErrorHandler;
-import com.example.ultrahome.apiConnection.entities.Error;
 import com.example.ultrahome.apiConnection.entities.Result;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.faucet.FaucetState;
 
@@ -72,19 +70,16 @@ public class FaucetControllerFragment extends Fragment {
                         isOpen = faucetState.isOpen();
                         openCloseSwitch.setChecked(isOpen);
                     } else {
-                        ErrorHandler.handleError(response, requireView(), "MENSAJE");
-// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
+                        ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                     }
                 } else {
-                    ErrorHandler.handleError(response, requireView(), "MENSAJE");
-// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
+                    ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<Result<FaucetState>> call, @NonNull Throwable t) {
                 ErrorHandler.handleUnexpectedError(t, requireView(), FaucetControllerFragment.this);
-                // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
             }
         });
 
@@ -132,18 +127,13 @@ public class FaucetControllerFragment extends Fragment {
     }
 
     private void openFaucet() {
-        if(isOpen) {
-            Toast.makeText(getContext(), "THE FAUCET IS ALREADY OPEN", Toast.LENGTH_LONG).show();
-            return;
-        }
-
         api.openFaucet(deviceId, new Callback<Result<Boolean>>() {
             @Override
             public void onResponse(@NonNull Call<Result<Boolean>> call, @NonNull Response<Result<Boolean>> response) {
                 if(response.isSuccessful()) {
                     Result<Boolean> result = response.body();
                     if(result != null) {
-                        Toast.makeText(getContext(), "OPENING FAUCET", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), getString(R.string.opening_faucet_string), Toast.LENGTH_LONG).show();
                         isOpen = true;
                         dispenseExactAmountButton.setVisibility(View.INVISIBLE);
                         stopButton.setVisibility(View.INVISIBLE);
@@ -152,36 +142,28 @@ public class FaucetControllerFragment extends Fragment {
                         amount.setVisibility(View.INVISIBLE);
                         unitSpinner.setVisibility(View.INVISIBLE);
                     } else {
-                        ErrorHandler.handleError(response, requireView(), "MENSAJE");
-// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
+                        ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                     }
                 } else {
-                    ErrorHandler.handleError(response, requireView(), "MENSAJE");
-// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
+                    ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
                 ErrorHandler.handleUnexpectedError(t, requireView(), FaucetControllerFragment.this);
-                // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
             }
         });
     }
 
     private void closeFaucet() {
-        if(!isOpen) {
-            Toast.makeText(getContext(), "THE FAUCET IS ALREADY CLOSED", Toast.LENGTH_LONG).show();
-            return;
-        }
-
         api.closeFaucet(deviceId, new Callback<Result<Boolean>>() {
             @Override
             public void onResponse(@NonNull Call<Result<Boolean>> call, @NonNull Response<Result<Boolean>> response) {
                 if(response.isSuccessful()) {
                     Result<Boolean> result = response.body();
                     if(result != null) {
-                        Toast.makeText(getContext(), "CLOSING FAUCET", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), getString(R.string.closing_faucet_string), Toast.LENGTH_LONG).show();
                         isOpen = false;
                         dispenseExactAmountButton.setVisibility(View.VISIBLE);
                         stopButton.setVisibility(View.INVISIBLE);
@@ -190,19 +172,16 @@ public class FaucetControllerFragment extends Fragment {
                         amount.setVisibility(View.INVISIBLE);
                         unitSpinner.setVisibility(View.INVISIBLE);
                     } else {
-                        ErrorHandler.handleError(response, requireView(), "MENSAJE");
-// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
+                        ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                     }
                 } else {
-                    ErrorHandler.handleError(response, requireView(), "MENSAJE");
-// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
+                    ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
                 ErrorHandler.handleUnexpectedError(t, requireView(), FaucetControllerFragment.this);
-                // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
             }
         });
     }
@@ -227,11 +206,11 @@ public class FaucetControllerFragment extends Fragment {
         closeFaucet();
     }
 
-    private void dispenseAmount(View view) {    // todo: VER QUE CARAJO PASA
+    private void dispenseAmount(View view) {    // todo: no funciona
         try{
             Integer.parseInt(amount.getText().toString());
         } catch (Exception e) {
-            Toast.makeText(getContext(), "YOU MUST ENTER AN AMOUNT TO DISPENSE!", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), getString(R.string.enter_amount_string), Toast.LENGTH_LONG).show();
             amount.setText("");
             return;
         }
@@ -240,7 +219,7 @@ public class FaucetControllerFragment extends Fragment {
         String unit = unitSpinner.getSelectedItem().toString();
 
         if(amountToDispense == 0) {
-            Toast.makeText(getContext(), "YOU CAN'T DISPENSE NOTHING!", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), getString(R.string.cant_be_nothing_string), Toast.LENGTH_LONG).show();
             amount.setText("");
             return;
         }
@@ -252,22 +231,19 @@ public class FaucetControllerFragment extends Fragment {
                 if(response.isSuccessful()) {
                     Result<Boolean> result = response.body();
                     if(result != null) {
-                        Toast.makeText(getContext(), "DISPENSING " + amountToDispense + unit, Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), getString(R.string.dispensing_string) + " " + amountToDispense + unit, Toast.LENGTH_LONG).show();
                         openCloseSwitch.setChecked(true);
                     } else {
-                        ErrorHandler.handleError(response, requireView(), "MENSAJE");
-// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
+                        ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                     }
                 } else {
-                    ErrorHandler.handleError(response, requireView(), "MENSAJE");
-// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
+                    ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
                 ErrorHandler.handleUnexpectedError(t, requireView(), FaucetControllerFragment.this);
-                // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
             }
         });
     }
