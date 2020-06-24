@@ -33,6 +33,7 @@ import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +64,6 @@ public class DevicesListFragment extends Fragment {
     private List<String> devicesNames;
     private List<String> devicesIds;
     private List<String> deviceNamesBackupBeforeDeleting;
-    private List<String> deviceIdsBackupBeforeDeleting;
     private List<String> deviceTypeIdsBackupBeforeDeleting;
     private List<String> deviceTypeIds;
 
@@ -87,7 +87,6 @@ public class DevicesListFragment extends Fragment {
         devicesNames = new ArrayList<>();
         devicesIds = new ArrayList<>();
         deviceNamesBackupBeforeDeleting = new ArrayList<>();
-        deviceIdsBackupBeforeDeleting = new ArrayList<>();
         deviceTypeIdsBackupBeforeDeleting = new ArrayList<>();
         deviceTypeIds = new ArrayList<>();
         api = ApiClient.getInstance();
@@ -285,6 +284,7 @@ public class DevicesListFragment extends Fragment {
         devicesNames.add(deviceName);
         deviceTypeIds.add(deviceTypeId);
         adapter.notifyItemInserted(devicesNames.size() - 1);
+
         requireView().findViewById(R.id.zero_devices).setVisibility(View.GONE);
         Snackbar.make(this.requireView(), "Device Added!", Snackbar.LENGTH_SHORT).show();
     }
@@ -305,14 +305,12 @@ public class DevicesListFragment extends Fragment {
 
         // remove the Device Card from screen
         String deviceNameToRemove = devicesNames.get(positionOfDeviceDisplayed);
-        String deviceIdToRemove = devicesIds.get(positionOfDeviceDisplayed);
         String deviceTypeIdToRemove = deviceTypeIds.get(positionOfDeviceDisplayed);
         deviceNamesBackupBeforeDeleting.add(deviceNameToRemove);
-        deviceIdsBackupBeforeDeleting.add(deviceIdToRemove);
         deviceTypeIdsBackupBeforeDeleting.add(deviceTypeIdToRemove);
         devicesNames.remove(positionOfDeviceDisplayed.intValue());
         deviceTypeIds.remove(positionOfDeviceDisplayed.intValue());
-        devicesIds.remove(positionOfDeviceDisplayed.intValue());
+
         adapter.notifyItemRemoved(positionOfDeviceDisplayed);
         adapter.notifyItemRangeChanged(positionOfDeviceDisplayed, devicesNames.size());
 
@@ -328,13 +326,10 @@ public class DevicesListFragment extends Fragment {
     /* this method just puts the ""removed"" Device back on screen */
     void recoverRemovedDevice(View v) {
         String deviceNameToRetrieve = deviceNamesBackupBeforeDeleting.get(0);
-        String deviceIdToRetrieve = deviceIdsBackupBeforeDeleting.get(0);
         String deviceTypeIdToRecover = deviceTypeIdsBackupBeforeDeleting.get(0);
         deviceNamesBackupBeforeDeleting.remove(0);
-        deviceIdsBackupBeforeDeleting.remove(0);
         deviceTypeIdsBackupBeforeDeleting.remove(0);
         devicesNames.add(positionOfDeviceDisplayedBackup, deviceNameToRetrieve);
-        devicesIds.add(positionOfDeviceDisplayedBackup, deviceIdToRetrieve);
         deviceTypeIds.add(positionOfDeviceDisplayedBackup, deviceTypeIdToRecover);
         adapter.notifyItemInserted(positionOfDeviceDisplayedBackup);
         adapter.notifyItemRangeChanged(positionOfDeviceDisplayedBackup, devicesNames.size());
@@ -507,13 +502,10 @@ public class DevicesListFragment extends Fragment {
         @Override
         public void onClick(View v) {
             String deviceNameToRetrieve = deviceNamesBackupBeforeDeleting.get(0);
-            String deviceIdToRetrieve = deviceIdsBackupBeforeDeleting.get(0);
             String deviceTypeIdToRetrieve = deviceTypeIdsBackupBeforeDeleting.get(0);
             deviceNamesBackupBeforeDeleting.remove(0);
-            deviceIdsBackupBeforeDeleting.remove(0);
             deviceTypeIdsBackupBeforeDeleting.remove(0);
             devicesNames.add(positionOfDeviceDisplayedBackup, deviceNameToRetrieve);
-            devicesIds.add(positionOfDeviceDisplayedBackup, deviceIdToRetrieve);
             deviceTypeIds.add(positionOfDeviceDisplayedBackup, deviceTypeIdToRetrieve);
             adapter.notifyItemInserted(positionOfDeviceDisplayedBackup);
             adapter.notifyItemRangeChanged(positionOfDeviceDisplayedBackup, devicesNames.size());
@@ -539,8 +531,8 @@ public class DevicesListFragment extends Fragment {
                                     Result<Boolean> result = response.body();
                                     if (result != null && result.getResult()) {
                                         deviceNamesBackupBeforeDeleting.remove(0);
-                                        deviceIdsBackupBeforeDeleting.remove(0);
                                         deviceTypeIdsBackupBeforeDeleting.remove(0);
+                                        devicesIds.remove(positionOfDeviceDisplayedBackup.intValue());
                                         if(devicesIds.size() == 0)
                                             DevicesListFragment.this.requireView().findViewById(R.id.zero_devices).setVisibility(View.VISIBLE);
                                     } else {
@@ -548,7 +540,6 @@ public class DevicesListFragment extends Fragment {
                                         if(fragmentOnScreen)
                                             showDeleteDeviceError();
                                     }
-
                                 } else {
                                     ErrorHandler.logError(response);
                                     if(fragmentOnScreen)

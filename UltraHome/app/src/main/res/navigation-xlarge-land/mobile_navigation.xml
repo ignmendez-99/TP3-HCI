@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_homes_tablet">
+
+    <fragment
+        android:id="@+id/navigation_homes_tablet"
+        android:name="com.example.ultrahome.ui.TabletFragment"
+        android:label="@string/title_homes"
+        tools:layout="@layout/tablet_main_screen">
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_profile_tablet"
+        android:name="com.example.ultrahome.ui.profile.ProfileFragment"
+        android:label="@string/title_profile"
+        tools:layout="@layout/fragment_profile" />
+
+    <fragment
+        android:id="@+id/navigation_routines_tablet"
+        android:name="com.example.ultrahome.ui.routines.RoutinesFragment"
+        android:label="@string/title_routines"
+        tools:layout="@layout/fragment_routines"/>
+
+</navigation>

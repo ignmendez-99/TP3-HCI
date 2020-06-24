@@ -1,8 +1,6 @@
 package com.example.ultrahome.ui.devices;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,9 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.ultrahome.R;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Consumer;
 
 public class DevicesListAdapter extends RecyclerView.Adapter<DevicesListAdapter.DevicesListViewHolder> {
 
