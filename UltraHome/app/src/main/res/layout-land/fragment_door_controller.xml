@@ -1,27 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <TextView
-        android:id="@+id/name"
+    <Switch
+        android:id="@+id/open_switch"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="SOY DOOR LANDSCAPE"
-        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/textView8"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/textView8" />
+
+    <Switch
+        android:id="@+id/lock_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/open_switch" />
+
+    <TextView
+        android:id="@+id/textView8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="36dp"
+        android:layout_marginEnd="24dp"
+        android:text="@string/open_string"
+        app:layout_constraintEnd_toStartOf="@+id/open_switch"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/button_delete_door"
+    <TextView
+        android:id="@+id/textView18"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="REMOVE THIS DOOR"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        android:layout_marginStart="24dp"
+        android:text="@string/close_string"
+        app:layout_constraintBottom_toBottomOf="@+id/open_switch"
+        app:layout_constraintStart_toEndOf="@+id/open_switch"
+        app:layout_constraintTop_toTopOf="@+id/open_switch" />
 
+    <TextView
+        android:id="@+id/textView19"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:text="@string/lock_string"
+        app:layout_constraintBottom_toBottomOf="@+id/lock_switch"
+        app:layout_constraintStart_toEndOf="@+id/lock_switch"
+        app:layout_constraintTop_toTopOf="@+id/lock_switch" />
+
+    <TextView
+        android:id="@+id/textView20"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
+        android:text="@string/unlock_string"
+        app:layout_constraintBottom_toBottomOf="@+id/lock_switch"
+        app:layout_constraintEnd_toStartOf="@+id/lock_switch"
+        app:layout_constraintTop_toTopOf="@+id/lock_switch" />
 </androidx.constraintlayout.widget.ConstraintLayout>
