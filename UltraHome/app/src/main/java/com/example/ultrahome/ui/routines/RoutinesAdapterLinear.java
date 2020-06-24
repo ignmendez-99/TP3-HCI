@@ -22,6 +22,6 @@ public class RoutinesAdapterLinear extends RoutinesAdapter {
     public RoutinesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
         View v = inflater.inflate(R.layout.routine_row_layout, parent, false);
-        return new RoutinesAdapter.RoutinesViewHolder(v);
+        return new RoutinesViewHolder(v);
     }
 }
