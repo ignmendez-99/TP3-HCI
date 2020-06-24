@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="350dp"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/routine_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="25dp"
+                android:textColor="@android:color/black"
+                android:textAlignment="center"
+                android:paddingTop="10dp"
+                android:paddingBottom="20dp"/>
+
+
+            <TextView
+                android:id="@+id/routine_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18dp"
+                android:paddingLeft="25dp"
+                android:textColor="@android:color/black"
+                android:text="@string/routine_description" />
+
+            <TextView
+                android:id="@+id/routine_actions_list"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:textSize="17dp"
+                android:paddingLeft="25dp"/>
+
+            <TextView
+                android:id="@+id/execute_routine_fail"
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/routine_fail_execute"
+                android:textColor="@android:color/holo_red_dark"
+                android:paddingLeft="25dp"
+                android:paddingRight="25dp"
+                android:paddingTop="25dp"
+                android:textAlignment="center"
+                app:layout_constraintStart_toStartOf="@+id/routine_description"
+                app:layout_constraintTop_toBottomOf="@+id/routine_description"/>
+
+            <LinearLayout
+                android:id="@+id/execute_close"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal"
+                android:paddingTop="25dp"
+                android:paddingBottom="25dp"
+                app:layout_constraintLeft_toRightOf="@+id/execute_routine_fail"
+                app:layout_constraintTop_toBottomOf="@+id/execute_routine_fail">
+
+                <Button
+                    android:id="@+id/close_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/close_string"/>
+
+                <Button
+                    android:id="@+id/execute_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/execute_button"/>
+
+            </LinearLayout>
+
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

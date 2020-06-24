@@ -1,7 +1,10 @@
 package com.example.ultrahome.ui.routines;
 
 
+import android.app.Dialog;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,9 +32,6 @@ import com.example.ultrahome.apiConnection.entities.Result;
 import com.example.ultrahome.apiConnection.entities.Routine.ActionsItem;
 import com.example.ultrahome.apiConnection.entities.Routine.Routine;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.Device;
-import com.example.ultrahome.ui.homes.HomesAdapterGrid;
-import com.example.ultrahome.ui.homes.HomesAdapterLinear;
-import com.example.ultrahome.ui.rooms.SwipeToDeleteRoomCallback;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
@@ -59,6 +59,8 @@ public class RoutinesFragment extends Fragment {
     private List<String> routineIds;
     private List<String> routineNamesBackupBeforeDeleting;
     private List<Routine> routines;
+
+    private TextView executeRoutineFail;
 
     private ApiClient api;
     private Snackbar deletingRoutineSnackbar;
@@ -120,17 +122,57 @@ public class RoutinesFragment extends Fragment {
 
     }
 
-    public void expand(View v, TextView textview, int position){
-        String idOfRoutineClicked = routineIds.get(position);
+    public void setDialogRoutine(View v, int position){
+
+        final Dialog dialog = new Dialog(getContext());
+        dialog.setContentView(R.layout.routine_description_dialog);
+
+        TextView title = dialog.findViewById(R.id.routine_title);
+        TextView actionsList = dialog.findViewById(R.id.routine_actions_list);
+        TextView executeFail = dialog.findViewById(R.id.execute_routine_fail);
+        Button closeButton = dialog.findViewById(R.id.close_button);
+        Button executeButton = dialog.findViewById(R.id.execute_button);
+
+        String nameRoutineClicked = routineNames.get(position);
+        String idRoutineClicked = routineIds.get(position);
+
         String routineDescription = "";
         Routine routineClicked = routines.get(position);
         for(ActionsItem actions : routineClicked.getActions()){
             String deviceName = actions.getDevice().getName();
-            String actionName = actions.getActionName();
-            routineDescription = routineDescription + "\n" + deviceName + " --> " + actionName;
+            if(deviceName != null){
+                String actionName = actions.getActionName();
+                routineDescription = routineDescription + "\n" + deviceName + " --> " + actionName;
+            }
+            else{
+                executeFail.setVisibility(View.VISIBLE);
+                executeButton.setEnabled(false);
+            }
         }
-        textview.setText(routineDescription);
+
+        SpannableString content = new SpannableString(nameRoutineClicked);
+        content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
+        title.setText(content);
+        actionsList.setText(routineDescription);
+
+        closeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        executeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                executeRoutine(v, idRoutineClicked);
+            }
+        });
+
+        dialog.show();
+
     }
+
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         // call superclass to save any view hierarchy
@@ -278,40 +320,35 @@ public class RoutinesFragment extends Fragment {
     }
 
     public void executeRoutine(View v, String routineId){
-        api.executeRoutine(routineId, new Callback<Result<List<Boolean>>>() {
-            @Override
-            public void onResponse(@NonNull Call<Result<List<Boolean>>> call, @NonNull Response<Result<List<Boolean>>> response) {
-                if(response.isSuccessful()) {
-                    Result<List<Boolean>> result = response.body();
-                    if (result != null) {
-                        List<Boolean> resultRoutine = result.getResult();
-                        Boolean notFail = true;
-                        for (Boolean actionResult : resultRoutine) {
-                            if (!actionResult) {
-                                notFail = false;
-                            }
-                        }
-                        if (notFail) {
-                            Toast.makeText(getContext(), "Routine Executed", Toast.LENGTH_SHORT);
+            api.executeRoutine(routineId, new Callback<Result<List<Boolean>>>() {
+                @Override
+                public void onResponse(@NonNull Call<Result<List<Boolean>>> call, @NonNull Response<Result<List<Boolean>>> response) {
+                    if (response.isSuccessful()) {
+                        Result<List<Boolean>> result = response.body();
+                        if (result != null) {
+                            List<Boolean> resultRoutine = result.getResult();
+                            Snackbar.make(v, "Routine Executed!", Snackbar.LENGTH_SHORT).show();
                         } else {
-                            Toast.makeText(getContext(), "Routine Fail", Toast.LENGTH_SHORT);
+                            ErrorHandler.handleError(response, requireView(), "MENSAJE");
+                            // todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                         }
                     } else {
                         ErrorHandler.handleError(response, requireView(), "MENSAJE");
-// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
+                        // todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                     }
-                }else{
-                    ErrorHandler.handleError(response, requireView(), "MENSAJE");
-// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                 }
-            }
+                @Override
+                public void onFailure(@NonNull Call<Result<List<Boolean>>> call, @NonNull Throwable t) {
+                    ExecuteRutineFail();
+                    ErrorHandler.handleUnexpectedError(t, requireView(), RoutinesFragment.this);
+                    // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
+                }
+            });
+    }
 
-            @Override
-            public void onFailure(@NonNull Call<Result<List<Boolean>>> call, @NonNull Throwable t) {
-                ErrorHandler.handleUnexpectedError(t, requireView(), RoutinesFragment.this);
-                // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
-            }
-        });
+    private void ExecuteRutineFail(){
+        executeRoutineFail.setVisibility(View.VISIBLE);
+        executeRoutineFail.setText("Failed to execute routine!");
     }
 
 
