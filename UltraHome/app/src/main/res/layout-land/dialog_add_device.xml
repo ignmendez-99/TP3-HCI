@@ -10,10 +10,10 @@
         android:id="@+id/dialog_add_device_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Add New Device"
-        android:textSize="25sp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
+        android:text="@string/add_new_device_string"
+        android:textSize="25sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -21,7 +21,7 @@
         android:id="@+id/dialog_add_device_subtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Choose a new name for your Device"
+        android:text="@string/choose_device_name_string"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="@+id/dialog_add_device_title"
         app:layout_constraintTop_toBottomOf="@+id/dialog_add_device_title" />
@@ -31,7 +31,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:hint="New Name"
+        android:hint="@string/new_name_string"
+        android:inputType="text"
         android:maxLength="65"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -70,14 +71,14 @@
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="ADD NEW DEVICE" />
+            android:text="@string/add_new_device_button_string" />
 
         <Button
             android:id="@+id/button_close_add_device_dialog"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="CANCEL" />
+            android:text="@string/cancel_string" />
     </LinearLayout>
 
     <include
@@ -106,43 +107,43 @@
             android:id="@+id/door_radioButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Door" />
+            android:text="@string/door_string" />
 
         <RadioButton
             android:id="@+id/faucet_radioButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Faucet" />
+            android:text="@string/faucet_string" />
 
         <RadioButton
             android:id="@+id/blinds_radioButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Blinds" />
+            android:text="@string/blinds_string" />
 
         <RadioButton
             android:id="@+id/speaker_radioButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Speaker" />
+            android:text="@string/speaker_string" />
 
         <RadioButton
             android:id="@+id/refrigerator_radioButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Refrigerator" />
+            android:text="@string/refrigerator_string" />
 
         <RadioButton
             android:id="@+id/vacuum_radioButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Vacuum" />
+            android:text="@string/vacuum_string_2" />
 
         <RadioButton
             android:id="@+id/lights_radioButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Lights" />
+            android:text="@string/light_string" />
     </RadioGroup>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

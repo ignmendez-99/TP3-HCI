@@ -28,7 +28,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:maxWidth="210dp"
-                android:text="ROOM NAME"
+                android:text="@string/room_name_placeholder"
                 android:textAlignment="center"
                 android:textColor="#000"
                 android:textSize="20sp"
@@ -48,7 +48,7 @@
                 android:id="@+id/devices_inside"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=" devices inside"
+                android:text="@string/devices_inside_string"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/room_name" />

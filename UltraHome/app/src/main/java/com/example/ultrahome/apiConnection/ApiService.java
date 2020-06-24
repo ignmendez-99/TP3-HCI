@@ -13,6 +13,7 @@ import com.example.ultrahome.apiConnection.entities.deviceEntities.door.DoorStat
 import com.example.ultrahome.apiConnection.entities.deviceEntities.faucet.FaucetState;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.lights.LightState;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.refrigerator.RefrigeratorState;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.speaker.SpeakerState;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.vacuum.VacuumState;
 
 import java.util.ArrayList;
@@ -217,5 +218,28 @@ public interface ApiService {
     @PUT("devices/{deviceId}/{actionName}")
     @Headers("Content-Type: application/json")
     Call<Result<String>> setVacuumLocation(@Path("deviceId") String deviceId, @Path("actionName") String actionName, @Body String [] data);
+
+    ////////////// SPEAKER CONTROLS ////////////////////
+
+    @GET("devices/{deviceId}/state")
+    Call<Result<SpeakerState>> getSpeakerState(@Path("deviceId") String deviceId);
+
+    @PUT("devices/{deviceId}/{actionName}")
+    @Headers("Content-Type: application/json")
+    Call<Result<Integer>> setSpeakerVolume(@Path("deviceId") String deviceId, @Path("actionName") String actionName, @Body Integer [] data);
+
+
+    @PUT("devices/{deviceId}/{actionName}")
+    @Headers("Content-Type: application/json")
+    Call<Result<Boolean>> playPauseStopOrResumeSpeaker(@Path("deviceId") String deviceId, @Path("actionName") String actionName);
+
+    @PUT("devices/{deviceId}/{actionName}")
+    @Headers("Content-Type: application/json")
+    Call<Result<Boolean>> nextOrPreviousSpeakerSong(@Path("deviceId") String deviceId, @Path("actionName") String actionName);
+
+    @PUT("devices/{deviceId}/{actionName}")
+    @Headers("Content-Type: application/json")
+    Call<Result<String>> setSpeakerGenre(@Path("deviceId") String deviceId, @Path("actionName") String actionName, @Body String [] data);
+
 
 }

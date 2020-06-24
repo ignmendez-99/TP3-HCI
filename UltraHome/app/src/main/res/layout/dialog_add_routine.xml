@@ -9,10 +9,10 @@
         android:id="@+id/dialog_add_routine_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Add Routine"
-        android:textSize="25sp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
+        android:text="@string/add_new_routine_string"
+        android:textSize="25sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -20,7 +20,7 @@
         android:id="@+id/dialog_add_routine_subtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Choose a new name for your Routine"
+        android:text="@string/choose_routine_name_string"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="@+id/dialog_add_routine_title"
         app:layout_constraintTop_toBottomOf="@+id/dialog_add_routine_title" />
@@ -30,7 +30,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:hint="New Name"
+        android:hint="@string/new_name_string"
         android:maxLength="65"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -40,9 +40,9 @@
         android:id="@+id/devices_to_select"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Choose a device"
-        android:textSize="20sp"
         android:paddingTop="10dp"
+        android:text="@string/choose_a_device_string"
+        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="@+id/routine_name_edit_text"
         app:layout_constraintTop_toBottomOf="@+id/routine_name_edit_text" />
 
@@ -106,14 +106,14 @@
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="ADD ACTION" />
+            android:text="@string/add_action_string" />
 
         <Button
             android:id="@+id/button_show_AddRoutineDialog"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="ADD NEW Routine" />
+            android:text="@string/add_new_routine_button_string" />
 
         <Button
             android:id="@+id/button_close_add_routine_dialog"

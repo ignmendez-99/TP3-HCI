@@ -42,8 +42,8 @@
                             android:id="@+id/routine_name"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Routine Name"
-                            android:textAppearance="?attr/textAppearanceHeadline6"
+                            android:text="@string/routine_name_placeholder"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Large"
                             android:textSize="20dp" />
 
                     </LinearLayout>

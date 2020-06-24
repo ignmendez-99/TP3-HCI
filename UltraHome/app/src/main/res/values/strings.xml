@@ -6,11 +6,11 @@
     <!-- ////////////// BLINDS STRINGS ////////////// -->
 
     <string name="max_level_string">MAX. LEVEL:</string>
-    <string name="max_level_placeholder">100%</string>  <!-- PLACEHOLDER, WILL BE EDITED LATER -->
+    <string name="max_level_placeholder" translatable="false">100%</string>  <!-- PLACEHOLDER, WILL BE EDITED LATER -->
     <string name="current_level_string">CURRENT LEVEL</string>
-    <string name="open_completely_string">OPEN COMPLETELY</string>
-    <string name="close_completely_string">CLOSE COMPLETELY</string>
-    <string name="blinds_percentage_text">PERCENTAGE</string>
+    <string name="open_completely_string">OPEN</string>
+    <string name="close_completely_string">CLOSE</string>
+    <string name="blinds_percentage_text">LEVEL</string>
     <string name="status_placeholder">CLOSING…</string>  <!-- PLACEHOLDER, WILL BE EDITED LATER -->
 
     <!-- ////////////// REFRIGERATOR STRINGS ////////////// -->
@@ -18,7 +18,7 @@
     <string name="fridge_temp_string">FRIDGE TEMP.:</string>
     <string name="freezer_temp_string">FREEZER TEMP.:</string>
     <string name="mode_string">MODE:</string>
-    <string name="celsius_string">º C</string>
+    <string name="celsius_string" translatable="false">º C</string>
     <string-array name="fridge_temps">
         <item>2</item>
         <item>3</item>
@@ -54,7 +54,7 @@
     <string name="dispense_exact_amount_string">DISPENSE EXACT AMOUNT</string>
     <string name="cancel_string">CANCEL</string>
     <string name="stop_string">STOP</string>
-    <string name="amount_hint_string">AMOUN</string>
+    <string name="amount_hint_string">AMOUNT</string>
     <string-array name="units">
         <item>ml</item>
         <item>cl</item>
@@ -75,7 +75,7 @@
     <string name="vacuum_string">VACUUM</string>
     <string name="mop_string">MOP</string>
     <string name="pause_string">PAUSE</string>
-    <string name="dock_string">DOCK</string>
+    <string name="dock_string" translatable="false">DOCK</string>
     <string name="location_string">LOCATION</string>
     <string name="battery_placeholder">BATTERY: 100%</string>  <!-- PLACEHOLDER, WILL BE EDITED LATER -->
 
@@ -83,9 +83,86 @@
 
     <string name="on_string">ON</string>
     <string name="off_string">OFF</string>
-    <string name="brightness_string">BRIGHTNESS:</string>
-    <string name="color_string">COLOR:</string>
-    <string name="brightness_placeholder">100</string>  <!-- PLACEHOLDER, WILL BE EDITED LATER -->
+    <string name="brightness_string">INTENSITY:</string>
+    <string name="color_string" translatable="false">COLOR:</string>
+    <string name="brightness_placeholder" translatable="false">100</string>  <!-- PLACEHOLDER, WILL BE EDITED LATER -->
+
+    <!-- ////////////// ADD NEW DEVICE DIALOG STRINGS ////////////// -->
+
+    <string name="add_new_device_string">Add new device</string>
+    <string name="choose_device_name_string">How do you want to call it?</string>
+    <string name="new_name_string">New name</string>
+    <string name="door_string">Door</string>
+    <string name="faucet_string">Faucet</string>
+    <string name="blinds_string">Blinds</string>
+    <string name="speaker_string">Speaker</string>
+    <string name="refrigerator_string">Refrigerator</string>
+    <string name="vacuum_string_2">Vacuum</string>
+    <string name="light_string">Light</string>
+    <string name="add_new_device_button_string">Add</string>
+    <!--  Cancel string used from above  -->
+
+    <!-- ////////////// ADD NEW ROUTINE DIALOG STRINGS ////////////// -->
+
+    <string name="add_new_routine_string">Add new routine</string>
+    <string name="choose_routine_name_string">How do you want to call it?</string>
+    <!--  New Name string used from above  -->
+    <string name="choose_a_device_string">Choose a device</string>
+    <string name="add_action_string">Add Action</string>
+    <string name="add_new_routine_button_string">Add routine</string>
+    <!--  Cancel string used from above  -->
+
+    <!-- ////////////// ADD NEW ROOM DIALOG STRINGS ////////////// -->
+
+    <string name="add_new_room_string">Add new room</string>
+    <string name="choose_room_name_string">Which room is it?</string>
+    <!--  New Name string used from above  -->
+    <!--  Cancel string used from above  -->
+
+    <!-- ////////////// ADD NEW HOME DIALOG STRINGS ////////////// -->
+
+    <string name="add_new_home_string">Add New Home</string>
+    <string name="choose_home_name_string">Which home is it?</string>
+    <!--  New Name string used from above  -->
+    <!--  Cancel string used from above  -->
+
+    <!-- ////////////// PROFILE STRINGS ////////////// -->
+
+    <string name="edit_profile_string">Edit profile</string>
+    <string name="settings_string">Settings</string>
+    <string name="faq_string">FAQ</string>
+    <string name="about_us_string">About us</string>
+    <string name="log_out_string">Log out</string>
+
+    <!-- ////////////// HOME GRID AND ROW STRINGS ////////////// -->
+
+    <string name="home_name_placeholder">Home Name</string>  <!-- PLACEHOLDER, WILL BE EDITED LATER -->
+    <string name="rooms_inside_string">rooms inside</string>
+
+    <!-- ////////////// ROOM GRID AND ROW STRINGS ////////////// -->
+
+    <string name="room_name_placeholder">Room Name</string>  <!-- PLACEHOLDER, WILL BE EDITED LATER -->
+    <string name="devices_inside_string">devices inside</string>
+
+    <!-- ////////////// ROUTINE ROW STRINGS ////////////// -->
+
+    <string name="routine_name_placeholder">Routine Name</string>  <!-- PLACEHOLDER, WILL BE EDITED LATER -->
+
+    <!-- //////////////  DEVICES LIST STRINGS ////////////// -->
+
+    <string name="failed_to_get_devices_string">Could not recover devices!</string>
+    <string name="try_again_string">Try again</string>
+    <string name="no_devices_string">You don\'t have any devices!\n Press the + button to add one :)</string>
+    <string name="placeholder_string" translatable="false">Placeholder</string>
+
+    <!-- //////////////  ROOMS LIST STRINGS ////////////// -->
+
+    <string name="failed_to_get_rooms_string">Could not recover rooms!</string>
+    <!--  Try again string used from above  -->
+    <string name="no_rooms_string">You don\'t have any rooms!\n Press the + button to add one :)</string>
+
+
+
 
 
 
@@ -101,6 +178,7 @@
     <!-- ////////////// FAUCET AND VACUUM STRINGS ////////////// -->
 
     <string name="start_string">START</string>
+
 
 
 
@@ -124,7 +202,7 @@
     <string name="delete_button">Delete</string>
     <string name="done_button">Done</string>
 
-    <string name="handle_unexpected_error">OOPS! THERE\'S A PROBLEM ON OUR SIDE :(</string>
+    <string name="handle_unexpected_error">Oops! There\'s a problem on our side :(</string>
 
     <string name="delete_device_confirmation">Are you sure you want to delete the device?</string>
 </resources>

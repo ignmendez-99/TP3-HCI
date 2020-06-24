@@ -29,8 +29,8 @@
             android:id="@+id/get_devices_failed_textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Could not recover Devices!"
-            android:textSize="20dp"
+            android:text="@string/failed_to_get_devices_string"
+            android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -39,7 +39,7 @@
             android:id="@+id/button_get_devices_again"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Try Again"
+            android:text="@string/try_again_string"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -50,10 +50,10 @@
         android:id="@+id/zero_devices"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:text="You don't have any Devices!\n Press the green button to add one!"
-        android:textSize="20sp"
+        android:text="@string/no_devices_string"
         android:textAlignment="center"
+        android:textSize="20sp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -71,10 +71,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="13dp"
         android:ems="10"
-        android:visibility="gone"
         android:inputType="textPersonName"
-        android:text="PLACEHOLDER EDIT"
+        android:text="@string/placeholder_string"
         android:textSize="24sp"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/horizontal_devices_recycler_view" />
 
@@ -84,12 +84,12 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="10dp"
-        android:visibility="gone"
-        android:text="PLACEHOLDER TEXT"
+        android:text="@string/placeholder_string"
         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
         android:textSize="24sp"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/horizontal_devices_recycler_view"/>
+        app:layout_constraintTop_toBottomOf="@id/horizontal_devices_recycler_view" />
 
     <FrameLayout
         android:id="@+id/device_control_container"
