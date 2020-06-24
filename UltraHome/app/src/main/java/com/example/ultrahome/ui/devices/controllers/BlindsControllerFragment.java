@@ -96,19 +96,16 @@ public class BlindsControllerFragment extends Fragment {
                         else if (currentLevel == 0)
                             openButton.setEnabled(false);
                     } else {
-                        ErrorHandler.handleError(response, requireView(), "MENSAJE");
-// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
+                        ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                     }
                 } else {
-                    ErrorHandler.handleError(response, requireView(), "MENSAJE");
-// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
+                    ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<Result<BlindsState>> call, @NonNull Throwable t) {
                 ErrorHandler.handleUnexpectedError(t, requireView(), BlindsControllerFragment.this);
-                // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
             }
         });
 
@@ -148,7 +145,7 @@ public class BlindsControllerFragment extends Fragment {
 
     private void openBlinds(View view) {
         if (currentLevel == 0) {
-            Toast.makeText(getContext(), "ALREADY FULLY OPEN!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), getString(R.string.already_fully_open_string), Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -158,30 +155,27 @@ public class BlindsControllerFragment extends Fragment {
                 if (response.isSuccessful()) {
                     Result<Boolean> result = response.body();
                     if (result != null) {
-                        Toast.makeText(getContext(), "OPENING COMPLETELY", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), getString(R.string.opening_string), Toast.LENGTH_SHORT).show();
                         runThreads = true;
                         updateProgressBar();
                     } else {
-                        ErrorHandler.handleError(response, requireView(), "MENSAJE");
-// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
+                        ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                     }
                 } else {
-                    ErrorHandler.handleError(response, requireView(), "MENSAJE");
-// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
+                    ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
                 ErrorHandler.handleUnexpectedError(t, requireView(), BlindsControllerFragment.this);
-                // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
             }
         });
     }
 
     private void closeBlinds(View view) {
         if (currentLevel == level) {
-            Toast.makeText(getContext(), "ALREADY CLOSED TO MAX LEVEL!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), getString(R.string.already_fully_closed_string), Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -191,23 +185,20 @@ public class BlindsControllerFragment extends Fragment {
                 if (response.isSuccessful()) {
                     Result<Boolean> result = response.body();
                     if (result != null) {
-                        Toast.makeText(getContext(), "CLOSING COMPLETELY", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), getString(R.string.closing_string), Toast.LENGTH_SHORT).show();
                         runThreads = true;
                         updateProgressBar();
                     } else {
-                        ErrorHandler.handleError(response, requireView(), "MENSAJE");
-// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
+                        ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                     }
                 } else {
-                    ErrorHandler.handleError(response, requireView(), "MENSAJE");
-// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
+                    ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
                 ErrorHandler.handleUnexpectedError(t, requireView(), BlindsControllerFragment.this);
-                // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
             }
         });
     }
@@ -224,29 +215,26 @@ public class BlindsControllerFragment extends Fragment {
                 if (response.isSuccessful()) {
                     Result<Integer> result = response.body();
                     if (result != null) {
-                        Toast.makeText(getContext(), "NEW MAX LEVEL SET AT  " + newLevel + "%", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), getString(R.string.new_max_level_set_at_string) + " " + newLevel + "%", Toast.LENGTH_SHORT).show();
                         level = newLevel;
                         runThreads = true;
                         updateProgressBar();
                     } else {
-                        ErrorHandler.handleError(response, requireView(), "MENSAJE");
-// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
+                        ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                     }
                 } else {
-                    ErrorHandler.handleError(response, requireView(), "MENSAJE");
-// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
+                    ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<Result<Integer>> call, @NonNull Throwable t) {
                 ErrorHandler.handleUnexpectedError(t, requireView(), BlindsControllerFragment.this);
-                // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
             }
         });
     }
 
-    private void updateProgressBar() {  // todo: DOESN'T WORK
+    private void updateProgressBar() {
         new Thread(() -> {
             while (runThreads) {
                 api.getBlindsState(deviceId, new Callback<Result<BlindsState>>() {
@@ -262,9 +250,10 @@ public class BlindsControllerFragment extends Fragment {
                                     case "opening":
                                         closeButton.setEnabled(true);
                                         openButton.setEnabled(false);
-                                        statusTextView.setText("OPENING...");
+                                        statusTextView.setText(getString(R.string.opening_string));
                                         statusTextView.setVisibility(View.VISIBLE);
                                         loadingProgressBar.setVisibility(View.VISIBLE);
+                                        levelSeekBar.setEnabled(false);
                                         shouldShowFinished = true;
                                         break;
                                     case "opened":
@@ -272,18 +261,20 @@ public class BlindsControllerFragment extends Fragment {
                                         openButton.setEnabled(false);
                                         statusTextView.setVisibility(View.INVISIBLE);
                                         loadingProgressBar.setVisibility(View.INVISIBLE);
+                                        levelSeekBar.setEnabled(true);
                                         if(shouldShowFinished) {
                                             shouldShowFinished = false;
-                                            Toast.makeText(getContext(), "FINISHED OPENING!", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(getContext(), getString(R.string.finished_opening_string), Toast.LENGTH_SHORT).show();
                                         }
                                         runThreads = false;
                                         break;
                                     case "closing":
                                         closeButton.setEnabled(false);
                                         openButton.setEnabled(true);
-                                        statusTextView.setText("CLOSING...");
+                                        statusTextView.setText(getString(R.string.closing_string));
                                         statusTextView.setVisibility(View.VISIBLE);
                                         loadingProgressBar.setVisibility(View.VISIBLE);
+                                        levelSeekBar.setEnabled(false);
                                         shouldShowFinished = true;
                                         break;
                                     case "closed":
@@ -291,9 +282,10 @@ public class BlindsControllerFragment extends Fragment {
                                         openButton.setEnabled(true);
                                         statusTextView.setVisibility(View.INVISIBLE);
                                         loadingProgressBar.setVisibility(View.INVISIBLE);
+                                        levelSeekBar.setEnabled(true);
                                         if(shouldShowFinished) {
                                             shouldShowFinished = false;
-                                            Toast.makeText(getContext(), "FINISHED CLOSING!", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(getContext(), getString(R.string.finished_closing_string), Toast.LENGTH_SHORT).show();
                                         }
                                         runThreads = false;
                                         break;
@@ -301,25 +293,22 @@ public class BlindsControllerFragment extends Fragment {
                                 }
                                 currentLevelProgressBar.setProgress(currentLevel);
                             } else {
-                                ErrorHandler.handleError(response, requireView(), "MENSAJE");
-// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
+                                ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                             }
                         } else {
-                            ErrorHandler.handleError(response, requireView(), "MENSAJE");
-// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
+                            ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                         }
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<Result<BlindsState>> call, @NonNull Throwable t) {
                         ErrorHandler.handleUnexpectedError(t, requireView(), BlindsControllerFragment.this);
-                        // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
                     }
                 });
                 try {
                     Thread.sleep(2000);
                 } catch (Exception e) {
-                    System.out.println("ERROR SLEEPING WHEN UPDATING SEEKBAR: " + e.getMessage());
+                    System.out.println(e.getMessage());
                 }
             }
         }).start();

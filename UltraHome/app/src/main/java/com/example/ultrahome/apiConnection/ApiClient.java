@@ -436,20 +436,56 @@ public class ApiClient {
         return call;
     }
 
-    public Call<Result<Boolean>> play(String deviceId, String command, Callback<Result<Boolean>> callback) {
+    public Call<Result<Boolean>> play(String deviceId, Callback<Result<Boolean>> callback) {
         Call<Result<Boolean>> call = this.service.playPauseStopOrResumeSpeaker(deviceId, "play");
         call.enqueue(callback);
         return call;
     }
 
-    public Call<Result<Boolean>> pause(String deviceId, String command, Callback<Result<Boolean>> callback) {
+    public Call<Result<Boolean>> resume(String deviceId, Callback<Result<Boolean>> callback) {
+        Call<Result<Boolean>> call = this.service.playPauseStopOrResumeSpeaker(deviceId, "resume");
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<Boolean>> pause(String deviceId, Callback<Result<Boolean>> callback) {
         Call<Result<Boolean>> call = this.service.playPauseStopOrResumeSpeaker(deviceId, "pause");
         call.enqueue(callback);
         return call;
     }
 
-    public Call<Result<Boolean>> stop(String deviceId, String command, Callback<Result<Boolean>> callback) {
+    public Call<Result<Boolean>> stop(String deviceId, Callback<Result<Boolean>> callback) {
         Call<Result<Boolean>> call = this.service.playPauseStopOrResumeSpeaker(deviceId, "stop");
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<Integer>> setSpeakerVolume(String deviceId, Integer newVolume, Callback<Result<Integer>> callback) {
+        Integer [] aux = new Integer[1];
+        aux[0] = newVolume;
+
+        Call<Result<Integer>> call = this.service.setSpeakerVolume(deviceId, "setVolume", aux);
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<String>> setSpeakerGenre(String deviceId, String newGenre, Callback<Result<String>> callback) {
+        String [] aux = new String[1];
+        aux[0] = newGenre;
+
+        Call<Result<String>> call = this.service.setSpeakerGenre(deviceId, "setGenre", aux);
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<Boolean>> nextSong(String deviceId, Callback<Result<Boolean>> callback) {
+        Call<Result<Boolean>> call = this.service.nextOrPreviousSpeakerSong(deviceId, "nextSong");
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<Boolean>> previousSong(String deviceId, Callback<Result<Boolean>> callback) {
+        Call<Result<Boolean>> call = this.service.nextOrPreviousSpeakerSong(deviceId, "previousSong");
         call.enqueue(callback);
         return call;
     }

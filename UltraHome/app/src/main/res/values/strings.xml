@@ -3,15 +3,34 @@
     <!--  //////////////  UNIQUE STRINGS  //////////////  -->
     <!--  //////////////////////////////////////////////  -->
 
+    <!-- ////////////// ERROR STRINGS ////////////// -->
+
+    <string name="error_1_string">Oops! Something went wrong :(</string>
+    <string name="error_2_string">" Unused by now"</string>   <!-- UNUSED -->
+
     <!-- ////////////// BLINDS STRINGS ////////////// -->
 
-    <string name="max_level_string">MAX. LEVEL:</string>
+    <string name="max_level_string">LEVEL:</string>
     <string name="max_level_placeholder" translatable="false">100%</string>  <!-- PLACEHOLDER, WILL BE EDITED LATER -->
     <string name="current_level_string">CURRENT LEVEL</string>
     <string name="open_completely_string">OPEN</string>
     <string name="close_completely_string">CLOSE</string>
     <string name="blinds_percentage_text">LEVEL</string>
     <string name="status_placeholder">CLOSING…</string>  <!-- PLACEHOLDER, WILL BE EDITED LATER -->
+
+    <string name="already_fully_open_string">Already fully open!</string>
+    <string name="already_fully_closed_string">Already fully closed!</string>
+    <string name="opening_string">Opening…</string>
+    <string name="closing_string">Closing…</string>
+    <string name="new_max_level_set_at_string">New  level set at</string>
+    <string name="finished_opening_string">Finished opening!</string>
+    <string name="finished_closing_string">Finished closing!</string>
+
+    <!-- ////////////// SPEAKER STRINGS ////////////// -->
+
+    <string name="speaker_placeholder" translatable="false"> - </string> <!-- PLACEHOLDER, WILL BE EDITED LATER -->
+    <string name="speaker_placeholder_2" translatable="false">-:--</string> <!-- PLACEHOLDER, WILL BE EDITED LATER -->
+    <string name="next_genre_string">NEXT GEN.</string>
 
     <!-- ////////////// REFRIGERATOR STRINGS ////////////// -->
 
@@ -65,10 +84,21 @@
         <item>kl</item>
     </string-array>
 
+    <string name="opening_faucet_string">Opening faucet…</string>
+    <string name="closing_faucet_string">Closing faucet…</string>
+    <string name="enter_amount_string">You must enter an amount!</string>
+    <string name="cant_be_nothing_string">You can\'t dispense nothing!</string>
+    <string name="dispensing_string">Dispensing</string>
+
     <!-- ////////////// DOOR STRINGS ////////////// -->
 
     <string name="lock_string">LOCK</string>
     <string name="unlock_string">UNLOCK</string>
+
+    <string name="opening_door_string">Opening door…</string>
+    <string name="closing_door_string">Closing door…</string>
+    <string name="locking_door_string">Locking door…</string>
+    <string name="unlocking_door_string">Unlocking door…</string>
 
     <!-- ////////////// VACUUM STRINGS ////////////// -->
 
@@ -79,6 +109,11 @@
     <string name="location_string">LOCATION</string>
     <string name="battery_placeholder">BATTERY: 100%</string>  <!-- PLACEHOLDER, WILL BE EDITED LATER -->
 
+    <string name="battery_string">Battery:</string>
+    <string name="mode_changed_string">Mode changed!</string>
+    <string name="status_changed_string">Status changed!</string>
+    <string name="battery_too_low_to_start_string">Can\'t start, battery is too low :(</string>
+
     <!-- ////////////// LIGHTS STRINGS ////////////// -->
 
     <string name="on_string">ON</string>
@@ -86,6 +121,11 @@
     <string name="brightness_string">INTENSITY:</string>
     <string name="color_string" translatable="false">COLOR:</string>
     <string name="brightness_placeholder" translatable="false">100</string>  <!-- PLACEHOLDER, WILL BE EDITED LATER -->
+
+    <string name="color_changed_string">Color changed!</string>
+    <string name="intensity_set_to_string">Intensity set to</string>
+    <string name="turned_on_string">Turned on!</string>
+    <string name="turned_off_string">Turned off!</string>
 
     <!-- ////////////// ADD NEW DEVICE DIALOG STRINGS ////////////// -->
 
