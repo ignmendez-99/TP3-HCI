@@ -361,12 +361,12 @@ public class DevicesListFragment extends Fragment {
                                 view.findViewById(R.id.zero_devices).setVisibility(View.VISIBLE);
                             view.findViewById(R.id.button_show_AddDeviceDialog).setVisibility(View.VISIBLE);
                         } else {
-                            ErrorHandler.handleError(response);
+                            ErrorHandler.logError(response);
                             if (fragmentOnScreen)
                                 showGetDevicesError();
                         }
                     } else {
-                        ErrorHandler.handleError(response);
+                        ErrorHandler.logError(response);
                         if(fragmentOnScreen)
                             showGetDevicesError();
                     }
@@ -415,7 +415,7 @@ public class DevicesListFragment extends Fragment {
             @Override
             public void onResponse(@NonNull Call<Result<Boolean>> call, @NonNull Response<Result<Boolean>> response) {
                 if(!response.isSuccessful()) {
-                    ErrorHandler.handleError(response);
+                    ErrorHandler.logError(response);
                 }
             }
             @Override
@@ -523,13 +523,13 @@ public class DevicesListFragment extends Fragment {
                                         if(devicesIds.size() == 0)
                                             DevicesListFragment.this.requireView().findViewById(R.id.zero_devices).setVisibility(View.VISIBLE);
                                     } else {
-                                        ErrorHandler.handleError(response);
+                                        ErrorHandler.logError(response);
                                         if(fragmentOnScreen)
                                             showDeleteDeviceError();
                                     }
 
                                 } else {
-                                    ErrorHandler.handleError(response);
+                                    ErrorHandler.logError(response);
                                     if(fragmentOnScreen)
                                         showDeleteDeviceError();
                                 }

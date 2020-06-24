@@ -2,11 +2,8 @@ package com.example.ultrahome.ui.routines;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -15,7 +12,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -27,11 +23,8 @@ import com.example.ultrahome.apiConnection.entities.Result;
 import com.example.ultrahome.apiConnection.entities.Routine.ActionsItem;
 import com.example.ultrahome.apiConnection.entities.Routine.Routine;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.Device;
-import com.example.ultrahome.apiConnection.entities.deviceEntities.DeviceType;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.DeviceTypeAction;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.DeviceTypeComplete;
-import com.example.ultrahome.ui.devices.DevicesListFragment;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -218,18 +211,18 @@ public class AddRoutineDialog extends Dialog {
                                 }
                             }
                         } else {
-                            ErrorHandler.handleError(response);
-                            // todo: falta mensaje amigable de error
+                            ErrorHandler.logError(response);
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                         }
                     } else {
-                        ErrorHandler.handleError(response);
-                        // todo: falta mensaje amigable de error
+                        ErrorHandler.logError(response);
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                     }
                 }
 
                 @Override
                 public void onFailure(@NonNull Call<Result<List<Device>>> call, @NonNull Throwable t) {
-                    ErrorHandler.handleUnexpectedErrorInDialog(t);
+                    ErrorHandler.logUnexpectedError(t);
                     // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
                 }
             });
@@ -251,18 +244,18 @@ public class AddRoutineDialog extends Dialog {
                     }
                     else{
                         //Snackbar.make(getCurrentFocus(),"ERROR tipo 1", Snackbar.LENGTH_LONG).show();
-                        ErrorHandler.handleError(response);
-                        // todo: falta mensaje amigable de error
+                        ErrorHandler.logError(response);
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                     }
                 } else {
-                    ErrorHandler.handleError(response);
-                    // todo: falta mensaje amigable de error
+                    ErrorHandler.logError(response);
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<Result<DeviceTypeComplete>> call, @NonNull Throwable t) {
-                ErrorHandler.handleUnexpectedErrorInDialog(t);
+                ErrorHandler.logUnexpectedError(t);
                 // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
             }
         });

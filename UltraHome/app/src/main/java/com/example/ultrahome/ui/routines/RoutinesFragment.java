@@ -221,18 +221,22 @@ public class RoutinesFragment extends Fragment {
                                 routineIds.remove(positionToDelete.intValue());
                                 routineNamesBackupBeforeDeleting.remove(0);
                             } else {
-                                ErrorHandler.handleError(response);
+                                ErrorHandler.handleError(response, requireView(), "MESSAGE");
+                                // todo: falta mensaje amigable de error
                                 // todo: aca se deberia volver a poner la Routine en la lista
                                 // todo: (si hay dudas, miren como lo hice en el onDismissed de FragmentHomes
                             }
                         } else {
-                            ErrorHandler.handleError(response);
+                            ErrorHandler.handleError(response, requireView(), "MESSAGE");
+                            // todo: falta mensaje amigable de error
                             // todo: aca se deberia volver a poner la Routine en la lista
                             // todo: (si hay dudas, miren como lo hice en el onDismissed de FragmentHomes
                         }
                     }
                     @Override
                     public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
+                        ErrorHandler.handleUnexpectedError(t, requireView(), RoutinesFragment.this);
+                        // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
                         // todo: aca se deberia volver a poner la Routine en la lista
                         // todo: (si hay dudas, miren como lo hice en el onDismissed de FragmentHomes
                     }
@@ -256,12 +260,12 @@ public class RoutinesFragment extends Fragment {
                             adapter.notifyItemInserted(routineNames.size() - 1);
                         }
                     } else {
-                        ErrorHandler.handleError(response);
-                        // todo: falta mensaje amigable de error
+                        ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                     }
                 } else {
-                    ErrorHandler.handleError(response);
-                    // todo: falta mensaje amigable de error
+                    ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                 }
             }
 
@@ -293,12 +297,12 @@ public class RoutinesFragment extends Fragment {
                             Toast.makeText(getContext(), "Routine Fail", Toast.LENGTH_SHORT);
                         }
                     } else {
-                        ErrorHandler.handleError(response);
-                        // todo: falta mensaje amigable de error
+                        ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                     }
                 }else{
-                    ErrorHandler.handleError(response);
-                    // todo: falta mensaje amigable de error
+                    ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                 }
             }
 

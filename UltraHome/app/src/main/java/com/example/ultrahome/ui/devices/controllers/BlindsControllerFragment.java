@@ -100,12 +100,12 @@ public class BlindsControllerFragment extends Fragment {
                         else if (currentLevel == 0)
                             openButton.setEnabled(false);
                     } else {
-                        ErrorHandler.handleError(response);
-                        // todo: falta mensaje amigable de error
+                        ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                     }
                 } else {
-                    ErrorHandler.handleError(response);
-                    // todo: falta mensaje amigable de error
+                    ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                 }
             }
 
@@ -166,12 +166,12 @@ public class BlindsControllerFragment extends Fragment {
                         runThreads = true;
                         updateProgressBar();
                     } else {
-                        ErrorHandler.handleError(response);
-                        // todo: falta mensaje amigable de error
+                        ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                     }
                 } else {
-                    ErrorHandler.handleError(response);
-                    // todo: falta mensaje amigable de error
+                    ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                 }
             }
 
@@ -199,12 +199,12 @@ public class BlindsControllerFragment extends Fragment {
                         runThreads = true;
                         updateProgressBar();
                     } else {
-                        ErrorHandler.handleError(response);
-                        // todo: falta mensaje amigable de error
+                        ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                     }
                 } else {
-                    ErrorHandler.handleError(response);
-                    // todo: falta mensaje amigable de error
+                    ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                 }
             }
 
@@ -233,12 +233,12 @@ public class BlindsControllerFragment extends Fragment {
                         runThreads = true;
                         updateProgressBar();
                     } else {
-                        ErrorHandler.handleError(response);
-                        // todo: falta mensaje amigable de error
+                        ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                     }
                 } else {
-                    ErrorHandler.handleError(response);
-                    // todo: falta mensaje amigable de error
+                    ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                 }
             }
 
@@ -305,12 +305,12 @@ public class BlindsControllerFragment extends Fragment {
                                 }
                                 currentLevelProgressBar.setProgress(currentLevel);
                             } else {
-                                ErrorHandler.handleError(response);
-                                // todo: falta mensaje amigable de error
+                                ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                             }
                         } else {
-                            ErrorHandler.handleError(response);
-                            // todo: falta mensaje amigable de error
+                            ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                         }
                     }
 

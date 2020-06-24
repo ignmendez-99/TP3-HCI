@@ -16,7 +16,6 @@ import com.example.ultrahome.apiConnection.ApiClient;
 import com.example.ultrahome.apiConnection.ErrorHandler;
 import com.example.ultrahome.apiConnection.entities.Home;
 import com.example.ultrahome.apiConnection.entities.Result;
-import com.google.android.material.snackbar.Snackbar;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -83,11 +82,11 @@ public class AddHomeDialog extends Dialog {
                             dismiss();
                         } else {
                             addHomeFail();
-                            ErrorHandler.handleError(response);
+                            ErrorHandler.logError(response);
                         }
                     } else {
                         addHomeFail();
-                        ErrorHandler.handleError(response);
+                        ErrorHandler.logError(response);
                     }
                     findViewById(R.id.loadingAddingHome).setVisibility(View.GONE);
                     findViewById(R.id.add_home_buttom_pair).setVisibility(View.VISIBLE);
@@ -98,7 +97,7 @@ public class AddHomeDialog extends Dialog {
                     findViewById(R.id.loadingAddingHome).setVisibility(View.GONE);
                     findViewById(R.id.add_home_buttom_pair).setVisibility(View.VISIBLE);
                     addHomeFail();
-                    ErrorHandler.handleUnexpectedErrorInDialog(t);
+                    ErrorHandler.logUnexpectedError(t);
                 }
             });
         }).start();

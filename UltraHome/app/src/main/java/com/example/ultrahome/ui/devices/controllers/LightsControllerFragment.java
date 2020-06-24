@@ -173,12 +173,12 @@ public class LightsControllerFragment extends Fragment {
 
                         firstTime = false;
                     } else {
-                        ErrorHandler.handleError(response);
-                        // todo: falta mensaje amigable de error
+                        ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                     }
                 } else {
-                    ErrorHandler.handleError(response);
-                    // todo: falta mensaje amigable de error
+                    ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                 }
             }
 
@@ -242,12 +242,12 @@ public class LightsControllerFragment extends Fragment {
                         colorDisplay.setBackgroundColor(colors.get(currentColor));
                         Toast.makeText(getContext(),"COLOR CHANGED!", Toast.LENGTH_SHORT).show();
                     } else {
-                        ErrorHandler.handleError(response);
-                        // todo: falta mensaje amigable de error
+                        ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                     }
                 } else {
-                    ErrorHandler.handleError(response);
-                    // todo: falta mensaje amigable de error
+                    ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                 }
             }
 
@@ -273,12 +273,12 @@ public class LightsControllerFragment extends Fragment {
                         brightnessTextView.setText(currentBrightness + "%");
                         Toast.makeText(getContext(),"BRGIHTNESS SET TO " + brightnessSeekBar.getProgress(), Toast.LENGTH_SHORT).show();
                     } else {
-                        ErrorHandler.handleError(response);
-                        // todo: falta mensaje amigable de error
+                        ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                     }
                 } else {
-                    ErrorHandler.handleError(response);
-                    // todo: falta mensaje amigable de error
+                    ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                 }
             }
 
@@ -302,12 +302,12 @@ public class LightsControllerFragment extends Fragment {
                             Toast.makeText(getContext(),"TURNED ON", Toast.LENGTH_SHORT).show();
                             isOn = true;
                         } else {
-                            ErrorHandler.handleError(response);
-                            // todo: falta mensaje amigable de error
+                            ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                         }
                     } else {
-                        ErrorHandler.handleError(response);
-                        // todo: falta mensaje amigable de error
+                        ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                     }
                 }
 
@@ -327,12 +327,12 @@ public class LightsControllerFragment extends Fragment {
                             Toast.makeText(getContext(),"TURNED OFF", Toast.LENGTH_SHORT).show();
                             isOn = false;
                         } else {
-                            ErrorHandler.handleError(response);
-                            // todo: falta mensaje amigable de error
+                            ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                         }
                     } else {
-                        ErrorHandler.handleError(response);
-                        // todo: falta mensaje amigable de error
+                        ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                     }
                 }
 

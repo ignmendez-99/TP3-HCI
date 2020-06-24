@@ -25,7 +25,6 @@ import com.example.ultrahome.apiConnection.entities.deviceEntities.lights.Lights
 import com.example.ultrahome.apiConnection.entities.deviceEntities.refrigerator.Refrigerator;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.speaker.Speaker;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.vacuum.Vacuum;
-import com.google.android.material.snackbar.Snackbar;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -159,11 +158,11 @@ public class AddDeviceDialog extends Dialog {
                             linkNewDeviceWithThisRoom(temporalId, deviceTypeId);
                         } else {
                             addDeviceFail();
-                            ErrorHandler.handleError(response);
+                            ErrorHandler.logError(response);
                         }
                     } else {
                         addDeviceFail();
-                        ErrorHandler.handleError(response);
+                        ErrorHandler.logError(response);
                     }
                     findViewById(R.id.loadingAddingDevice).setVisibility(View.GONE);
                     findViewById(R.id.add_device_buttom_pair).setVisibility(View.VISIBLE);
@@ -173,7 +172,7 @@ public class AddDeviceDialog extends Dialog {
                     findViewById(R.id.loadingAddingDevice).setVisibility(View.GONE);
                     findViewById(R.id.add_device_buttom_pair).setVisibility(View.VISIBLE);
                     addDeviceFail();
-                    ErrorHandler.handleUnexpectedErrorInDialog(t);
+                    ErrorHandler.logUnexpectedError(t);
                 }
             });
         }).start();
@@ -189,18 +188,18 @@ public class AddDeviceDialog extends Dialog {
                         fragmentInstance.notifyNewDeviceAdded(deviceId, deviceName, deviceTypeId);
                         dismiss();
                     } else {
-                        ErrorHandler.handleError(response);
+                        ErrorHandler.logError(response);
                         addDeviceFail();
                     }
                 } else {
-                    ErrorHandler.handleError(response);
+                    ErrorHandler.logError(response);
                     addDeviceFail();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
-                ErrorHandler.handleUnexpectedErrorInDialog(t);
+                ErrorHandler.logUnexpectedError(t);
                 addDeviceFail();
             }
         });

@@ -16,7 +16,15 @@ public class ErrorHandler extends Fragment{
 
     private static final String LOG_TAG = "com.example.ultrahome";
 
-    public static <T> void handleError(@NonNull Response<T> response) {
+    public static <T> void handleError(@NonNull Response<T> response, View v, String errorMessage) {
+        Error error = ApiClient.getInstance().getError(response.errorBody());
+        String text = "ERROR" + error.getDescription().get(0) + error.getCode();
+        Log.e(LOG_TAG, text);
+
+        Snackbar.make(v, errorMessage, Snackbar.LENGTH_LONG).show();
+    }
+
+    public static <T> void logError(@NonNull Response<T> response) {
         Error error = ApiClient.getInstance().getError(response.errorBody());
         String text = "ERROR" + error.getDescription().get(0) + error.getCode();
         Log.e(LOG_TAG, text);
@@ -30,7 +38,7 @@ public class ErrorHandler extends Fragment{
         snackbar.show();
     }
 
-    public static void handleUnexpectedErrorInDialog(@NonNull Throwable t) {
+    public static void logUnexpectedError(@NonNull Throwable t) {
         Log.e(LOG_TAG, t.toString());
     }
 }

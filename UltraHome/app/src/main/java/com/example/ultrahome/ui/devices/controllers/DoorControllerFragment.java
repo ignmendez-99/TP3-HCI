@@ -85,12 +85,12 @@ public class DoorControllerFragment extends Fragment {
                             });
                         }
                     } else {
-                        ErrorHandler.handleError(response);
-                        // todo: falta mensaje amigable de error
+                        ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                     }
                 } else {
-                    ErrorHandler.handleError(response);
-                    // todo: falta mensaje amigable de error
+                    ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                 }
             }
 
@@ -139,12 +139,12 @@ public class DoorControllerFragment extends Fragment {
                         isOpen = true;
                         lockUnlockSwitch.setEnabled(false);
                     } else {
-                        ErrorHandler.handleError(response);
-                        // todo: falta mensaje amigable de error
+                        ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                     }
                 } else {
-                    ErrorHandler.handleError(response);
-                    // todo: falta mensaje amigable de error
+                    ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                 }
             }
 
@@ -171,12 +171,12 @@ public class DoorControllerFragment extends Fragment {
                         isOpen = false;
                         lockUnlockSwitch.setEnabled(true);
                     } else {
-                        ErrorHandler.handleError(response);
-                        // todo: falta mensaje amigable de error
+                        ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                     }
                 } else {
-                    ErrorHandler.handleError(response);
-                    // todo: falta mensaje amigable de error
+                    ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                 }
             }
 
@@ -208,12 +208,12 @@ public class DoorControllerFragment extends Fragment {
                         isLocked = true;
                         openCloseSwitch.setEnabled(false);
                     } else {
-                        ErrorHandler.handleError(response);
-                        // todo: falta mensaje amigable de error
+                        ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                     }
                 } else {
-                    ErrorHandler.handleError(response);
-                    // todo: falta mensaje amigable de error
+                    ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                 }
             }
 
@@ -241,12 +241,12 @@ public class DoorControllerFragment extends Fragment {
                         isLocked = false;
                         openCloseSwitch.setEnabled(true);
                     } else {
-                        ErrorHandler.handleError(response);
-                        // todo: falta mensaje amigable de error
+                        ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                     }
                 } else {
-                    ErrorHandler.handleError(response);
-                    // todo: falta mensaje amigable de error
+                    ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                 }
             }
 

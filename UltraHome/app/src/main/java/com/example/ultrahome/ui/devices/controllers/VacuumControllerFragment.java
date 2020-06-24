@@ -93,12 +93,12 @@ public class VacuumControllerFragment extends Fragment {
 
 
                     } else {
-                        ErrorHandler.handleError(response);
-                        // todo: falta mensaje amigable de error
+                        ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                     }
                 } else {
-                    ErrorHandler.handleError(response);
-                    // todo: falta mensaje amigable de error
+                    ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                 }
             }
 
@@ -145,12 +145,12 @@ public class VacuumControllerFragment extends Fragment {
                         Toast.makeText(getContext(), "MODE CHANGED TO " + newMode.toUpperCase(), Toast.LENGTH_LONG).show();
                         mode = newMode;
                     } else {
-                        ErrorHandler.handleError(response);
-                        // todo: falta mensaje amigable de error
+                        ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                     }
                 } else {
-                    ErrorHandler.handleError(response);
-                    // todo: falta mensaje amigable de error
+                    ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                 }
             }
 
@@ -187,9 +187,13 @@ public class VacuumControllerFragment extends Fragment {
                                                 status = "active";
                                                 Toast.makeText(getContext(), "STATUS CHANGED TO " + status.toUpperCase(), Toast.LENGTH_LONG).show();
                                                 updateButtons();
+                                            } else {
+                                                ErrorHandler.handleError(response, requireView(), "MESSAGE");
+                                                // todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                                             }
                                         } else {
-                                            ErrorHandler.handleError(response);
+                                            ErrorHandler.handleError(response, requireView(), "MESSAGE");
+                                            // todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                                         }
                                     }
 
@@ -200,12 +204,12 @@ public class VacuumControllerFragment extends Fragment {
                                 });
                             }
                         } else {
-                            ErrorHandler.handleError(response);
-                            // todo: falta mensaje amigable de error
+                            ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                         }
                     } else {
-                        ErrorHandler.handleError(response);
-                        // todo: falta mensaje amigable de error
+                        ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                     }
                 }
                 @Override
@@ -232,12 +236,12 @@ public class VacuumControllerFragment extends Fragment {
                             Toast.makeText(getContext(), "STATUS CHANGED TO " + status.toUpperCase(), Toast.LENGTH_LONG).show();
                             updateButtons();
                         } else {
-                            ErrorHandler.handleError(response);
-                            // todo: falta mensaje amigable de error
+                            ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                         }
                     } else {
-                        ErrorHandler.handleError(response);
-                        // todo: falta mensaje amigable de error
+                        ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                     }
                 }
 
@@ -312,12 +316,12 @@ public class VacuumControllerFragment extends Fragment {
                                 if(runThreads)
                                     batteryTextView.setText("BATTERY: " + vacuumState.getBatteryLevel() + "%");
                             } else {
-//                                ErrorHandler.handleError(response);
-                                // todo: falta mensaje amigable de error
+//                                ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                             }
                         } else {
-//                            ErrorHandler.handleError(response);
-                            // todo: falta mensaje amigable de error
+//                            ErrorHandler.handleError(response, requireView(), "MENSAJE");
+// todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                         }
                     }
 

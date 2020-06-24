@@ -84,11 +84,11 @@ public class AddRoomDialog extends Dialog {
                             linkNewRoomWithThisHome(temporalId);
                         } else {
                             addRoomFail();
-                            ErrorHandler.handleError(response);
+                            ErrorHandler.logError(response);
                         }
                     } else {
                         addRoomFail();
-                        ErrorHandler.handleError(response);
+                        ErrorHandler.logError(response);
                     }
                     findViewById(R.id.loadingAddingRoom).setVisibility(View.GONE);
                     findViewById(R.id.add_room_buttom_pair).setVisibility(View.VISIBLE);
@@ -98,7 +98,7 @@ public class AddRoomDialog extends Dialog {
                     findViewById(R.id.loadingAddingRoom).setVisibility(View.GONE);
                     findViewById(R.id.add_room_buttom_pair).setVisibility(View.VISIBLE);
                     addRoomFail();
-                    ErrorHandler.handleUnexpectedErrorInDialog(t);
+                    ErrorHandler.logUnexpectedError(t);
                 }
             });
         }).start();
@@ -114,18 +114,18 @@ public class AddRoomDialog extends Dialog {
                         fragmentInstance.notifyNewRoomAdded(newRoomId, roomName);
                         dismiss();
                     } else {
-                        ErrorHandler.handleError(response);
+                        ErrorHandler.logError(response);
                         addRoomFail();
                     }
                 } else {
-                    ErrorHandler.handleError(response);
+                    ErrorHandler.logError(response);
                     addRoomFail();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
-                ErrorHandler.handleUnexpectedErrorInDialog(t);
+                ErrorHandler.logUnexpectedError(t);
                 addRoomFail();
             }
         });

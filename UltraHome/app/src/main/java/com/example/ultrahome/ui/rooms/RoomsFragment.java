@@ -214,11 +214,12 @@ public class RoomsFragment extends Fragment {
                                 v.findViewById(R.id.zero_rooms).setVisibility(View.VISIBLE);
                             v.findViewById(R.id.button_show_AddRoomDialog).setVisibility(View.VISIBLE);
                         } else {
+                            ErrorHandler.logError(response);
                             if (fragmentOnScreen)
                                 showGetRoomsError();
                         }
                     } else {
-                        ErrorHandler.handleError(response);
+                        ErrorHandler.logError(response);
                         if(fragmentOnScreen)
                             showGetRoomsError();
                     }
@@ -267,7 +268,7 @@ public class RoomsFragment extends Fragment {
             @Override
             public void onResponse(@NonNull Call<Result<Boolean>> call, @NonNull Response<Result<Boolean>> response) {
                 if(!response.isSuccessful()) {
-                    ErrorHandler.handleError(response);
+                    ErrorHandler.logError(response);
                 }
             }
             @Override
@@ -313,12 +314,12 @@ public class RoomsFragment extends Fragment {
                                         if(roomIds.size() == 0)
                                             RoomsFragment.this.requireView().findViewById(R.id.zero_rooms).setVisibility(View.VISIBLE);
                                     } else {
-                                        ErrorHandler.handleError(response);
+                                        ErrorHandler.logError(response);
                                         if(fragmentOnScreen)
                                             showDeleteRoomError();
                                     }
                                 } else {
-                                    ErrorHandler.handleError(response);
+                                    ErrorHandler.logError(response);
                                     if(fragmentOnScreen)
                                         showDeleteRoomError();
                                 }

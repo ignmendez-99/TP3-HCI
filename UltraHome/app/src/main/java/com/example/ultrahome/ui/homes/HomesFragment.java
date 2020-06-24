@@ -202,11 +202,12 @@ public class HomesFragment extends Fragment{
                                 v.findViewById(R.id.zero_homes).setVisibility(View.GONE);
                             v.findViewById(R.id.button_show_AddHomeDialog).setVisibility(View.VISIBLE);
                         } else {
+                            ErrorHandler.logError(response);
                             if(fragmentOnScreen)
                                 showGetHomesError();
                         }
                     } else {
-                        ErrorHandler.handleError(response);
+                        ErrorHandler.logError(response);
                         if(fragmentOnScreen)
                             showGetHomesError();
                     }
@@ -284,11 +285,12 @@ public class HomesFragment extends Fragment{
                                         if(homeIds.size() == 0)
                                             HomesFragment.this.requireView().findViewById(R.id.zero_homes).setVisibility(View.VISIBLE);
                                     } else {
+                                        ErrorHandler.logError(response);
                                         if(fragmentOnScreen)
                                             showDeleteHomeError();
                                     }
                                 } else {
-                                    ErrorHandler.handleError(response);
+                                    ErrorHandler.logError(response);
                                     if(fragmentOnScreen)
                                         showDeleteHomeError();
                                 }
