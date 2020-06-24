@@ -17,6 +17,7 @@ import com.example.ultrahome.apiConnection.entities.Home;
 import com.example.ultrahome.apiConnection.entities.Result;
 import com.example.ultrahome.apiConnection.entities.Room;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.refrigerator.RefrigeratorState;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.speaker.SpeakerState;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.vacuum.VacuumState;
 
 import java.io.IOException;
@@ -426,4 +427,31 @@ public class ApiClient {
         call.enqueue(callback);
         return call;
     }
+
+    ////////////// VACUUM CALLS ////////////////////
+
+    public Call<Result<SpeakerState>> getSpeakerState(String deviceId, Callback<Result<SpeakerState>> callback) {
+        Call<Result<SpeakerState>> call = this.service.getSpeakerState(deviceId);
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<Boolean>> play(String deviceId, String command, Callback<Result<Boolean>> callback) {
+        Call<Result<Boolean>> call = this.service.playPauseStopOrResumeSpeaker(deviceId, "play");
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<Boolean>> pause(String deviceId, String command, Callback<Result<Boolean>> callback) {
+        Call<Result<Boolean>> call = this.service.playPauseStopOrResumeSpeaker(deviceId, "pause");
+        call.enqueue(callback);
+        return call;
+    }
+
+    public Call<Result<Boolean>> stop(String deviceId, String command, Callback<Result<Boolean>> callback) {
+        Call<Result<Boolean>> call = this.service.playPauseStopOrResumeSpeaker(deviceId, "stop");
+        call.enqueue(callback);
+        return call;
+    }
+
 }

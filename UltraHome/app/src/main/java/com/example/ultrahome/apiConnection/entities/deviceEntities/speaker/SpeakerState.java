@@ -17,4 +17,16 @@ public class SpeakerState extends DeviceState {
     @SerializedName("genre")
     @Expose
     private Integer genre;
+
+    public String getStatus() {
+        return status;
+    }
+
+    public Integer getVolume() {
+        return volume;
+    }
+
+    public Integer getGenre() {
+        return genre;
+    }
 }

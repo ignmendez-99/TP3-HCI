@@ -8,10 +8,10 @@
         android:id="@+id/dialog_add_room_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Add New Room"
-        android:textSize="25sp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
+        android:text="@string/add_new_room_string"
+        android:textSize="25sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -19,7 +19,7 @@
         android:id="@+id/dialog_add_room_subtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Choose a new name for your Room"
+        android:text="@string/choose_room_name_string"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="@+id/dialog_add_room_title"
         app:layout_constraintTop_toBottomOf="@+id/dialog_add_room_title" />
@@ -29,7 +29,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:hint="New Name"
+        android:hint="@string/new_name_string"
         android:maxLength="65"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -58,14 +58,14 @@
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="ADD NEW ROOM" />
+            android:text="@string/add_new_device_button_string" />
 
         <Button
             android:id="@+id/button_close_add_room_dialog"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="CANCEL" />
+            android:text="@string/cancel_string" />
     </LinearLayout>
 
     <include

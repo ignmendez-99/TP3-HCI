@@ -1,7 +1,6 @@
 package com.example.ultrahome.ui.devices.controllers;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,11 +17,8 @@ import androidx.fragment.app.Fragment;
 import com.example.ultrahome.R;
 import com.example.ultrahome.apiConnection.ApiClient;
 import com.example.ultrahome.apiConnection.ErrorHandler;
-import com.example.ultrahome.apiConnection.entities.Error;
 import com.example.ultrahome.apiConnection.entities.Result;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.blinds.BlindsState;
-
-import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
