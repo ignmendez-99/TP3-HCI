@@ -21,7 +21,7 @@ public class RoutinesAdapterGrid extends RoutinesAdapter {
     @Override
     public RoutinesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
-        View v = inflater.inflate(R.layout.routine_row_layout, parent, false);
-        return new RoutinesAdapter.RoutinesViewHolder(v);
+        View v = inflater.inflate(R.layout.routine_grid_layout, parent, false);
+        return new RoutinesViewHolder(v);
     }
 }
