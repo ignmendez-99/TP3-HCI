@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -64,6 +63,8 @@ public class DevicesListFragment extends Fragment {
     private List<String> devicesNames;
     private List<String> devicesIds;
     private List<String> deviceNamesBackupBeforeDeleting;
+    private List<String> deviceIdsBackupBeforeDeleting;
+    private List<String> deviceTypeIdsBackupBeforeDeleting;
     private List<String> deviceTypeIds;
 
     private String roomId;   // this is the room that contains all devices displayed in this screen
@@ -86,8 +87,11 @@ public class DevicesListFragment extends Fragment {
         devicesNames = new ArrayList<>();
         devicesIds = new ArrayList<>();
         deviceNamesBackupBeforeDeleting = new ArrayList<>();
+        deviceIdsBackupBeforeDeleting = new ArrayList<>();
+        deviceTypeIdsBackupBeforeDeleting = new ArrayList<>();
         deviceTypeIds = new ArrayList<>();
         api = ApiClient.getInstance();
+        initDeviceTypeIdMap();
 
         // we grab the "parameter" that RoomsFragment left us
         // TODO: try this with an Intent/Bundle
@@ -131,13 +135,12 @@ public class DevicesListFragment extends Fragment {
             getAllDevicesOfThisRoom(view);
         }
 
-        initDeviceTypeIdMap();
         initScreenControllers(view);
     }
 
     private void initScreenControllers(@NonNull View view) {
         button_add_device = view.findViewById(R.id.button_show_AddDeviceDialog);
-        button_add_device.setOnClickListener(this::showAddRoomDialog);
+        button_add_device.setOnClickListener(this::showAddDeviceDialog);
 
         deleteDeviceButton = view.findViewById(R.id.delete_device_button);
         deleteDeviceButton.setOnClickListener(this::deletePressed);
@@ -286,10 +289,10 @@ public class DevicesListFragment extends Fragment {
         Snackbar.make(this.requireView(), "Device Added!", Snackbar.LENGTH_SHORT).show();
     }
 
-    private void showAddRoomDialog(View v) {
+    private void showAddDeviceDialog(View v) {
         // Create and show the dialog.
-        AddDeviceDialog addHomeDialog = new AddDeviceDialog(requireContext(), roomId, this);
-        addHomeDialog.show();
+        AddDeviceDialog addDeviceDialog = new AddDeviceDialog(requireContext(), roomId, this);
+        addDeviceDialog.show();
     }
 
     public void showDeleteDeviceDialog() {
@@ -301,9 +304,15 @@ public class DevicesListFragment extends Fragment {
         childFragment = null;
 
         // remove the Device Card from screen
-        String roomNameToRemove = devicesNames.get(positionOfDeviceDisplayed);
-        deviceNamesBackupBeforeDeleting.add(roomNameToRemove);
+        String deviceNameToRemove = devicesNames.get(positionOfDeviceDisplayed);
+        String deviceIdToRemove = devicesIds.get(positionOfDeviceDisplayed);
+        String deviceTypeIdToRemove = deviceTypeIds.get(positionOfDeviceDisplayed);
+        deviceNamesBackupBeforeDeleting.add(deviceNameToRemove);
+        deviceIdsBackupBeforeDeleting.add(deviceIdToRemove);
+        deviceTypeIdsBackupBeforeDeleting.add(deviceTypeIdToRemove);
         devicesNames.remove(positionOfDeviceDisplayed.intValue());
+        deviceTypeIds.remove(positionOfDeviceDisplayed.intValue());
+        devicesIds.remove(positionOfDeviceDisplayed.intValue());
         adapter.notifyItemRemoved(positionOfDeviceDisplayed);
         adapter.notifyItemRangeChanged(positionOfDeviceDisplayed, devicesNames.size());
 
@@ -318,9 +327,15 @@ public class DevicesListFragment extends Fragment {
 
     /* this method just puts the ""removed"" Device back on screen */
     void recoverRemovedDevice(View v) {
-        String deviceToRetrieve = deviceNamesBackupBeforeDeleting.get(0);
+        String deviceNameToRetrieve = deviceNamesBackupBeforeDeleting.get(0);
+        String deviceIdToRetrieve = deviceIdsBackupBeforeDeleting.get(0);
+        String deviceTypeIdToRecover = deviceTypeIdsBackupBeforeDeleting.get(0);
         deviceNamesBackupBeforeDeleting.remove(0);
-        devicesNames.add(positionOfDeviceDisplayedBackup, deviceToRetrieve);
+        deviceIdsBackupBeforeDeleting.remove(0);
+        deviceTypeIdsBackupBeforeDeleting.remove(0);
+        devicesNames.add(positionOfDeviceDisplayedBackup, deviceNameToRetrieve);
+        devicesIds.add(positionOfDeviceDisplayedBackup, deviceIdToRetrieve);
+        deviceTypeIds.add(positionOfDeviceDisplayedBackup, deviceTypeIdToRecover);
         adapter.notifyItemInserted(positionOfDeviceDisplayedBackup);
         adapter.notifyItemRangeChanged(positionOfDeviceDisplayedBackup, devicesNames.size());
     }
@@ -491,9 +506,15 @@ public class DevicesListFragment extends Fragment {
     private class UndoDeleteDeviceListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
-            String deviceToRetrieve = deviceNamesBackupBeforeDeleting.get(0);
+            String deviceNameToRetrieve = deviceNamesBackupBeforeDeleting.get(0);
+            String deviceIdToRetrieve = deviceIdsBackupBeforeDeleting.get(0);
+            String deviceTypeIdToRetrieve = deviceTypeIdsBackupBeforeDeleting.get(0);
             deviceNamesBackupBeforeDeleting.remove(0);
-            devicesNames.add(positionOfDeviceDisplayedBackup, deviceToRetrieve);
+            deviceIdsBackupBeforeDeleting.remove(0);
+            deviceTypeIdsBackupBeforeDeleting.remove(0);
+            devicesNames.add(positionOfDeviceDisplayedBackup, deviceNameToRetrieve);
+            devicesIds.add(positionOfDeviceDisplayedBackup, deviceIdToRetrieve);
+            deviceTypeIds.add(positionOfDeviceDisplayedBackup, deviceTypeIdToRetrieve);
             adapter.notifyItemInserted(positionOfDeviceDisplayedBackup);
             adapter.notifyItemRangeChanged(positionOfDeviceDisplayedBackup, devicesNames.size());
             deletingDeviceSnackbar.dismiss();
@@ -517,9 +538,9 @@ public class DevicesListFragment extends Fragment {
                                 if (response.isSuccessful()) {
                                     Result<Boolean> result = response.body();
                                     if (result != null && result.getResult()) {
-                                        devicesIds.remove(positionOfDeviceDisplayedBackup.intValue());
-                                        deviceTypeIds.remove(positionOfDeviceDisplayedBackup.intValue());
                                         deviceNamesBackupBeforeDeleting.remove(0);
+                                        deviceIdsBackupBeforeDeleting.remove(0);
+                                        deviceTypeIdsBackupBeforeDeleting.remove(0);
                                         if(devicesIds.size() == 0)
                                             DevicesListFragment.this.requireView().findViewById(R.id.zero_devices).setVisibility(View.VISIBLE);
                                     } else {

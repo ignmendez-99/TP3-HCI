@@ -3,17 +3,17 @@
 
     <item
         android:id="@+id/navigation_homes"
-        android:icon="@drawable/ic_home_black_24dp"
+        android:icon="@drawable/home_icon_foreground"
         android:title="@string/title_homes" />
 
     <item
         android:id="@+id/navigation_routines"
-        android:icon="@drawable/ic_favorite_black_24dp"
+        android:icon="@drawable/routines_icon_foreground"
         android:title="@string/title_routines" />
 
     <item
         android:id="@+id/navigation_profile"
-        android:icon="@drawable/ic_dashboard_black_24dp"
+        android:icon="@drawable/profile_icon_foreground"
         android:title="@string/title_profile" />
 
 </menu>
