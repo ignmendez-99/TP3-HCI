@@ -19,8 +19,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.ViewModel;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -59,6 +57,7 @@ public class RoutinesFragment extends Fragment {
     private List<String> routineIds;
     private List<String> routineNamesBackupBeforeDeleting;
     private List<Routine> routines;
+    private List<String> auxList;
 
     private ApiClient api;
     private boolean deletingRoutine = false;
@@ -117,16 +116,6 @@ public class RoutinesFragment extends Fragment {
         fragmentOnScreen = false;
     }
 
-    public Routine getRoutine(String routineId){
-        Routine aux = routines.get(0);
-        for(Routine r : routines){
-            if(r.getId().equals(routineId)){
-                 aux=r;
-            }
-        }
-        return aux;
-    }
-
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
 //         call superclass to save any view hierarchy
@@ -141,8 +130,6 @@ public class RoutinesFragment extends Fragment {
             }
         }
     }
-
-
 
     void deleteRoutine(View v) {
         deletingRoutineSnackbar = Snackbar.make(v, "Home deleted!", Snackbar.LENGTH_SHORT);
@@ -159,7 +146,6 @@ public class RoutinesFragment extends Fragment {
         routineNames.add(positionToDelete, routineToRetrieve);
         adapter.notifyItemInserted(positionToDelete);
     }
-
 
     void showDeleteRoutineDialog(int position) {
         positionToDelete = position;
@@ -188,51 +174,6 @@ public class RoutinesFragment extends Fragment {
         }
     }
 
-//    /* In the moment that the delete-room-snackbar disappears, the Room is deleted from DataBase */
-//    private class DeleteRoutineSnackbarTimeout extends BaseTransientBottomBar.BaseCallback<Snackbar> {
-//        private View view;
-//
-//        DeleteRoutineSnackbarTimeout(View v) {
-//            view = v;
-//        }
-//
-//        @Override
-//        public void onDismissed(Snackbar transientBottomBar, int event) {
-//            if(event == DISMISS_EVENT_TIMEOUT || event == DISMISS_EVENT_CONSECUTIVE) {
-//                super.onDismissed(transientBottomBar, event);
-//                api.deleteRoutine(routineIds.get(positionToDelete), new Callback<Result<Boolean>>() {
-//                    @Override
-//                    public void onResponse(@NonNull Call<Result<Boolean>> call, @NonNull Response<Result<Boolean>> response) {
-//                        if (response.isSuccessful()) {
-//                            Result<Boolean> result = response.body();
-//                            if (result != null && result.getResult()) {
-//                                routineIds.remove(positionToDelete.intValue());
-//                                routineNamesBackupBeforeDeleting.remove(0);
-//                            } else {
-//                                ErrorHandler.handleError(response, requireView(), "MESSAGE");
-//                                // todo: falta mensaje amigable de error
-//                                // todo: aca se deberia volver a poner la Routine en la lista
-//                                // todo: (si hay dudas, miren como lo hice en el onDismissed de FragmentHomes
-//                            }
-//                        } else {
-//                            ErrorHandler.handleError(response, requireView(), "MESSAGE");
-//                            // todo: falta mensaje amigable de error
-//                            // todo: aca se deberia volver a poner la Routine en la lista
-//                            // todo: (si hay dudas, miren como lo hice en el onDismissed de FragmentHomes
-//                        }
-//                    }
-//                    @Override
-//                    public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
-//                        ErrorHandler.handleUnexpectedError(t, requireView(), RoutinesFragment.this);
-//                        // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
-//                        // todo: aca se deberia volver a poner la Routine en la lista
-//                        // todo: (si hay dudas, miren como lo hice en el onDismissed de FragmentHomes
-//                    }
-//                });
-//            }
-//        }
-//    }
-
     private void showGetRoutinesError() {
         requireView().findViewById(R.id.get_routines_failed).setVisibility(View.VISIBLE);
         requireView().findViewById(R.id.button_get_routines_again).setOnClickListener(RoutinesFragment.this::getRoutinesAgain);
@@ -258,7 +199,7 @@ public class RoutinesFragment extends Fragment {
         getRoutines(requireView());
     }
 
-    public void setDialogRoutine(View v, int position){
+    void setDialogRoutine(View v, int position){
 
         //First create the dialog
         final Dialog dialog = new Dialog(getContext());
@@ -274,6 +215,8 @@ public class RoutinesFragment extends Fragment {
         String nameRoutineClicked = routineNames.get(position);
         String idRoutineClicked = routineIds.get(position);
 
+        auxList = new ArrayList<>();
+
         //build the description string
         String routineDescription = "";
         Routine routineClicked = routines.get(position);
@@ -281,7 +224,9 @@ public class RoutinesFragment extends Fragment {
             String deviceName = actions.getDevice().getName();
             if(deviceName != null){
                 String actionName = actions.getActionName();
-                routineDescription = routineDescription + "\n" + deviceName + " --> " + actionName;
+                String auxString = "- " + deviceName + " --> " + actionName;
+                routineDescription = routineDescription + "\n" + auxString;
+                auxList.add(auxString);
             }
             else{
                 executeFail.setVisibility(View.VISIBLE);
@@ -304,10 +249,26 @@ public class RoutinesFragment extends Fragment {
         executeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                executeRoutine(v, idRoutineClicked);
+                executeRoutine(v, idRoutineClicked, dialog);
             }
         });
         dialog.show();
+    }
+
+    private void updateDescription(List<Boolean> list, Dialog d){
+        TextView tv = d.findViewById(R.id.routine_actions_list);
+        String newDescription = "";
+        String resultString="";
+        for(int i=0; i < list.size(); i++){
+            if(list.get(i)==true){
+                    resultString = auxList.get(i) + "  ]====>  Succesful!" + "\n";
+                }
+                else {
+                resultString = auxList.get(i) + "  ]====>  Failed!" + "\n";
+            }
+                newDescription = newDescription + resultString;
+        }
+        tv.setText(newDescription);
     }
 
     private void getRoutines(View v) {
@@ -352,7 +313,7 @@ public class RoutinesFragment extends Fragment {
         }).start();
     }
 
-    public void executeRoutine(View v, String routineId){
+    public void executeRoutine(View v, String routineId, Dialog d){
             api.executeRoutine(routineId, new Callback<Result<List<Boolean>>>() {
                 @Override
                 public void onResponse(@NonNull Call<Result<List<Boolean>>> call, @NonNull Response<Result<List<Boolean>>> response) {
@@ -360,6 +321,7 @@ public class RoutinesFragment extends Fragment {
                         Result<List<Boolean>> result = response.body();
                         if (result != null) {
                             List<Boolean> resultRoutine = result.getResult();
+                            updateDescription(resultRoutine, d);
                             Snackbar.make(getParentFragment().getView(), "Routine Executed!", Snackbar.LENGTH_SHORT).show();
                         } else {
                             ErrorHandler.handleError(response, requireView(), "MENSAJE");
