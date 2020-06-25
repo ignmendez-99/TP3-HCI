@@ -131,7 +131,7 @@ public interface ApiService {
 
     @PUT("routines/{routineId}/execute")
     @Headers("Content-Type: application/json")
-    Call<Result<List<Boolean>>> executeRoutine(@Path("routineId") String routineId);
+    Call<Result<List<String>>> executeRoutine(@Path("routineId") String routineId);
 
     ////////////// DOOR CONTROLS ////////////////////
 

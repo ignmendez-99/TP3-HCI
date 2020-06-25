@@ -38,7 +38,7 @@ public class ApiClient {
     private static ApiClient instance = null;
     // Use IP 10.0.2.2 instead of 127.0.0.1 when running Android emulator in the
     // same computer that runs the API.
-    private final String BaseURL = "http://10.0.2.2:8080/api/";
+    private final String BaseURL = "http://10.0.2.2:8081/api/";
 
     private ApiClient() {
         retrofit = new Retrofit.Builder()
@@ -212,8 +212,8 @@ public class ApiClient {
         return call;
     }
 
-    public Call<Result<List<Boolean>>> executeRoutine(String routineId, Callback<Result<List<Boolean>>> callback){
-        Call<Result<List<Boolean>>> call = this.service.executeRoutine(routineId);
+    public Call<Result<List<String>>> executeRoutine(String routineId, Callback<Result<List<String>>> callback){
+        Call<Result<List<String>>> call = this.service.executeRoutine(routineId);
         call.enqueue(callback);
         return call;
     }

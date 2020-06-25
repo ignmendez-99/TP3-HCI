@@ -38,7 +38,9 @@ import com.google.android.material.snackbar.Snackbar;
 import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import retrofit2.Call;
@@ -235,7 +237,7 @@ public class RoutinesFragment extends Fragment {
             String deviceName = actions.getDevice().getName();
             if(deviceName != null){
                 String actionName = actions.getActionName();
-                String auxString = "- " + deviceName + " --> " + actionName;
+                String auxString = "- " + deviceName + " -> " + actionName;
                 routineDescription = routineDescription + "\n" + auxString;
                 auxList.add(auxString);
             }
@@ -266,16 +268,16 @@ public class RoutinesFragment extends Fragment {
         dialog.show();
     }
 
-    private void updateDescription(List<Boolean> list, Dialog d){
+    private void updateDescription(List<String> list, Dialog d){
         TextView tv = d.findViewById(R.id.routine_actions_list);
-        String newDescription = "";
+        String newDescription = "\n";
         String resultString="";
         for(int i=0; i < list.size(); i++){
-            if(list.get(i)==true){
-                resultString = auxList.get(i) + "  ]====>  Succesful!" + "\n";
+            if(list.get(i)==null || list.get(i)=="false"){
+                resultString = auxList.get(i) + " => Failed!" + "\n";
             }
             else {
-                resultString = auxList.get(i) + "  ]====>  Failed!" + "\n";
+                resultString = auxList.get(i) + " :: Success!" + "\n";
             }
             newDescription = newDescription + resultString;
         }
@@ -326,13 +328,21 @@ public class RoutinesFragment extends Fragment {
 
     private void executeRoutine(View v, String routineId, Dialog d){
         new Thread(() -> {
-            api.executeRoutine(routineId, new Callback<Result<List<Boolean>>>() {
+            api.executeRoutine(routineId, new Callback<Result<List<String>>>() {
                 @Override
-                public void onResponse(@NonNull Call<Result<List<Boolean>>> call, @NonNull Response<Result<List<Boolean>>> response) {
+                public void onResponse(@NonNull Call<Result<List<String>>> call, @NonNull Response<Result<List<String>>> response) {
                     if (response.isSuccessful()) {
-                        Result<List<Boolean>> result = response.body();
+                        Result<List<String>> result = response.body();
                         if (result != null) {
-                            List<Boolean> resultRoutine = result.getResult();
+                            List<String> aux = new ArrayList<>();
+                            List<String> resultRoutine = result.getResult();
+//                            for(String b : resultRoutine){
+//                                if(b == null){
+//                                    aux.add("null");
+//                                }else{
+//                                    aux.add(b.toString());
+//                                }
+//                            }
                             updateDescription(resultRoutine, d);
                             Snackbar.make(requireView(), "Routine Executed!", Snackbar.LENGTH_SHORT).show();
                         } else {
@@ -346,7 +356,7 @@ public class RoutinesFragment extends Fragment {
                 }
 
                 @Override
-                public void onFailure(@NonNull Call<Result<List<Boolean>>> call, @NonNull Throwable t) {
+                public void onFailure(@NonNull Call<Result<List<String>>> call, @NonNull Throwable t) {
 //                  ExecuteRutineFail();
                     ErrorHandler.handleUnexpectedError(t, requireView(), RoutinesFragment.this);
                     // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
