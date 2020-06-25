@@ -18,6 +18,7 @@ import com.example.ultrahome.R;
 import com.example.ultrahome.apiConnection.ApiClient;
 import com.example.ultrahome.apiConnection.ErrorHandler;
 import com.example.ultrahome.apiConnection.entities.Result;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.door.DoorState;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.lights.LightState;
 
 import java.util.HashMap;
@@ -38,7 +39,7 @@ public class LightsControllerFragment extends Fragment {
     private ApiClient api;
 
     private int currentBrightness;
-    private boolean isOn, firstTime = true;
+    private boolean isOn, firstTime = true, runThreads = true;
     private String currentColor;
 
 
@@ -56,6 +57,13 @@ public class LightsControllerFragment extends Fragment {
         readBundle(getArguments());
 
         init(getView());
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        runThreads = false;
     }
 
     private void initializeColorButtons(View view) {
@@ -110,6 +118,18 @@ public class LightsControllerFragment extends Fragment {
         colors.put("#000000", 0xFF000000);
     }
 
+    private void enableOrDisableSwitch(boolean enabled) {
+        if(enabled == true)
+            onOffSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if(!firstTime)
+                    turnOnOrOff();
+            });
+        else
+            onOffSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                //
+            });
+    }
+
     private void init(View view) {
         initializeColorButtons(view);
 
@@ -120,39 +140,6 @@ public class LightsControllerFragment extends Fragment {
         colorDisplay = view.findViewById(R.id.color_show);
 
         api = ApiClient.getInstance();
-
-        api.getLightState(deviceId, new Callback<Result<LightState>>() {
-            @Override
-            public void onResponse(@NonNull Call<Result<LightState>> call, @NonNull Response<Result<LightState>> response) {
-                if(response.isSuccessful()) {
-                    Result<LightState> result = response.body();
-                    if(result != null) {
-                        LightState lightState = result.getResult();
-
-                        currentBrightness = lightState.getBrightness();
-                        brightnessTextView.setText(currentBrightness + "%");
-                        brightnessSeekBar.setProgress(currentBrightness);
-
-                        isOn = lightState.isOn();
-                        onOffSwitch.setChecked(isOn);
-
-                        currentColor = lightState.getColor();
-                        colorDisplay.setBackgroundColor(colors.get(currentColor));
-
-                        firstTime = false;
-                    } else {
-                        ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
-                    }
-                } else {
-                    ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<Result<LightState>> call, @NonNull Throwable t) {
-                ErrorHandler.handleUnexpectedError(t, requireView(), LightsControllerFragment.this);
-            }
-        });
 
         brightnessSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -170,10 +157,9 @@ public class LightsControllerFragment extends Fragment {
             }
         });
 
-        onOffSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if(!firstTime)
-                turnOnOrOff();
-        });
+        enableOrDisableSwitch(true);
+
+        updateState();
     }
 
     private void readBundle(Bundle bundle) {
@@ -191,6 +177,52 @@ public class LightsControllerFragment extends Fragment {
         fragment.setArguments(bundle);
 
         return fragment;
+    }
+
+    private void updateState() {
+        new Thread(() -> {
+            while (runThreads) {
+                api.getLightState(deviceId, new Callback<Result<LightState>>() {
+                    @Override
+                    public void onResponse(@NonNull Call<Result<LightState>> call, @NonNull Response<Result<LightState>> response) {
+                        if(response.isSuccessful()) {
+                            Result<LightState> result = response.body();
+                            if(result != null && runThreads) {
+                                LightState lightState = result.getResult();
+
+                                currentBrightness = lightState.getBrightness();
+                                brightnessTextView.setText(currentBrightness + "%");
+                                brightnessSeekBar.setProgress(currentBrightness);
+
+                                isOn = lightState.isOn();
+                                enableOrDisableSwitch(false);
+                                onOffSwitch.setChecked(isOn);
+                                enableOrDisableSwitch(true);
+
+                                currentColor = lightState.getColor();
+                                colorDisplay.setBackgroundColor(colors.get(currentColor));
+
+                                firstTime = false;
+                            } else {
+                                ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
+                            }
+                        } else {
+                            ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<Result<LightState>> call, @NonNull Throwable t) {
+                        ErrorHandler.handleUnexpectedError(t, requireView(), LightsControllerFragment.this);
+                    }
+                });
+                try {
+                    Thread.sleep(15000);
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        }).start();
     }
 
     private void changeColor(View view, String newColor) {

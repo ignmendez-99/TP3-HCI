@@ -84,8 +84,8 @@
         <item>kl</item>
     </string-array>
 
-    <string name="opening_faucet_string">Opening faucet…</string>
-    <string name="closing_faucet_string">Closing faucet…</string>
+    <string name="opening_faucet_string">Faucet opened indefinitely</string>
+    <string name="closing_faucet_string">Faucet closed</string>
     <string name="enter_amount_string">You must enter an amount!</string>
     <string name="cant_be_nothing_string">You can\'t dispense nothing!</string>
     <string name="dispensing_string">Dispensing</string>
@@ -95,10 +95,10 @@
     <string name="lock_string">LOCK</string>
     <string name="unlock_string">UNLOCK</string>
 
-    <string name="opening_door_string">Opening door…</string>
-    <string name="closing_door_string">Closing door…</string>
-    <string name="locking_door_string">Locking door…</string>
-    <string name="unlocking_door_string">Unlocking door…</string>
+    <string name="opening_door_string">Door opened</string>
+    <string name="closing_door_string">Door closed</string>
+    <string name="locking_door_string">Door locked</string>
+    <string name="unlocking_door_string">Door unlocked</string>
 
     <!-- ////////////// VACUUM STRINGS ////////////// -->
 
@@ -249,7 +249,7 @@
     <string name="could_not_recover_routines">Could not recover Routines!</string>
     <string name="zero_routines">You don\'t have any Routines!</string>
 
-    <string name="handle_unexpected_error">OOPS! THERE\'S A PROBLEM ON OUR SIDE :(</string>
+    <string name="handle_unexpected_error">Oops! There\'s a problem on our side :(</string>
 
     <string name="delete_device_confirmation">Are you sure you want to delete the device?</string>
 </resources>

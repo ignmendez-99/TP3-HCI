@@ -15,6 +15,7 @@ import com.example.ultrahome.R;
 import com.example.ultrahome.apiConnection.ApiClient;
 import com.example.ultrahome.apiConnection.ErrorHandler;
 import com.example.ultrahome.apiConnection.entities.Result;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.blinds.BlindsState;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.door.DoorState;
 
 import retrofit2.Call;
@@ -29,7 +30,7 @@ public class DoorControllerFragment extends Fragment {
 
     private Switch openCloseSwitch, lockUnlockSwitch;
 
-    private boolean isLocked, isOpen;
+    private boolean isLocked, isOpen, runThreads = true;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_door_controller, container, false);
@@ -43,56 +44,20 @@ public class DoorControllerFragment extends Fragment {
         init(requireView());
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        runThreads = false;
+    }
+
     private void init(View view) {
         api = ApiClient.getInstance();
 
         openCloseSwitch = view.findViewById(R.id.open_switch);
         lockUnlockSwitch = view.findViewById(R.id.lock_switch);
 
-        api.getDoorState(deviceId, new Callback<Result<DoorState>>() {
-            @Override
-            public void onResponse(@NonNull Call<Result<DoorState>> call, @NonNull Response<Result<DoorState>> response) {
-                if(response.isSuccessful()) {
-                    Result<DoorState> result = response.body();
-                    if(result != null) {
-                        DoorState doorState = result.getResult();
-                        isOpen = doorState.isOpen();
-                        isLocked = doorState.isLocked();
-                        if(isOpen)
-                            lockUnlockSwitch.setEnabled(false);
-                        if(isLocked)
-                            openCloseSwitch.setEnabled(false);
-                        lockUnlockSwitch.setChecked(isLocked);
-                        openCloseSwitch.setChecked(!isOpen);
-                        if(openCloseSwitch != null && lockUnlockSwitch != null) {
-                            openCloseSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                                if (isChecked) {
-                                    closeDoor();
-                                } else {
-                                    openDoor();
-                                }
-                            });
-                            lockUnlockSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                                if (isChecked) {
-                                    lockDoor();
-                                } else {
-                                    unlockDoor();
-                                }
-                            });
-                        }
-                    } else {
-                        ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
-                    }
-                } else {
-                    ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<Result<DoorState>> call, @NonNull Throwable t) {
-                ErrorHandler.handleUnexpectedError(t, requireView(), DoorControllerFragment.this);
-            }
-        });
+        updateState();
     }
 
     private void readBundle(Bundle bundle) {
@@ -110,6 +75,62 @@ public class DoorControllerFragment extends Fragment {
         fragment.setArguments(bundle);
 
         return fragment;
+    }
+
+    private void updateState() {
+        new Thread(() -> {
+            while (runThreads) {
+                api.getDoorState(deviceId, new Callback<Result<DoorState>>() {
+                    @Override
+                    public void onResponse(@NonNull Call<Result<DoorState>> call, @NonNull Response<Result<DoorState>> response) {
+                        if(response.isSuccessful()) {
+                            Result<DoorState> result = response.body();
+                            if(result != null && runThreads) {
+                                DoorState doorState = result.getResult();
+                                isOpen = doorState.isOpen();
+                                isLocked = doorState.isLocked();
+                                if(isOpen)
+                                    lockUnlockSwitch.setEnabled(false);
+                                if(isLocked)
+                                    openCloseSwitch.setEnabled(false);
+                                lockUnlockSwitch.setChecked(isLocked);
+                                openCloseSwitch.setChecked(!isOpen);
+                                if(openCloseSwitch != null && lockUnlockSwitch != null) {
+                                    openCloseSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                                        if (isChecked) {
+                                            closeDoor();
+                                        } else {
+                                            openDoor();
+                                        }
+                                    });
+                                    lockUnlockSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                                        if (isChecked) {
+                                            lockDoor();
+                                        } else {
+                                            unlockDoor();
+                                        }
+                                    });
+                                }
+                            } else {
+                                ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
+                            }
+                        } else {
+                            ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<Result<DoorState>> call, @NonNull Throwable t) {
+                        ErrorHandler.handleUnexpectedError(t, requireView(), DoorControllerFragment.this);
+                    }
+                });
+                try {
+                    Thread.sleep(15000);
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        }).start();
     }
 
     private void openDoor() {

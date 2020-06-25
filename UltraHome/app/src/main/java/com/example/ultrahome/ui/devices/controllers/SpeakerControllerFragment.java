@@ -62,9 +62,11 @@ public class SpeakerControllerFragment extends Fragment {
         init(getView());
     }
 
+
+
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onDestroyView() {
+        super.onDestroyView();
 
         runThreads = false;
     }
@@ -94,8 +96,6 @@ public class SpeakerControllerFragment extends Fragment {
         genreTextView = view.findViewById(R.id.genre_textView);
 
         progressProgressBar = view.findViewById(R.id.progress_progressBar);
-
-
 
         prevButton.setOnClickListener(this::prevSong);
         nextButton.setOnClickListener(this::nextSong);
@@ -145,7 +145,7 @@ public class SpeakerControllerFragment extends Fragment {
                     if (response.isSuccessful()) {
                         Result<Boolean> result = response.body();
                         if (result != null) {
-                            updateState();
+//                            updateState();
 
                         } else {
                             ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
@@ -167,7 +167,7 @@ public class SpeakerControllerFragment extends Fragment {
                     if (response.isSuccessful()) {
                         Result<Boolean> result = response.body();
                         if (result != null) {
-                            updateState();
+//                            updateState();
 
                         } else {
                             ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
@@ -192,7 +192,7 @@ public class SpeakerControllerFragment extends Fragment {
                 if (response.isSuccessful()) {
                     Result<Boolean> result = response.body();
                     if (result != null) {
-                        updateState();
+//                        updateState();
 
                     } else {
                         ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
@@ -216,7 +216,7 @@ public class SpeakerControllerFragment extends Fragment {
                 if (response.isSuccessful()) {
                     Result<Boolean> result = response.body();
                     if (result != null) {
-                        updateState();
+//                        updateState();
 
 
                     } else {
@@ -241,7 +241,7 @@ public class SpeakerControllerFragment extends Fragment {
                 if (response.isSuccessful()) {
                     Result<Boolean> result = response.body();
                     if (result != null) {
-                        updateState();
+//                        updateState();
 
                     } else {
                         ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
@@ -265,7 +265,7 @@ public class SpeakerControllerFragment extends Fragment {
                 if (response.isSuccessful()) {
                     Result<Boolean> result = response.body();
                     if (result != null) {
-                        updateState();
+//                        updateState();
 
                     } else {
                         ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));

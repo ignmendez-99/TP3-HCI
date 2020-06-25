@@ -18,6 +18,7 @@ import com.example.ultrahome.apiConnection.ApiClient;
 import com.example.ultrahome.apiConnection.ErrorHandler;
 import com.example.ultrahome.apiConnection.entities.Error;
 import com.example.ultrahome.apiConnection.entities.Result;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.door.DoorState;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.refrigerator.RefrigeratorState;
 
 import retrofit2.Call;
@@ -32,6 +33,8 @@ public class RefrigeratorControllerFragment extends Fragment {
 
     private ApiClient api;
 
+    private boolean runThreads = true;
+
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_refrigerator_controller, container, false);
     }
@@ -44,54 +47,19 @@ public class RefrigeratorControllerFragment extends Fragment {
         init(view);
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        runThreads = false;
+    }
+
     private void init(@NonNull View view) {
         modeSpinner = view.findViewById(R.id.mode_spinner);
         fridgeTempSpinner = view.findViewById(R.id.fridge_temp_spinner);
         freezerTempSpinner = view.findViewById(R.id.freezer_temp_spinner);
 
         api = ApiClient.getInstance();
-
-        api.getRefrigeratorState(deviceId, new Callback<Result<RefrigeratorState>>() {
-            @Override
-            public void onResponse(@NonNull Call<Result<RefrigeratorState>> call, @NonNull Response<Result<RefrigeratorState>> response) {
-                if(response.isSuccessful()) {
-                    Result<RefrigeratorState> result = response.body();
-                    if(result != null) {
-                        RefrigeratorState refrigeratorState = result.getResult();
-                        Integer freezerTemp = refrigeratorState.getFreezerTemperature();
-                        int freezerTempIndex = getIndex(freezerTempSpinner, freezerTemp.toString());
-                        Integer fridgeTemp = refrigeratorState.getTemperature();
-                        int fridgeTempIndex = getIndex(fridgeTempSpinner, fridgeTemp.toString());
-                        freezerTempSpinner.setSelection(freezerTempIndex);
-                        fridgeTempSpinner.setSelection(fridgeTempIndex);
-
-
-                        String aux = refrigeratorState.getMode();
-                        switch (aux) {
-                            case "default":
-                                modeSpinner.setSelection(0);
-                                break;
-                            case "vacation":
-                                modeSpinner.setSelection(1);
-                                break;
-                            case "party":
-                                modeSpinner.setSelection(2);
-                                break;
-                        }
-
-                    } else {
-                        ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
-                    }
-                } else {
-                    ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<Result<RefrigeratorState>> call, @NonNull Throwable t) {
-                ErrorHandler.handleUnexpectedError(t, requireView(), RefrigeratorControllerFragment.this);
-            }
-        });
 
         modeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -125,6 +93,8 @@ public class RefrigeratorControllerFragment extends Fragment {
                 //
             }
         });
+
+        updateState();
     }
 
     private void readBundle(Bundle bundle) {
@@ -151,7 +121,7 @@ public class RefrigeratorControllerFragment extends Fragment {
                 if(response.isSuccessful()) {
                     Result<Boolean> result = response.body();
                     if(result != null) {
-                        updateSpinners();
+                        updateStateOnce();
                     } else {
                         ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                     }
@@ -174,7 +144,7 @@ public class RefrigeratorControllerFragment extends Fragment {
                 if(response.isSuccessful()) {
                     Result<Integer> result = response.body();
                     if(result != null) {
-                        updateSpinners();
+                        updateStateOnce();
                     } else {
                         ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                     }
@@ -197,7 +167,7 @@ public class RefrigeratorControllerFragment extends Fragment {
                 if(response.isSuccessful()) {
                     Result<Integer> result = response.body();
                     if(result != null) {
-                        updateSpinners();
+                        updateStateOnce();
                     } else {
                         ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                     }
@@ -222,7 +192,7 @@ public class RefrigeratorControllerFragment extends Fragment {
         return -1;
     }
 
-    private void updateSpinners() {
+    private void updateStateOnce() {
         api.getRefrigeratorState(deviceId, new Callback<Result<RefrigeratorState>>() {
             @Override
             public void onResponse(@NonNull Call<Result<RefrigeratorState>> call, @NonNull Response<Result<RefrigeratorState>> response) {
@@ -262,5 +232,56 @@ public class RefrigeratorControllerFragment extends Fragment {
                 ErrorHandler.handleUnexpectedError(t, requireView(), RefrigeratorControllerFragment.this);
             }
         });
+    }
+
+    private void updateState() {
+        new Thread(() -> {
+            while (runThreads) {
+                api.getRefrigeratorState(deviceId, new Callback<Result<RefrigeratorState>>() {
+                    @Override
+                    public void onResponse(@NonNull Call<Result<RefrigeratorState>> call, @NonNull Response<Result<RefrigeratorState>> response) {
+                        if(response.isSuccessful()) {
+                            Result<RefrigeratorState> result = response.body();
+                            if(result != null && runThreads) {
+                                RefrigeratorState refrigeratorState = result.getResult();
+                                Integer freezerTemp = refrigeratorState.getFreezerTemperature();
+                                int freezerTempIndex = getIndex(freezerTempSpinner, freezerTemp.toString());
+                                Integer fridgeTemp = refrigeratorState.getTemperature();
+                                int fridgeTempIndex = getIndex(fridgeTempSpinner, fridgeTemp.toString());
+                                String aux = refrigeratorState.getMode();
+                                freezerTempSpinner.setSelection(freezerTempIndex);
+                                fridgeTempSpinner.setSelection(fridgeTempIndex);
+                                switch (aux) {
+                                    case "default":
+                                        modeSpinner.setSelection(0);
+                                        break;
+                                    case "vacation":
+                                        modeSpinner.setSelection(1);
+                                        break;
+                                    case "party":
+                                        modeSpinner.setSelection(2);
+                                        break;
+                                }
+
+                            } else {
+                                ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
+                            }
+                        } else {
+                            ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<Result<RefrigeratorState>> call, @NonNull Throwable t) {
+                        ErrorHandler.handleUnexpectedError(t, requireView(), RefrigeratorControllerFragment.this);
+                    }
+                });
+                try {
+                    Thread.sleep(15000);
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        }).start();
     }
 }
