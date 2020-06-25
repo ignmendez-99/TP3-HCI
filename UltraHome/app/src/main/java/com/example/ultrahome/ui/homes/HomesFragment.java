@@ -358,7 +358,7 @@ public class HomesFragment extends Fragment{
                                     if (result != null && result.getResult()) {
                                         homeIds.remove(positionToDelete.intValue());
                                         homeNamesBackupBeforeDeleting.remove(0);
-                                        if(homeIds.size() == 0)
+                                        if(homeIds.size() == 0 && fragmentOnScreen)
                                             HomesFragment.this.requireView().findViewById(R.id.zero_homes).setVisibility(View.VISIBLE);
                                     } else {
                                         ErrorHandler.logError(response);
