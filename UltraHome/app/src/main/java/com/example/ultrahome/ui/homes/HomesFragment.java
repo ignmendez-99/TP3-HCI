@@ -22,12 +22,18 @@ import com.example.ultrahome.apiConnection.ApiClient;
 import com.example.ultrahome.apiConnection.ErrorHandler;
 import com.example.ultrahome.apiConnection.entities.Home;
 import com.example.ultrahome.apiConnection.entities.Result;
+import com.example.ultrahome.apiConnection.entities.Room;
+import com.example.ultrahome.ui.devices.DevicesListFragment;
+import com.example.ultrahome.ui.rooms.RoomsFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import retrofit2.Call;
@@ -49,11 +55,17 @@ public class HomesFragment extends Fragment{
     private List<String> homeNames;
     private List<String> homeIds;
     private List<String> homeNamesBackupBeforeDeleting;
+    private Map<Integer, Integer> roomsInEachHome;
 
     private Snackbar deletingHomeSnackbar;
     private boolean deletingHome = false;
     private boolean fragmentOnScreen = true;
     private ApiClient api;
+
+    // variables dealing with tablet mode
+    private HomesFragment fragment_1;
+    private RoomsFragment fragment_2;
+    private DevicesListFragment fragment_3;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_homes, container, false);
@@ -62,10 +74,20 @@ public class HomesFragment extends Fragment{
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        // Setup Tablet Mode
+        if(view.findViewById(R.id.button_show_AddHomeDialog) == null) {
+            fragment_1 = new HomesFragment();
+            FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+            transaction.replace(R.id.fragment_tablet_1, fragment_1).commit();
+            return;
+        }
+
         api = ApiClient.getInstance();
         homeNames = new ArrayList<>();
         homeIds = new ArrayList<>();
         homeNamesBackupBeforeDeleting = new ArrayList<>();
+        roomsInEachHome = new HashMap<>();
 
         buttonAddHome = view.findViewById(R.id.button_show_AddHomeDialog);
         buttonAddHome.setOnClickListener(this::showAddHomeDialog);
@@ -85,17 +107,7 @@ public class HomesFragment extends Fragment{
 
         // If there is a savedState, we retrieve it and we DON'T call the API.
         if(savedInstanceState != null) {
-            int numberOfHomesSaved = savedInstanceState.getInt("numberOfHomes");
-            for(int i = 0; i < numberOfHomesSaved; i++) {
-                homeNames.add(savedInstanceState.getString("homeName" + i));
-                homeIds.add(savedInstanceState.getString("homeId" + i));
-                adapter.notifyItemInserted(i);
-            }
-            if(numberOfHomesSaved == 0) {
-                view.findViewById(R.id.zero_homes).setVisibility(View.VISIBLE);
-            }
-            requireView().findViewById(R.id.button_show_AddHomeDialog).setVisibility(View.VISIBLE);
-            requireView().findViewById(R.id.loadingHomesList).setVisibility(View.GONE);
+            recoverSavedState(savedInstanceState, view);
         } else {
             getAllHomes(view);
         }
@@ -105,10 +117,35 @@ public class HomesFragment extends Fragment{
         itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
+    private void recoverSavedState(@NonNull Bundle savedInstanceState, View view) {
+        int numberOfHomesSaved = savedInstanceState.getInt("numberOfHomes");
+        for(int i = 0; i < numberOfHomesSaved; i++) {
+            homeNames.add(savedInstanceState.getString("homeName" + i));
+            homeIds.add(savedInstanceState.getString("homeId" + i));
+            adapter.notifyItemInserted(i);
+        }
+        if(numberOfHomesSaved == 0) {
+            view.findViewById(R.id.zero_homes).setVisibility(View.VISIBLE);
+        }
+        requireView().findViewById(R.id.button_show_AddHomeDialog).setVisibility(View.VISIBLE);
+        requireView().findViewById(R.id.loadingHomesList).setVisibility(View.GONE);
+
+        HomesViewModel model = new ViewModelProvider(requireActivity()).get(HomesViewModel.class);
+        roomsInEachHome = model.getRoomsInEachHome().getValue();
+        if(roomsInEachHome != null) {
+            for (Integer position : roomsInEachHome.keySet()) {
+                adapter.notifyNumberOfRoomsRetrieved(position, roomsInEachHome.get(position));
+                adapter.notifyItemChanged(position);
+            }
+        }
+    }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         fragmentOnScreen = false;
+        HomesViewModel model = new ViewModelProvider(requireActivity()).get(HomesViewModel.class);
+        model.storeRoomsInEachHome(roomsInEachHome);
     }
 
     @Override
@@ -129,6 +166,7 @@ public class HomesFragment extends Fragment{
     void navigateToRoomsFragment(View view, int position) {
         // we send the homeId to the RoomsFragment, so that the correct Rooms are loaded
         String idOfHomeClicked = homeIds.get(position);
+        // todo: try to replace this with a Bundle/Intent
         HomeToRoomViewModel model = new ViewModelProvider(requireActivity()).get(HomeToRoomViewModel.class);
         model.storeHomeId(idOfHomeClicked);
         final NavController navController =  Navigation.findNavController(view);
@@ -192,8 +230,10 @@ public class HomesFragment extends Fragment{
                         if(result != null) {
                             List<Home> homeList = result.getResult();
                             for (Home h: homeList) {
-                                homeIds.add(h.getId());
+                                String homeId = h.getId();
+                                homeIds.add(homeId);
                                 homeNames.add(h.getName());
+                                getAmountOfRoomsInThisHome(homeId, homeNames.size() - 1);
                                 adapter.notifyItemInserted(homeNames.size() - 1);
                             }
                             if(homeList.size() == 0)
@@ -221,6 +261,36 @@ public class HomesFragment extends Fragment{
                         showGetHomesError();
                 }
             });
+        }).start();
+    }
+
+    /* For updating the TextView that says "3 rooms inside" */
+    private void getAmountOfRoomsInThisHome(String homeId, int positionToChange) {
+        new Thread(() -> {
+           api.getRoomsInThisHome(homeId, new Callback<Result<List<Room>>>() {
+               @Override
+               public void onResponse(@NonNull Call<Result<List<Room>>> call, @NonNull Response<Result<List<Room>>> response) {
+                   if(response.isSuccessful()) {
+                       Result<List<Room>> result = response.body();
+                       if(result != null) {
+                           List<Room> listOfRooms = result.getResult();
+                           int numberOfRooms = listOfRooms.size();
+                           roomsInEachHome.put(positionToChange, numberOfRooms);
+                           adapter.notifyNumberOfRoomsRetrieved(positionToChange, numberOfRooms);
+                           adapter.notifyItemChanged(positionToChange);
+                       } else {
+                           ErrorHandler.logError(response);
+                       }
+                   } else {
+                       ErrorHandler.logError(response);
+                   }
+               }
+
+               @Override
+               public void onFailure(@NonNull Call<Result<List<Room>>> call, @NonNull Throwable t) {
+                    ErrorHandler.handleUnexpectedError(t, requireView(), HomesFragment.this);
+               }
+           });
         }).start();
     }
 

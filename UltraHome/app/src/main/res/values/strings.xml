@@ -177,12 +177,14 @@
     <!-- ////////////// HOME GRID AND ROW STRINGS ////////////// -->
 
     <string name="home_name_placeholder">Home Name</string>  <!-- PLACEHOLDER, WILL BE EDITED LATER -->
-    <string name="rooms_inside_string">rooms inside</string>
+    <string name="multiple_rooms_inside_string">rooms inside</string>
+    <string name="one_room_inside_string">room inside</string>
 
     <!-- ////////////// ROOM GRID AND ROW STRINGS ////////////// -->
 
     <string name="room_name_placeholder">Room Name</string>  <!-- PLACEHOLDER, WILL BE EDITED LATER -->
-    <string name="devices_inside_string">devices inside</string>
+    <string name="multiple_devices_inside_string">devices inside</string>
+    <string name="one_device_inside_string">device inside</string>
 
     <!-- ////////////// ROUTINE ROW STRINGS ////////////// -->
 

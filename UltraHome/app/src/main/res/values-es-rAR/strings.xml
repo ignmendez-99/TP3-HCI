@@ -50,9 +50,11 @@
     <string name="about_us_string">Acerca de nosotros</string>
     <string name="log_out_string">Cerrar cesión</string>
     <string name="home_name_placeholder">Nombre de la casa</string>
-    <string name="rooms_inside_string">habitaciones dentro</string>
+    <string name="multiple_rooms_inside_string">habitaciones dentro</string>
+    <string name="one_room_inside_string">habitación dentro</string>
     <string name="room_name_placeholder">Nombre de la habitación</string>
-    <string name="devices_inside_string">dispositivos dentro</string>
+    <string name="multiple_devices_inside_string">dispositivos dentro</string>
+    <string name="one_device_inside_string">dispositivo dentro</string>
     <string name="routine_name_placeholder">Nombre de la rutina</string>
     <string name="failed_to_get_devices_string">No se pudieron cargar los dispositivos!</string>
     <string name="try_again_string">Reintentar</string>

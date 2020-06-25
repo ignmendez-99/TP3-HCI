@@ -22,13 +22,16 @@ import com.example.ultrahome.apiConnection.ApiClient;
 import com.example.ultrahome.apiConnection.ErrorHandler;
 import com.example.ultrahome.apiConnection.entities.Result;
 import com.example.ultrahome.apiConnection.entities.Room;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.Device;
 import com.example.ultrahome.ui.homes.HomeToRoomViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -49,6 +52,7 @@ public class RoomsFragment extends Fragment {
     private List<String> roomNames;
     private List<String> roomIds;
     private List<String> roomNamesBackupBeforeDeleting;
+    private Map<Integer, Integer> devicesInEachRoom;
 
     private Snackbar deletingRoomSnackbar;
     private String homeId;   // this is the home that contains all rooms displayed in this screen
@@ -66,6 +70,7 @@ public class RoomsFragment extends Fragment {
         roomIds = new ArrayList<>();
         roomNames = new ArrayList<>();
         roomNamesBackupBeforeDeleting = new ArrayList<>();
+        devicesInEachRoom = new HashMap<>();
         api = ApiClient.getInstance();
 
         // we grab the homeId that HomesFragment left us
@@ -90,17 +95,7 @@ public class RoomsFragment extends Fragment {
 
         // If there is a savedState, we retrieve it and we DON'T call the API.
         if(savedInstanceState != null) {
-            int numberOfRoomsSaved = savedInstanceState.getInt("numberOfRooms");
-            for(int i = 0; i < numberOfRoomsSaved; i++) {
-                roomNames.add(savedInstanceState.getString("roomName" + i));
-                roomIds.add(savedInstanceState.getString("roomId" + i));
-                adapter.notifyItemInserted(i);
-            }
-            if(numberOfRoomsSaved == 0) {
-                view.findViewById(R.id.zero_rooms).setVisibility(View.VISIBLE);
-            }
-            requireView().findViewById(R.id.button_show_AddRoomDialog).setVisibility(View.VISIBLE);
-            requireView().findViewById(R.id.loadingRoomsList).setVisibility(View.GONE);
+            recoverSavedState(savedInstanceState, view);
         } else {
             getAllRoomsOfThisHome(view);
         }
@@ -110,10 +105,35 @@ public class RoomsFragment extends Fragment {
         itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
+    private void recoverSavedState(@NonNull Bundle savedInstanceState, View view) {
+        int numberOfRoomsSaved = savedInstanceState.getInt("numberOfRooms");
+        for(int i = 0; i < numberOfRoomsSaved; i++) {
+            roomNames.add(savedInstanceState.getString("roomName" + i));
+            roomIds.add(savedInstanceState.getString("roomId" + i));
+            adapter.notifyItemInserted(i);
+        }
+        if(numberOfRoomsSaved == 0) {
+            view.findViewById(R.id.zero_rooms).setVisibility(View.VISIBLE);
+        }
+        requireView().findViewById(R.id.button_show_AddRoomDialog).setVisibility(View.VISIBLE);
+        requireView().findViewById(R.id.loadingRoomsList).setVisibility(View.GONE);
+
+        RoomsViewModel model = new ViewModelProvider(requireActivity()).get(RoomsViewModel.class);
+        devicesInEachRoom = model.getDevicesInEachRoom().getValue();
+        if(devicesInEachRoom != null) {
+            for (Integer position : devicesInEachRoom.keySet()) {
+                adapter.notifyNumberOfDevicesRetrieved(position, devicesInEachRoom.get(position));
+                adapter.notifyItemChanged(position);
+            }
+        }
+    }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         fragmentOnScreen = false;
+        RoomsViewModel model = new ViewModelProvider(requireActivity()).get(RoomsViewModel.class);
+        model.storeDevicesInEachRoom(devicesInEachRoom);
     }
 
     @Override
@@ -134,6 +154,7 @@ public class RoomsFragment extends Fragment {
     void navigateToDevicesFragment(View view, int position) {
         // we send the roomId to the DevicesFragment, so that the correct Devices are loaded
         String idOfRoomClicked = roomIds.get(position);
+        // todo: try to replace this with a Bundle/Intent
         RoomToDeviceViewModel model = new ViewModelProvider(requireActivity()).get(RoomToDeviceViewModel.class);
         model.storeRoomId(idOfRoomClicked);
         final NavController navController =  Navigation.findNavController(view);
@@ -203,8 +224,10 @@ public class RoomsFragment extends Fragment {
                                         deleteUselessRoom(room, v);
                                     } else {
                                         if (room.getHome().getId().equals(homeId)) {
-                                            roomIds.add(room.getId());
+                                            String roomId = room.getId();
+                                            roomIds.add(roomId);
                                             roomNames.add(room.getName());
+                                            getAmountOfDevicesInThisRoom(roomId, roomNames.size() - 1);
                                             adapter.notifyItemInserted(roomNames.size() - 1);
                                         }
                                     }
@@ -231,6 +254,36 @@ public class RoomsFragment extends Fragment {
                     ErrorHandler.handleUnexpectedError(t, requireView(), RoomsFragment.this);
                     if (fragmentOnScreen)
                         showGetRoomsError();
+                }
+            });
+        }).start();
+    }
+
+    /* For updating the TextView that says "3 devices inside" */
+    private void getAmountOfDevicesInThisRoom(String roomId, int positionToChange) {
+        new Thread(() -> {
+            api.getDevicesInThisRoom(roomId, new Callback<Result<List<Device>>>() {
+                @Override
+                public void onResponse(@NonNull Call<Result<List<Device>>> call, @NonNull Response<Result<List<Device>>> response) {
+                    if(response.isSuccessful()) {
+                        Result<List<Device>> result = response.body();
+                        if(result != null) {
+                            List<Device> listOfDevices = result.getResult();
+                            int numberOfDevices = listOfDevices.size();
+                            devicesInEachRoom.put(positionToChange, numberOfDevices);
+                            adapter.notifyNumberOfDevicesRetrieved(positionToChange, numberOfDevices);
+                            adapter.notifyItemChanged(positionToChange);
+                        } else {
+                            ErrorHandler.logError(response);
+                        }
+                    } else {
+                        ErrorHandler.logError(response);
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<Result<List<Device>>> call, @NonNull Throwable t) {
+                    ErrorHandler.handleUnexpectedError(t, requireView(), RoomsFragment.this);
                 }
             });
         }).start();
