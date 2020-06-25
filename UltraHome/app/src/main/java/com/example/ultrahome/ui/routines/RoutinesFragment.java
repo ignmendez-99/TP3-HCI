@@ -1,6 +1,5 @@
 package com.example.ultrahome.ui.routines;
 
-
 import android.app.Dialog;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -19,8 +18,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.ViewModel;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -42,6 +39,7 @@ import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -49,6 +47,7 @@ import retrofit2.Response;
 
 public class RoutinesFragment extends Fragment {
 
+    // variables for dealing with the RecyclerView
     private RecyclerView recyclerView;
     private Integer positionToDelete;
     private LinearLayoutManager layoutManager;
@@ -59,6 +58,7 @@ public class RoutinesFragment extends Fragment {
     private List<String> routineIds;
     private List<String> routineNamesBackupBeforeDeleting;
     private List<Routine> routines;
+    private List<String> auxList;
 
     private ApiClient api;
     private boolean deletingRoutine = false;
@@ -78,6 +78,18 @@ public class RoutinesFragment extends Fragment {
         routineNamesBackupBeforeDeleting = new ArrayList<>();
         api = ApiClient.getInstance();
 
+        setupRecyclerView(view);
+
+        if(savedInstanceState != null) {
+            recoverSavedState(savedInstanceState, view);
+        } else {
+            getRoutines(view);
+        }
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteRoutineCallback(adapter));
+        itemTouchHelper.attachToRecyclerView(recyclerView);
+    }
+
+    private void setupRecyclerView(@NonNull View view) {
         recyclerView = view.findViewById(R.id.routines_recycler_view);
         if(recyclerView == null) {
             recyclerView = view.findViewById(R.id.routines_recycler_view_grid);
@@ -90,25 +102,21 @@ public class RoutinesFragment extends Fragment {
             adapter = new RoutinesAdapterLinear(getContext(), routineNames, this);
         }
         recyclerView.setAdapter(adapter);
+    }
 
-        if(savedInstanceState != null) {
-            int numberOfRoutinesSaved = savedInstanceState.getInt("numberOfRoutines");
-            for(int i = 0; i < numberOfRoutinesSaved; i++) {
-                routineNames.add(savedInstanceState.getString("routineName" + i));
-                routineIds.add(savedInstanceState.getString("routineId" + i));
-                routines = (ArrayList<Routine>)savedInstanceState.getSerializable("key");
-                adapter.notifyItemInserted(i);
-            }
-
-            if(numberOfRoutinesSaved == 0) {
-                view.findViewById(R.id.zero_routines).setVisibility(View.VISIBLE);
-            }
-            requireView().findViewById(R.id.loadingRoutinesList).setVisibility(View.GONE);
-        } else {
-            getRoutines(view);
+    private void recoverSavedState(@NonNull Bundle savedInstanceState, View view) {
+        int numberOfRoutinesSaved = savedInstanceState.getInt("numberOfRoutines");
+        for(int i = 0; i < numberOfRoutinesSaved; i++) {
+            routineNames.add(savedInstanceState.getString("routineName" + i));
+            routineIds.add(savedInstanceState.getString("routineId" + i));
+            routines = (ArrayList<Routine>)savedInstanceState.getSerializable("key");
+            adapter.notifyItemInserted(i);
         }
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteRoutineCallback(adapter));
-        itemTouchHelper.attachToRecyclerView(recyclerView);
+
+        if(numberOfRoutinesSaved == 0) {
+            view.findViewById(R.id.zero_routines).setVisibility(View.VISIBLE);
+        }
+        requireView().findViewById(R.id.loadingRoutinesList).setVisibility(View.GONE);
     }
 
     @Override
@@ -117,19 +125,9 @@ public class RoutinesFragment extends Fragment {
         fragmentOnScreen = false;
     }
 
-    public Routine getRoutine(String routineId){
-        Routine aux = routines.get(0);
-        for(Routine r : routines){
-            if(r.getId().equals(routineId)){
-                 aux=r;
-            }
-        }
-        return aux;
-    }
-
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
-//         call superclass to save any view hierarchy
+        // call superclass to save any view hierarchy
         super.onSaveInstanceState(outState);
 
         if(routineNames != null) {
@@ -142,10 +140,8 @@ public class RoutinesFragment extends Fragment {
         }
     }
 
-
-
     void deleteRoutine(View v) {
-        deletingRoutineSnackbar = Snackbar.make(v, "Home deleted!", Snackbar.LENGTH_SHORT);
+        deletingRoutineSnackbar = Snackbar.make(v, "Routine deleted!", Snackbar.LENGTH_SHORT);
         deletingRoutineSnackbar.setAction("UNDO", new UndoDeleteRoutineListener());
         deletingRoutine = true;
         deletingRoutineSnackbar.addCallback(new DeleteRoutineSnackbarTimeout());
@@ -159,7 +155,6 @@ public class RoutinesFragment extends Fragment {
         routineNames.add(positionToDelete, routineToRetrieve);
         adapter.notifyItemInserted(positionToDelete);
     }
-
 
     void showDeleteRoutineDialog(int position) {
         positionToDelete = position;
@@ -177,6 +172,8 @@ public class RoutinesFragment extends Fragment {
         newFragment.show(ft, "dialog");
     }
 
+    /* The only thing that the UNDO action does, is closing the Snackbar and putting the
+       Routine on screen again */
     private class UndoDeleteRoutineListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
@@ -188,51 +185,6 @@ public class RoutinesFragment extends Fragment {
         }
     }
 
-//    /* In the moment that the delete-room-snackbar disappears, the Room is deleted from DataBase */
-//    private class DeleteRoutineSnackbarTimeout extends BaseTransientBottomBar.BaseCallback<Snackbar> {
-//        private View view;
-//
-//        DeleteRoutineSnackbarTimeout(View v) {
-//            view = v;
-//        }
-//
-//        @Override
-//        public void onDismissed(Snackbar transientBottomBar, int event) {
-//            if(event == DISMISS_EVENT_TIMEOUT || event == DISMISS_EVENT_CONSECUTIVE) {
-//                super.onDismissed(transientBottomBar, event);
-//                api.deleteRoutine(routineIds.get(positionToDelete), new Callback<Result<Boolean>>() {
-//                    @Override
-//                    public void onResponse(@NonNull Call<Result<Boolean>> call, @NonNull Response<Result<Boolean>> response) {
-//                        if (response.isSuccessful()) {
-//                            Result<Boolean> result = response.body();
-//                            if (result != null && result.getResult()) {
-//                                routineIds.remove(positionToDelete.intValue());
-//                                routineNamesBackupBeforeDeleting.remove(0);
-//                            } else {
-//                                ErrorHandler.handleError(response, requireView(), "MESSAGE");
-//                                // todo: falta mensaje amigable de error
-//                                // todo: aca se deberia volver a poner la Routine en la lista
-//                                // todo: (si hay dudas, miren como lo hice en el onDismissed de FragmentHomes
-//                            }
-//                        } else {
-//                            ErrorHandler.handleError(response, requireView(), "MESSAGE");
-//                            // todo: falta mensaje amigable de error
-//                            // todo: aca se deberia volver a poner la Routine en la lista
-//                            // todo: (si hay dudas, miren como lo hice en el onDismissed de FragmentHomes
-//                        }
-//                    }
-//                    @Override
-//                    public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
-//                        ErrorHandler.handleUnexpectedError(t, requireView(), RoutinesFragment.this);
-//                        // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
-//                        // todo: aca se deberia volver a poner la Routine en la lista
-//                        // todo: (si hay dudas, miren como lo hice en el onDismissed de FragmentHomes
-//                    }
-//                });
-//            }
-//        }
-//    }
-
     private void showGetRoutinesError() {
         requireView().findViewById(R.id.get_routines_failed).setVisibility(View.VISIBLE);
         requireView().findViewById(R.id.button_get_routines_again).setOnClickListener(RoutinesFragment.this::getRoutinesAgain);
@@ -240,7 +192,7 @@ public class RoutinesFragment extends Fragment {
     }
 
     private void showDeleteRoutineError() {
-        Snackbar s = Snackbar.make(requireView(), "Could not delete Home!", Snackbar.LENGTH_SHORT);
+        Snackbar s = Snackbar.make(requireView(), "Could not delete Routine!", Snackbar.LENGTH_SHORT);
         s.setAction("CLOSE", RoutinesFragment.this::recoverRemovedRoutine);
         s.addCallback(new BaseTransientBottomBar.BaseCallback<Snackbar>() {
             @Override
@@ -258,10 +210,10 @@ public class RoutinesFragment extends Fragment {
         getRoutines(requireView());
     }
 
-    public void setDialogRoutine(View v, int position){
+    void setDialogRoutine(View v, int position){
 
         //First create the dialog
-        final Dialog dialog = new Dialog(getContext());
+        final Dialog dialog = new Dialog(requireContext());
         dialog.setContentView(R.layout.routine_description_dialog);
 
         //instance everything
@@ -274,6 +226,8 @@ public class RoutinesFragment extends Fragment {
         String nameRoutineClicked = routineNames.get(position);
         String idRoutineClicked = routineIds.get(position);
 
+        auxList = new ArrayList<>();
+
         //build the description string
         String routineDescription = "";
         Routine routineClicked = routines.get(position);
@@ -281,7 +235,9 @@ public class RoutinesFragment extends Fragment {
             String deviceName = actions.getDevice().getName();
             if(deviceName != null){
                 String actionName = actions.getActionName();
-                routineDescription = routineDescription + "\n" + deviceName + " --> " + actionName;
+                String auxString = "- " + deviceName + " --> " + actionName;
+                routineDescription = routineDescription + "\n" + auxString;
+                auxList.add(auxString);
             }
             else{
                 executeFail.setVisibility(View.VISIBLE);
@@ -304,10 +260,26 @@ public class RoutinesFragment extends Fragment {
         executeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                executeRoutine(v, idRoutineClicked);
+                executeRoutine(v, idRoutineClicked, dialog);
             }
         });
         dialog.show();
+    }
+
+    private void updateDescription(List<Boolean> list, Dialog d){
+        TextView tv = d.findViewById(R.id.routine_actions_list);
+        String newDescription = "";
+        String resultString="";
+        for(int i=0; i < list.size(); i++){
+            if(list.get(i)==true){
+                resultString = auxList.get(i) + "  ]====>  Succesful!" + "\n";
+            }
+            else {
+                resultString = auxList.get(i) + "  ]====>  Failed!" + "\n";
+            }
+            newDescription = newDescription + resultString;
+        }
+        tv.setText(newDescription);
     }
 
     private void getRoutines(View v) {
@@ -352,7 +324,8 @@ public class RoutinesFragment extends Fragment {
         }).start();
     }
 
-    public void executeRoutine(View v, String routineId){
+    private void executeRoutine(View v, String routineId, Dialog d){
+        new Thread(() -> {
             api.executeRoutine(routineId, new Callback<Result<List<Boolean>>>() {
                 @Override
                 public void onResponse(@NonNull Call<Result<List<Boolean>>> call, @NonNull Response<Result<List<Boolean>>> response) {
@@ -360,7 +333,8 @@ public class RoutinesFragment extends Fragment {
                         Result<List<Boolean>> result = response.body();
                         if (result != null) {
                             List<Boolean> resultRoutine = result.getResult();
-                            Snackbar.make(getParentFragment().getView(), "Routine Executed!", Snackbar.LENGTH_SHORT).show();
+                            updateDescription(resultRoutine, d);
+                            Snackbar.make(requireView(), "Routine Executed!", Snackbar.LENGTH_SHORT).show();
                         } else {
                             ErrorHandler.handleError(response, requireView(), "MENSAJE");
                             // todo: falta poner mensaje amigable de error y PASARSELO a HandleError
@@ -370,13 +344,15 @@ public class RoutinesFragment extends Fragment {
                         // todo: falta poner mensaje amigable de error y PASARSELO a HandleError
                     }
                 }
+
                 @Override
                 public void onFailure(@NonNull Call<Result<List<Boolean>>> call, @NonNull Throwable t) {
-//                    ExecuteRutineFail();
+//                  ExecuteRutineFail();
                     ErrorHandler.handleUnexpectedError(t, requireView(), RoutinesFragment.this);
                     // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
                 }
             });
+        }).start();
     }
 
 //    private void ExecuteRutineFail(){
@@ -392,7 +368,7 @@ public class RoutinesFragment extends Fragment {
                 if (event == DISMISS_EVENT_TIMEOUT || event == DISMISS_EVENT_CONSECUTIVE) {
                     super.onDismissed(transientBottomBar, event);
                     new Thread(() -> {
-                        api.deleteHome(routineIds.get(positionToDelete), new Callback<Result<Boolean>>() {
+                        api.deleteRoutine(routineIds.get(positionToDelete), new Callback<Result<Boolean>>() {
                             @Override
                             public void onResponse(@NonNull Call<Result<Boolean>> call, @NonNull Response<Result<Boolean>> response) {
                                 if (response.isSuccessful()) {
@@ -400,7 +376,7 @@ public class RoutinesFragment extends Fragment {
                                     if (result != null && result.getResult()) {
                                         routineIds.remove(positionToDelete.intValue());
                                         routineNamesBackupBeforeDeleting.remove(0);
-                                        if(routineIds.size() == 0)
+                                        if(routineIds.size() == 0 && fragmentOnScreen)
                                             RoutinesFragment.this.requireView().findViewById(R.id.zero_routines).setVisibility(View.VISIBLE);
                                     } else {
                                         ErrorHandler.logError(response);

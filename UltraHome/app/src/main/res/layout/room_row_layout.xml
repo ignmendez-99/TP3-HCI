@@ -42,7 +42,8 @@
                 android:id="@+id/number_devices_inside"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="39"
+                android:text="0"
+                android:layout_marginEnd="5dp"
                 app:layout_constraintEnd_toStartOf="@+id/devices_inside"
                 app:layout_constraintTop_toTopOf="@+id/devices_inside" />
 
@@ -50,7 +51,7 @@
                 android:id="@+id/devices_inside"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/devices_inside_string"
+                android:text="@string/multiple_devices_inside_string"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.9"

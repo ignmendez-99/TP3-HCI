@@ -56,16 +56,15 @@ public class LightsControllerFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         readBundle(getArguments());
 
-        init(getView());
+        init(view);
     }
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
 
+        super.onDestroyView();
         runThreads = false;
     }
-
     private void initializeColorButtons(@NonNull View view) {
         redBtn = view.findViewById(R.id.red_color_button);
         greenBtn = view.findViewById(R.id.green_color_button);
