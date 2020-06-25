@@ -66,7 +66,7 @@ public class LightsControllerFragment extends Fragment {
         runThreads = false;
     }
 
-    private void initializeColorButtons(View view) {
+    private void initializeColorButtons(@NonNull View view) {
         redBtn = view.findViewById(R.id.red_color_button);
         greenBtn = view.findViewById(R.id.green_color_button);
         blueBtn = view.findViewById(R.id.blue_color_button);
