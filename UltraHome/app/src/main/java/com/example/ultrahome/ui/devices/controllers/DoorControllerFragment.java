@@ -40,7 +40,7 @@ public class DoorControllerFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         readBundle(getArguments());
 
-        init(requireView());
+        init(view);
     }
 
     private void init(View view) {

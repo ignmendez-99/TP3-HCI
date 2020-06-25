@@ -92,18 +92,7 @@ public class HomesFragment extends Fragment{
         buttonAddHome = view.findViewById(R.id.button_show_AddHomeDialog);
         buttonAddHome.setOnClickListener(this::showAddHomeDialog);
 
-        recyclerView = view.findViewById(R.id.homes_recycler_view);
-        if(recyclerView == null) {
-            recyclerView = view.findViewById(R.id.homes_recycler_view_grid);
-            gridLayoutManager = new GridLayoutManager(getContext(), 2);
-            recyclerView.setLayoutManager(gridLayoutManager);
-            adapter = new HomesAdapterGrid(getContext(), homeNames,this);
-        } else {
-            layoutManager = new LinearLayoutManager(getContext());
-            recyclerView.setLayoutManager(layoutManager);
-            adapter = new HomesAdapterLinear(getContext(), homeNames, this);
-        }
-        recyclerView.setAdapter(adapter);
+        setupRecyclerView(view);
 
         // If there is a savedState, we retrieve it and we DON'T call the API.
         if(savedInstanceState != null) {
@@ -115,6 +104,23 @@ public class HomesFragment extends Fragment{
         // Swipe to delete functionality is assigned here
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteHomeCallback(adapter));
         itemTouchHelper.attachToRecyclerView(recyclerView);
+    }
+
+    private void setupRecyclerView(@NonNull View view) {
+        recyclerView = view.findViewById(R.id.homes_recycler_view);
+        if(recyclerView == null) {
+            // if we couldn't find the Linear version, the we must be in Landscape mode
+            recyclerView = view.findViewById(R.id.homes_recycler_view_grid);
+            gridLayoutManager = new GridLayoutManager(getContext(), 2);
+            recyclerView.setLayoutManager(gridLayoutManager);
+            adapter = new HomesAdapterGrid(getContext(), homeNames,this);
+        } else {
+            // Portrait mode
+            layoutManager = new LinearLayoutManager(getContext());
+            recyclerView.setLayoutManager(layoutManager);
+            adapter = new HomesAdapterLinear(getContext(), homeNames, this);
+        }
+        recyclerView.setAdapter(adapter);
     }
 
     private void recoverSavedState(@NonNull Bundle savedInstanceState, View view) {

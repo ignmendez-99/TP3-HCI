@@ -80,6 +80,21 @@ public class RoomsFragment extends Fragment {
         addNewRoomButton = view.findViewById(R.id.button_show_AddRoomDialog);
         addNewRoomButton.setOnClickListener(this::showAddRoomDialog);
 
+        setupRecyclerView(view);
+
+        // If there is a savedState, we retrieve it and we DON'T call the API.
+        if(savedInstanceState != null) {
+            recoverSavedState(savedInstanceState, view);
+        } else {
+            getAllRoomsOfThisHome(view);
+        }
+
+        // Swipe to delete functionality is assigned here
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteRoomCallback(adapter));
+        itemTouchHelper.attachToRecyclerView(recyclerView);
+    }
+
+    private void setupRecyclerView(@NonNull View view) {
         recyclerView = view.findViewById(R.id.rooms_recycler_view);
         if(recyclerView == null) {
             recyclerView = view.findViewById(R.id.rooms_recycler_view_grid);
@@ -92,17 +107,6 @@ public class RoomsFragment extends Fragment {
             adapter = new RoomsAdapterLinear(getContext(), roomNames, this);
         }
         recyclerView.setAdapter(adapter);
-
-        // If there is a savedState, we retrieve it and we DON'T call the API.
-        if(savedInstanceState != null) {
-            recoverSavedState(savedInstanceState, view);
-        } else {
-            getAllRoomsOfThisHome(view);
-        }
-
-        // Swipe to delete functionality is assigned here
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteRoomCallback(adapter));
-        itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
     private void recoverSavedState(@NonNull Bundle savedInstanceState, View view) {
