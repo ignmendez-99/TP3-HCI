@@ -39,7 +39,7 @@ public class DeleteRoutineConfirmationDialog extends DialogFragment {
     public void onDismiss(@NonNull DialogInterface dialog) {
         super.onDismiss(dialog);
         if(mustRecoverRoutine) {
-            containerFragment.recoverRemovedRoutine();
+            containerFragment.recoverRemovedRoutine(containerFragment.getView());
         }
     }
 }

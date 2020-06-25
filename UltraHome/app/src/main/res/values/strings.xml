@@ -248,6 +248,8 @@
     <string name="execute_button">Execute</string>
     <string name="routine_fail_execute">This routine wants to access a deleted device\nImposible to execute! Needs to be removed.</string>
     <string name="click_to_open">Click to open</string>
+    <string name="could_not_recover_routines">Could not recover Routines!</string>
+    <string name="zero_routines">You don\'t have any Routines!</string>
 
     <string name="handle_unexpected_error">OOPS! THERE\'S A PROBLEM ON OUR SIDE :(</string>
 
