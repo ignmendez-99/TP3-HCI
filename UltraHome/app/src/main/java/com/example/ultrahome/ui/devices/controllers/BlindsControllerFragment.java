@@ -39,6 +39,8 @@ public class BlindsControllerFragment extends Fragment implements LifecycleObser
 
     private boolean foreground = true;
 
+    private int notificationsId = 001;
+
     private Button openButton, closeButton;
     private SeekBar levelSeekBar;
     private ProgressBar currentLevelProgressBar, loadingProgressBar;
@@ -114,7 +116,7 @@ public class BlindsControllerFragment extends Fragment implements LifecycleObser
                                             if(foreground)
                                                 Toast.makeText(getContext(), getString(R.string.finished_opening_string), Toast.LENGTH_SHORT).show();
                                             else
-                                                notificationManager.notify(123, openedBlindsBuilder.build());
+                                                notificationManager.notify(notificationsId, openedBlindsBuilder.build());
                                         }
                                         break;
                                     case "closing":
@@ -137,7 +139,7 @@ public class BlindsControllerFragment extends Fragment implements LifecycleObser
                                             if(foreground)
                                                 Toast.makeText(getContext(), getString(R.string.finished_closing_string), Toast.LENGTH_SHORT).show();
                                             else
-                                                notificationManager.notify(123, closedBlindsBuilder.build());
+                                                notificationManager.notify(notificationsId, closedBlindsBuilder.build());
                                         }
                                         break;
 

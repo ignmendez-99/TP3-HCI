@@ -213,6 +213,9 @@
     <string name="blinds_closed_text_string">Your blinds have been closed</string>
     <string name="blinds_opened_title_string">Blinds opened!</string>
     <string name="blinds_opened_text_string">Your blinds have been opened</string>
+    <string name="notification_channel_name_string">mainChannel</string>
+    <string name="notification_channel_description_string">Channel for all the app\'s notifications</string>
+    <string name="notification_channel_id_string">jifUltraId</string>
 
 
 

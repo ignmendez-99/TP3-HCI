@@ -114,10 +114,10 @@ public class HomesFragment extends Fragment{
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "123name";
-            String description = "123desc";
+            CharSequence name = getString(R.string.notification_channel_name_string);
+            String description = getString(R.string.notification_channel_description_string);
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel("123", name, importance);
+            NotificationChannel channel = new NotificationChannel(getString(R.string.notification_channel_id_string), name, importance);
             channel.setDescription(description);
             // Register the channel with the system; you can't change the importance
             // or other notification behaviors after this
