@@ -249,9 +249,10 @@ public class HomesFragment extends Fragment{
 
                 @Override
                 public void onFailure(@NonNull Call<Result<List<Home>>> call, @NonNull Throwable t) {
-                    ErrorHandler.handleUnexpectedError(t, requireView(), HomesFragment.this);
-                    if(fragmentOnScreen)
+                    if(fragmentOnScreen) {
                         showGetHomesError();
+                        ErrorHandler.handleUnexpectedError(t, requireView(), HomesFragment.this);
+                    }
                 }
             });
         }).start();
@@ -281,7 +282,8 @@ public class HomesFragment extends Fragment{
 
                @Override
                public void onFailure(@NonNull Call<Result<List<Room>>> call, @NonNull Throwable t) {
-                    ErrorHandler.handleUnexpectedError(t, requireView(), HomesFragment.this);
+                   if(fragmentOnScreen)
+                       ErrorHandler.handleUnexpectedError(t, requireView(), HomesFragment.this);
                }
            });
         }).start();

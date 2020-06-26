@@ -256,9 +256,10 @@ public class RoomsFragment extends Fragment {
 
                 @Override
                 public void onFailure(@NonNull Call<Result<List<Room>>> call, @NonNull Throwable t) {
-                    ErrorHandler.handleUnexpectedError(t, requireView(), RoomsFragment.this);
-                    if (fragmentOnScreen)
+                    if (fragmentOnScreen) {
                         showGetRoomsError();
+                        ErrorHandler.handleUnexpectedError(t, requireView(), RoomsFragment.this);
+                    }
                 }
             });
         }).start();
@@ -288,7 +289,8 @@ public class RoomsFragment extends Fragment {
 
                 @Override
                 public void onFailure(@NonNull Call<Result<List<Device>>> call, @NonNull Throwable t) {
-                    ErrorHandler.handleUnexpectedError(t, requireView(), RoomsFragment.this);
+                    if(fragmentOnScreen)
+                        ErrorHandler.handleUnexpectedError(t, requireView(), RoomsFragment.this);
                 }
             });
         }).start();
@@ -331,7 +333,8 @@ public class RoomsFragment extends Fragment {
             }
             @Override
             public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
-                ErrorHandler.handleUnexpectedError(t, requireView(), RoomsFragment.this);
+                if(fragmentOnScreen)
+                    ErrorHandler.handleUnexpectedError(t, requireView(), RoomsFragment.this);
             }
         });
     }

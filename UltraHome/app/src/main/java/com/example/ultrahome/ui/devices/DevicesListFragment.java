@@ -389,9 +389,10 @@ public class DevicesListFragment extends Fragment {
 
                 @Override
                 public void onFailure(@NonNull Call<Result<List<Device>>> call, @NonNull Throwable t) {
-                    ErrorHandler.handleUnexpectedError(t, requireView(), DevicesListFragment.this);
-                    if(fragmentOnScreen)
+                    if(fragmentOnScreen) {
                         showGetDevicesError();
+                        ErrorHandler.handleUnexpectedError(t, requireView(), DevicesListFragment.this);
+                    }
                 }
             });
         }).start();
@@ -434,7 +435,8 @@ public class DevicesListFragment extends Fragment {
             }
             @Override
             public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
-                ErrorHandler.handleUnexpectedError(t, requireView(), DevicesListFragment.this);
+                if(fragmentOnScreen)
+                    ErrorHandler.handleUnexpectedError(t, requireView(), DevicesListFragment.this);
             }
         });
     }
