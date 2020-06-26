@@ -113,6 +113,7 @@
     <string name="mode_changed_string">Mode changed!</string>
     <string name="status_changed_string">Status changed!</string>
     <string name="battery_too_low_to_start_string">Can\'t start, battery is too low :(</string>
+    <string name="changed_vacuum_location_string">Location changed to</string>
 
     <!-- ////////////// LIGHTS STRINGS ////////////// -->
 
@@ -203,7 +204,12 @@
     <!--  Try again string used from above  -->
     <string name="no_rooms_string">You don\'t have any rooms!\n Press the + button to add one :)</string>
 
+    <!-- //////////////  NOTIFICATIONS STRINGS ////////////// -->
 
+    <string name="blinds_closed_title_string">Blinds closed!</string>
+    <string name="blinds_closed_text_string">Your blinds have been closed</string>
+    <string name="blinds_opened_title_string">Blinds opened!</string>
+    <string name="blinds_opened_text_string">Your blinds have been opened</string>
 
 
 
@@ -244,11 +250,11 @@
     <string name="delete_button">Delete</string>
     <string name="done_button">Done</string>
 
-    <string name="routine_description">Routine Description:</string>
+    <string name="routine_description">Routine description:</string>
     <string name="execute_button">Execute</string>
     <string name="routine_fail_execute">This routine wants to access a deleted device\nImposible to execute! Needs to be removed.</string>
     <string name="click_to_open">Click to open</string>
-    <string name="could_not_recover_routines">Could not recover Routines!</string>
+    <string name="could_not_recover_routines">Could not recover routines!</string>
     <string name="zero_routines">You don\'t have any Routines!</string>
 
     <string name="handle_unexpected_error">Oops! There\'s a problem on our side :(</string>

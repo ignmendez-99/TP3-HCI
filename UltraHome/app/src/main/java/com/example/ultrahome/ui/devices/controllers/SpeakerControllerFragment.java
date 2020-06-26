@@ -13,6 +13,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.OnLifecycleEvent;
+import androidx.lifecycle.ProcessLifecycleOwner;
 
 import com.example.ultrahome.R;
 import com.example.ultrahome.apiConnection.ApiClient;
@@ -26,7 +30,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class SpeakerControllerFragment extends Fragment {
+public class SpeakerControllerFragment extends Fragment implements LifecycleObserver {
 
     private String [] genres = {"classical",
             "country",
@@ -125,7 +129,19 @@ public class SpeakerControllerFragment extends Fragment {
 
         api = ApiClient.getInstance();
 
+        ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
+
         updateState();
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+    public void onAppBackgrounded() {
+        runThreads = false;
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    public void onAppForegrounded() {
+        runThreads = true;
     }
 
     @NonNull
@@ -147,8 +163,7 @@ public class SpeakerControllerFragment extends Fragment {
                     if (response.isSuccessful()) {
                         Result<Boolean> result = response.body();
                         if (result != null) {
-//                            updateState();
-
+                            // todo: icono de cargando hasta que se ejecuta el updateState
                         } else {
                             ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                         }
@@ -169,7 +184,7 @@ public class SpeakerControllerFragment extends Fragment {
                     if (response.isSuccessful()) {
                         Result<Boolean> result = response.body();
                         if (result != null) {
-//                            updateState();
+                            // todo: icono de cargando hasta que se ejecuta el updateState
 
                         } else {
                             ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
@@ -194,8 +209,7 @@ public class SpeakerControllerFragment extends Fragment {
                 if (response.isSuccessful()) {
                     Result<Boolean> result = response.body();
                     if (result != null) {
-//                        updateState();
-
+                        // todo: icono de cargando hasta que se ejecuta el updateState
                     } else {
                         ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                     }
@@ -218,9 +232,7 @@ public class SpeakerControllerFragment extends Fragment {
                 if (response.isSuccessful()) {
                     Result<Boolean> result = response.body();
                     if (result != null) {
-//                        updateState();
-
-
+                        // todo: icono de cargando hasta que se ejecuta el updateState
                     } else {
                         ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                     }
@@ -243,8 +255,7 @@ public class SpeakerControllerFragment extends Fragment {
                 if (response.isSuccessful()) {
                     Result<Boolean> result = response.body();
                     if (result != null) {
-//                        updateState();
-
+                        // todo: icono de cargando hasta que se ejecuta el updateState
                     } else {
                         ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                     }
@@ -267,8 +278,7 @@ public class SpeakerControllerFragment extends Fragment {
                 if (response.isSuccessful()) {
                     Result<Boolean> result = response.body();
                     if (result != null) {
-//                        updateState();
-
+                        // todo: icono de cargando hasta que se ejecuta el updateState
                     } else {
                         ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                     }

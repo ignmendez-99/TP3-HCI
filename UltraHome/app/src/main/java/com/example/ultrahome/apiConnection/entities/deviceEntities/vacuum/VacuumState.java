@@ -22,6 +22,8 @@ public class VacuumState extends DeviceState {
         public String getName() {
             return name;
         }
+
+
     }
 
     @SerializedName("status")
@@ -54,5 +56,13 @@ public class VacuumState extends DeviceState {
 
     public Location getLocation() {
         return location;
+    }
+
+    public String getLocationName() {
+        return location.name;
+    }
+
+    public String getLocationId() {
+        return location.id;
     }
 }

@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Switch;
@@ -14,6 +16,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.OnLifecycleEvent;
+import androidx.lifecycle.ProcessLifecycleOwner;
 
 import com.example.ultrahome.R;
 import com.example.ultrahome.apiConnection.ApiClient;
@@ -23,14 +29,13 @@ import com.example.ultrahome.apiConnection.entities.deviceEntities.vacuum.Vacuum
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class VacuumControllerFragment extends Fragment {
+public class VacuumControllerFragment extends Fragment implements LifecycleObserver {
 
     private String deviceId;
 
@@ -44,6 +49,8 @@ public class VacuumControllerFragment extends Fragment {
 
     private List<String> roomIds;
     private List<String> roomNames;
+    
+    private String [] roomIdsArray, roomNamesArray;
 
     private ApiClient api;
 
@@ -84,6 +91,79 @@ public class VacuumControllerFragment extends Fragment {
         outState.putSerializable("roomNames", (Serializable) roomNames);
     }
 
+    private int getRoomIndex(String room) {
+        int i;
+        for(i = 0; i < roomNamesArray.length; i++)
+            if(roomNamesArray[i].equals(room))
+                return i;
+        return -1;
+    }
+    
+    private void updateState() {
+        new Thread(() -> {
+            while(runThreads) {
+                api.getVacuumState(deviceId, new Callback<Result<VacuumState>>() {
+                    @Override
+                    public void onResponse(@NonNull Call<Result<VacuumState>> call, @NonNull Response<Result<VacuumState>> response) {
+                        if(response.isSuccessful()) {
+                            Result<VacuumState> result = response.body();
+                            if(result != null && runThreads) {
+                                VacuumState vacuumState = result.getResult();
+                                batteryTextView.setText(getString(R.string.battery_string) + " " + vacuumState.getBatteryLevel() + "%");
+                                status = vacuumState.getStatus();
+                                mode = vacuumState.getMode();
+                                if(mode.equals("vacuum"))
+                                    modeSwitch.setChecked(false);
+                                else
+                                    modeSwitch.setChecked(true);
+                                location = vacuumState.getLocationName();
+                                roomToCleanSpinner.setSelection(getRoomIndex(location));
+                                updateButtons();
+                                roomToCleanSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+                                {
+                                    @Override
+                                    public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long id) {
+                                        changeLocation(roomIdsArray[getRoomIndex(roomToCleanSpinner.getSelectedItem().toString())]);
+                                    }
+
+                                    @Override
+                                    public void onNothingSelected(AdapterView<?> arg0) {
+                                    }
+                                });
+
+                            } else {
+                                ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
+                            }
+                        } else {
+                            ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<Result<VacuumState>> call, @NonNull Throwable t) {
+                        ErrorHandler.handleUnexpectedError(t, requireView(), VacuumControllerFragment.this);
+                    }
+                });
+
+                try {
+                    Thread.sleep(7000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+    public void onAppBackgrounded() {
+        runThreads = false;
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    public void onAppForegrounded() {
+        runThreads = true;
+    }
+
     private void init(View view) {
         startButton = view.findViewById(R.id.start_button);
         pauseButton = view.findViewById(R.id.pause_button);
@@ -92,42 +172,16 @@ public class VacuumControllerFragment extends Fragment {
         roomToCleanSpinner = view.findViewById(R.id.room_to_clean_spinner);
         batteryTextView = view.findViewById(R.id.battery_level);
 
+        roomNamesArray = new String[roomNames.size()];
+        roomNames.toArray(roomNamesArray);
+
+        roomIdsArray = new String[roomIds.size()];
+        roomIds.toArray(roomIdsArray);
+        
 
         api = ApiClient.getInstance();
-
-        api.getVacuumState(deviceId, new Callback<Result<VacuumState>>() {
-            @Override
-            public void onResponse(@NonNull Call<Result<VacuumState>> call, @NonNull Response<Result<VacuumState>> response) {
-                if(response.isSuccessful()) {
-                    Result<VacuumState> result = response.body();
-                    if(result != null) {
-                        VacuumState vacuumState = result.getResult();
-                        status = vacuumState.getStatus();
-                        mode = vacuumState.getMode();
-//                        location = vacuumState.getLocation();
-                        batteryTextView.setText(getString(R.string.battery_string) + " " + vacuumState.getBatteryLevel() + "%");
-                        updateButtons();
-
-                        if(mode.equals("vacuum"))
-                            modeSwitch.setChecked(false);
-                        else
-                            modeSwitch.setChecked(true);
-
-
-
-                    } else {
-                        ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
-                    }
-                } else {
-                    ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<Result<VacuumState>> call, @NonNull Throwable t) {
-                ErrorHandler.handleUnexpectedError(t, requireView(), VacuumControllerFragment.this);
-            }
-        });
+        
+        updateState();
 
         modeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
@@ -137,13 +191,46 @@ public class VacuumControllerFragment extends Fragment {
             }
         });
 
-
         startButton.setOnClickListener(v -> changeState(v, "start"));
         pauseButton.setOnClickListener(v -> changeState(v, "pause"));
         dockButton.setOnClickListener(v -> changeState(v, "dock"));
+        roomToCleanSpinner = view.findViewById(R.id.room_to_clean_spinner);
 
-        startBatteryThread();
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
+                android.R.layout.simple_spinner_item, roomNamesArray);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        roomToCleanSpinner.setAdapter(adapter);
 
+        ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
+
+
+    }
+
+    private void changeLocation(String newLocation) {
+        if(location.equals(newLocation))
+            return;
+
+        api.setVacuumLocation(deviceId, newLocation, new Callback<Result<String>>() {
+            @Override
+            public void onResponse(@NonNull Call<Result<String>> call, @NonNull Response<Result<String>> response) {
+                if(response.isSuccessful()) {
+                    Result<String> result = response.body();
+                    if(result != null) {
+                        Toast.makeText(getContext(), getString(R.string.changed_vacuum_location_string) + " " + roomToCleanSpinner.getSelectedItem().toString(), Toast.LENGTH_LONG).show();
+                        location = newLocation;
+                    } else {
+                        ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
+                    }
+                } else {
+                    ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Result<String>> call, @NonNull Throwable t) {
+                ErrorHandler.handleUnexpectedError(t, requireView(), VacuumControllerFragment.this);
+            }
+        });
     }
 
     private void changeMode(String newMode) {
@@ -307,40 +394,5 @@ public class VacuumControllerFragment extends Fragment {
                 startButton.setEnabled(false);
                 break;
         }
-    }
-
-    private void startBatteryThread() {
-        new Thread(() -> {
-            while(runThreads) {
-                api.getVacuumState(deviceId, new Callback<Result<VacuumState>>() {
-                    @Override
-                    public void onResponse(@NonNull Call<Result<VacuumState>> call, @NonNull Response<Result<VacuumState>> response) {
-                        if(response.isSuccessful()) {
-                            Result<VacuumState> result = response.body();
-                            if(result != null) {
-                                VacuumState vacuumState = result.getResult();
-                                if(runThreads)
-                                    batteryTextView.setText(getString(R.string.battery_string) + " " + vacuumState.getBatteryLevel() + "%");
-                            } else {
-                                ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
-                            }
-                        } else {
-                            ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull Call<Result<VacuumState>> call, @NonNull Throwable t) {
-                        ErrorHandler.handleUnexpectedError(t, requireView(), VacuumControllerFragment.this);
-                    }
-                });
-
-                try {
-                    Thread.sleep(15000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
     }
 }
