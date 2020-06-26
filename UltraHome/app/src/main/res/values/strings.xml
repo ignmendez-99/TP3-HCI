@@ -176,6 +176,8 @@
 
     <!-- ////////////// HOME GRID AND ROW STRINGS ////////////// -->
 
+    <string name="no_homes_string">You don\'t have any Homes!\n Press the green button to add one!</string>
+    <string name="failed_to_get_homes_string">Could not recover Homes!</string>
     <string name="home_name_placeholder">Home Name</string>  <!-- PLACEHOLDER, WILL BE EDITED LATER -->
     <string name="multiple_rooms_inside_string">rooms inside</string>
     <string name="one_room_inside_string">room inside</string>
@@ -192,6 +194,7 @@
 
     <!-- //////////////  DEVICES LIST STRINGS ////////////// -->
 
+    <string name="device_name_placeholder">Device Name</string>
     <string name="failed_to_get_devices_string">Could not recover devices!</string>
     <string name="try_again_string">Try again</string>
     <string name="no_devices_string">You don\'t have any devices!\n Press the + button to add one :)</string>
