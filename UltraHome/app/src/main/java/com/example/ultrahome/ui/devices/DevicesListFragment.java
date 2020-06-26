@@ -127,8 +127,8 @@ public class DevicesListFragment extends Fragment {
                 deviceTypeIds.add(savedInstanceState.getString("deviceTypeId" + i));
                 adapter.notifyItemInserted(i);
             }
-            if(numberOfDevicesSaved == 0) {
-                view.findViewById(R.id.zero_devices).setVisibility(View.VISIBLE);
+            if(numberOfDevicesSaved != 0) {
+                view.findViewById(R.id.zero_devices).setVisibility(View.GONE);
             }
             requireView().findViewById(R.id.button_show_AddDeviceDialog).setVisibility(View.VISIBLE);
             requireView().findViewById(R.id.loadingDevicesList).setVisibility(View.GONE);
@@ -348,6 +348,7 @@ public class DevicesListFragment extends Fragment {
     }
 
     private void getAllDevicesOfThisRoom(View view) {
+        final int[] numberOfDevicesInThisRoom = {0};
         new Thread(() -> {
             api.getDevices(new Callback<Result<List<Device>>>() {
                 @Override
@@ -367,12 +368,13 @@ public class DevicesListFragment extends Fragment {
                                             deviceTypeIds.add(device.getType().getId());
                                             devicesNames.add(device.getName());
                                             adapter.notifyItemInserted(devicesNames.size() - 1);
+                                            numberOfDevicesInThisRoom[0]++;
                                         }
+                                        if(numberOfDevicesInThisRoom[0] > 0)
+                                            view.findViewById(R.id.zero_devices).setVisibility(View.GONE);
                                     }
                                 }
-                                view.findViewById(R.id.zero_devices).setVisibility(View.GONE);
-                            } else
-                                view.findViewById(R.id.zero_devices).setVisibility(View.VISIBLE);
+                            }
                             view.findViewById(R.id.button_show_AddDeviceDialog).setVisibility(View.VISIBLE);
                         } else {
                             ErrorHandler.logError(response);

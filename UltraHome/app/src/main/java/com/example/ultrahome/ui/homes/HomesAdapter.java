@@ -36,7 +36,7 @@ public abstract class HomesAdapter extends RecyclerView.Adapter<HomesAdapter.Hom
             String aux = numberOfRoomsInEachHome.get(position);
             if (aux != null) {
                 holder.amountOfRoomsInside.setText(aux);
-                if(aux.equals("0"))
+                if(aux.equals("1"))
                     holder.textRoomsInside.setText(R.string.one_room_inside_string);
                 else
                     holder.textRoomsInside.setText(R.string.multiple_rooms_inside_string);
