@@ -47,7 +47,7 @@ public abstract class RoomsAdapter extends RecyclerView.Adapter<RoomsAdapter.Roo
             String aux = numberOfDevicesInEachRoom.get(position);
             if (aux != null) {
                 holder.amountOfDevicesInside.setText(aux);
-                if(aux.equals("0"))
+                if(aux.equals("1"))
                     holder.textDevicesInside.setText(R.string.one_device_inside_string);
                 else
                     holder.textDevicesInside.setText(R.string.multiple_devices_inside_string);

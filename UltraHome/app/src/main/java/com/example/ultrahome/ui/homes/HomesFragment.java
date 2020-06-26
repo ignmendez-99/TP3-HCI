@@ -23,6 +23,7 @@ import com.example.ultrahome.apiConnection.ErrorHandler;
 import com.example.ultrahome.apiConnection.entities.Home;
 import com.example.ultrahome.apiConnection.entities.Result;
 import com.example.ultrahome.apiConnection.entities.Room;
+import com.example.ultrahome.ui.TabletFragment;
 import com.example.ultrahome.ui.devices.DevicesListFragment;
 import com.example.ultrahome.ui.rooms.RoomsFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -62,6 +63,11 @@ public class HomesFragment extends Fragment{
     private boolean fragmentOnScreen = true;
     private ApiClient api;
 
+    // tablet-specific variables
+    private boolean inTablet = false;
+    private Integer positionOfHomeOpened;
+
+
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_homes, container, false);
     }
@@ -69,6 +75,9 @@ public class HomesFragment extends Fragment{
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        /* will only get something if we are in Tablet mode */
+        readBundle(getArguments());
 
         api = ApiClient.getInstance();
         homeNames = new ArrayList<>();
@@ -91,6 +100,13 @@ public class HomesFragment extends Fragment{
         // Swipe to delete functionality is assigned here
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteHomeCallback(adapter));
         itemTouchHelper.attachToRecyclerView(recyclerView);
+    }
+
+    /* will only get something if we are in Tablet mode */
+    private void readBundle(Bundle bundle) {
+        if(bundle != null) {
+            inTablet = bundle.getBoolean("inTablet");
+        }
     }
 
     private void setupRecyclerView(@NonNull View view) {
@@ -159,11 +175,18 @@ public class HomesFragment extends Fragment{
     void navigateToRoomsFragment(View view, int position) {
         // we send the homeId to the RoomsFragment, so that the correct Rooms are loaded
         String idOfHomeClicked = homeIds.get(position);
-        // todo: try to replace this with a Bundle/Intent
         HomeToRoomViewModel model = new ViewModelProvider(requireActivity()).get(HomeToRoomViewModel.class);
         model.storeHomeId(idOfHomeClicked);
-        final NavController navController =  Navigation.findNavController(view);
-        navController.navigate(R.id.action_HomesFragment_to_RoomsFragment);
+        if(inTablet) {
+            if(positionOfHomeOpened == null || positionOfHomeOpened != position) {
+                positionOfHomeOpened = position;
+                TabletFragment parentFragment = (TabletFragment) getParentFragment();
+                parentFragment.initRoomsFragment();
+            }
+        } else {
+            final NavController navController = Navigation.findNavController(view);
+            navController.navigate(R.id.action_HomesFragment_to_RoomsFragment);
+        }
     }
 
     /* Called by the AddHomeDialog, when the Home has been successfully added */
@@ -182,6 +205,8 @@ public class HomesFragment extends Fragment{
     }
 
     void deleteHome(View v) {
+        if(inTablet)
+            ((TabletFragment)getParentFragment()).homeWasDeleted();
         deletingHomeSnackbar = Snackbar.make(v, "Home deleted!", Snackbar.LENGTH_SHORT);
         deletingHomeSnackbar.setAction("UNDO", new UndoDeleteHomeListener());
         deletingHome = true;

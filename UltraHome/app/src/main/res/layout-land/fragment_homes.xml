@@ -52,7 +52,6 @@
         android:id="@+id/zero_homes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
         android:text="You don't have any Homes!\n Press the green button to add one!"
         android:textSize="20sp"
         android:textAlignment="center"

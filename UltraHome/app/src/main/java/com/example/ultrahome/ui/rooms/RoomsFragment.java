@@ -60,6 +60,10 @@ public class RoomsFragment extends Fragment {
     private boolean deletingRoom = false;
     private ApiClient api;
 
+    // tablet-specific variables
+    private boolean inTablet = false;
+
+
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_rooms, container, false);
     }
@@ -67,6 +71,10 @@ public class RoomsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        /* will only get something if we are in Tablet mode */
+        readBundle(getArguments());
+
         roomIds = new ArrayList<>();
         roomNames = new ArrayList<>();
         roomNamesBackupBeforeDeleting = new ArrayList<>();
@@ -94,6 +102,13 @@ public class RoomsFragment extends Fragment {
         itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
+    /* will only get something if we are in Tablet mode */
+    private void readBundle(Bundle bundle) {
+        if(bundle != null) {
+            inTablet = bundle.getBoolean("inTablet");
+        }
+    }
+
     private void setupRecyclerView(@NonNull View view) {
         recyclerView = view.findViewById(R.id.rooms_recycler_view);
         if(recyclerView == null) {
@@ -116,8 +131,8 @@ public class RoomsFragment extends Fragment {
             roomIds.add(savedInstanceState.getString("roomId" + i));
             adapter.notifyItemInserted(i);
         }
-        if(numberOfRoomsSaved == 0) {
-            view.findViewById(R.id.zero_rooms).setVisibility(View.VISIBLE);
+        if(numberOfRoomsSaved != 0) {
+            view.findViewById(R.id.zero_rooms).setVisibility(View.GONE);
         }
         requireView().findViewById(R.id.button_show_AddRoomDialog).setVisibility(View.VISIBLE);
         requireView().findViewById(R.id.loadingRoomsList).setVisibility(View.GONE);
@@ -214,6 +229,7 @@ public class RoomsFragment extends Fragment {
     }
 
     private void getAllRoomsOfThisHome(View v) {
+        final int[] numberOfRoomsInThisHome = {0};
         new Thread(() -> {
             api.getRooms(new Callback<Result<List<Room>>>() {
                 @Override
@@ -234,12 +250,13 @@ public class RoomsFragment extends Fragment {
                                             roomNames.add(room.getName());
                                             getAmountOfDevicesInThisRoom(roomId, roomNames.size() - 1);
                                             adapter.notifyItemInserted(roomNames.size() - 1);
+                                            numberOfRoomsInThisHome[0]++;
                                         }
+                                        if(numberOfRoomsInThisHome[0] > 0)
+                                            v.findViewById(R.id.zero_rooms).setVisibility(View.GONE);
                                     }
                                 }
-                                v.findViewById(R.id.zero_rooms).setVisibility(View.GONE);
-                            } else
-                                v.findViewById(R.id.zero_rooms).setVisibility(View.VISIBLE);
+                            }
                             v.findViewById(R.id.button_show_AddRoomDialog).setVisibility(View.VISIBLE);
                         } else {
                             ErrorHandler.logError(response);
