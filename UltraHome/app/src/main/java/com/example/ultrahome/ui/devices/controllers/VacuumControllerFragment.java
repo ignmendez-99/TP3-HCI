@@ -21,6 +21,11 @@ import com.example.ultrahome.apiConnection.ErrorHandler;
 import com.example.ultrahome.apiConnection.entities.Result;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.vacuum.VacuumState;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -37,6 +42,9 @@ public class VacuumControllerFragment extends Fragment {
     private String status, mode, location;
     private boolean runThreads = true;
 
+    private List<String> roomIds;
+    private List<String> roomNames;
+
     private ApiClient api;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -46,7 +54,18 @@ public class VacuumControllerFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        roomNames = new ArrayList<>();
+        roomIds = new ArrayList<>();
+
+        /* get Arguments when the Fragment is created by DevicesListFragment */
         readBundle(getArguments());
+
+        /* get saved state */
+        if(savedInstanceState != null) {
+            roomIds = (List<String>) savedInstanceState.getSerializable("roomIds");
+            roomNames = (List<String>) savedInstanceState.getSerializable("roomNames");
+        }
 
         init(view);
     }
@@ -56,6 +75,13 @@ public class VacuumControllerFragment extends Fragment {
         super.onDestroy();
 
         runThreads = false;
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable("roomIds", (Serializable) roomIds);
+        outState.putSerializable("roomNames", (Serializable) roomNames);
     }
 
     private void init(View view) {
@@ -233,13 +259,17 @@ public class VacuumControllerFragment extends Fragment {
     private void readBundle(Bundle bundle) {
         if (bundle != null) {
             deviceId = bundle.getString("deviceId");
+            roomIds = (List<String>) bundle.getSerializable("roomIds");
+            roomNames = (List<String>) bundle.getSerializable("roomNames");
         }
     }
 
     @NonNull
-    public static VacuumControllerFragment newInstance(String deviceId) {
+    public static VacuumControllerFragment newInstance(String deviceId, List<String> roomIds, List<String> roomNames) {
         Bundle bundle = new Bundle();
         bundle.putString("deviceId", deviceId);
+        bundle.putSerializable("roomNames", (Serializable) roomNames);
+        bundle.putSerializable("roomIds", (Serializable) roomIds);
 
         VacuumControllerFragment fragment = new VacuumControllerFragment();
         fragment.setArguments(bundle);

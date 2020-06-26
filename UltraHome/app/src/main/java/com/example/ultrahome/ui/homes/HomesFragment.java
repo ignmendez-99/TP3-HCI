@@ -62,11 +62,6 @@ public class HomesFragment extends Fragment{
     private boolean fragmentOnScreen = true;
     private ApiClient api;
 
-    // variables dealing with tablet mode
-    private HomesFragment fragment_1;
-    private RoomsFragment fragment_2;
-    private DevicesListFragment fragment_3;
-
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_homes, container, false);
     }
@@ -74,14 +69,6 @@ public class HomesFragment extends Fragment{
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        // Setup Tablet Mode
-        if(view.findViewById(R.id.button_show_AddHomeDialog) == null) {
-            fragment_1 = new HomesFragment();
-            FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-            transaction.replace(R.id.fragment_tablet_1, fragment_1).commit();
-            return;
-        }
 
         api = ApiClient.getInstance();
         homeNames = new ArrayList<>();

@@ -66,6 +66,9 @@ public class DevicesListFragment extends Fragment {
     private List<String> deviceNamesBackupBeforeDeleting;
     private List<String> deviceTypeIdsBackupBeforeDeleting;
     private List<String> deviceTypeIds;
+    /* These 2 below are only used by the Vacuum */
+    private List<String> roomNames;
+    private List<String> roomIds;
 
     private String roomId;   // this is the room that contains all devices displayed in this screen
     private Snackbar deletingDeviceSnackbar;
@@ -92,10 +95,11 @@ public class DevicesListFragment extends Fragment {
         api = ApiClient.getInstance();
         initDeviceTypeIdMap();
 
-        // we grab the "parameter" that RoomsFragment left us
-        // TODO: try this with an Intent/Bundle
+        // we grab all the "parameters" that RoomsFragment left us
         RoomToDeviceViewModel model = new ViewModelProvider(requireActivity()).get(RoomToDeviceViewModel.class);
         roomId = model.getRoomId().getValue();
+        roomIds = model.getRoomIds().getValue();
+        roomNames = model.getRoomNames().getValue();
 
         DevicesListViewModel previousState = new ViewModelProvider(requireActivity()).get(DevicesListViewModel.class);
         childFragment = previousState.getChildFragment().getValue();
@@ -475,7 +479,7 @@ public class DevicesListFragment extends Fragment {
                         childFragment = SpeakerControllerFragment.newInstance(deviceId);
                         break;
                     case R.layout.fragment_vacuum_controller:
-                        childFragment = VacuumControllerFragment.newInstance(deviceId);
+                        childFragment = VacuumControllerFragment.newInstance(deviceId, roomIds, roomNames);
                         break;
                     default:
                         throw new IllegalStateException("Unexpected value: " + layoutToChoose);

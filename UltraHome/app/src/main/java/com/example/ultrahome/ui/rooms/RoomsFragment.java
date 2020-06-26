@@ -158,9 +158,10 @@ public class RoomsFragment extends Fragment {
     void navigateToDevicesFragment(View view, int position) {
         // we send the roomId to the DevicesFragment, so that the correct Devices are loaded
         String idOfRoomClicked = roomIds.get(position);
-        // todo: try to replace this with a Bundle/Intent
         RoomToDeviceViewModel model = new ViewModelProvider(requireActivity()).get(RoomToDeviceViewModel.class);
         model.storeRoomId(idOfRoomClicked);
+        model.storeRoomIds(roomIds);
+        model.storeRoomNames(roomNames);
         final NavController navController =  Navigation.findNavController(view);
         navController.navigate(R.id.action_RoomsFragment_to_DevicesListFragment);
     }

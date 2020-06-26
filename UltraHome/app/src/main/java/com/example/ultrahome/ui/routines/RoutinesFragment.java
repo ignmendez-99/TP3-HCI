@@ -318,9 +318,10 @@ public class RoutinesFragment extends Fragment {
 
                 @Override
                 public void onFailure(@NonNull Call<Result<List<Routine>>> call, @NonNull Throwable t) {
-                    ErrorHandler.handleUnexpectedError(t, requireView(), RoutinesFragment.this);
-                    if (fragmentOnScreen)
+                    if (fragmentOnScreen) {
                         showGetRoutinesError();
+                        ErrorHandler.handleUnexpectedError(t, requireView(), RoutinesFragment.this);
+                    }
                 }
             });
         }).start();
