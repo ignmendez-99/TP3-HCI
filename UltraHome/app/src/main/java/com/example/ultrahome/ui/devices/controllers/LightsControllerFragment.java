@@ -86,39 +86,39 @@ public class LightsControllerFragment extends Fragment implements LifecycleObser
         darkGreyBtn = view.findViewById(R.id.darkGrey_color_button);
         blackBtn = view.findViewById(R.id.black_color_button);
 
-        redBtn.setOnClickListener(v -> changeColor(v, "#F44336"));
-        greenBtn.setOnClickListener(v -> changeColor(v, "#4CFF00"));
-        blueBtn.setOnClickListener(v -> changeColor(v, "#0036FF"));
-        yellowBtn.setOnClickListener(v -> changeColor(v, "#FFDD00"));
-        warmWhiteBtn.setOnClickListener(v -> changeColor(v, "#FFFADA"));
-        purpleBtn.setOnClickListener(v -> changeColor(v, "#9C27B0"));
-        darkGreenBtn.setOnClickListener(v -> changeColor(v, "#39813C"));
-        orangeBtn.setOnClickListener(v -> changeColor(v, "#FF9800"));
-        violetBtn.setOnClickListener(v -> changeColor(v, "#673AB7"));
-        coolWhiteBtn.setOnClickListener(v -> changeColor(v, "#E9F8FF"));
-        whiteBtn.setOnClickListener(v -> changeColor(v, "#FFFFFF"));
-        lightGreyBtn.setOnClickListener(v -> changeColor(v, "#D8D8D8"));
-        greyBtn.setOnClickListener(v -> changeColor(v, "#939393"));
-        darkGreyBtn.setOnClickListener(v -> changeColor(v, "#4E4E4E"));
-        blackBtn.setOnClickListener(v -> changeColor(v, "#000000"));
+        redBtn.setOnClickListener(v -> changeColor(v, "F44336"));
+        greenBtn.setOnClickListener(v -> changeColor(v, "4CFF00"));
+        blueBtn.setOnClickListener(v -> changeColor(v, "0036FF"));
+        yellowBtn.setOnClickListener(v -> changeColor(v, "FFDD00"));
+        warmWhiteBtn.setOnClickListener(v -> changeColor(v, "FFFADA"));
+        purpleBtn.setOnClickListener(v -> changeColor(v, "9C27B0"));
+        darkGreenBtn.setOnClickListener(v -> changeColor(v, "39813C"));
+        orangeBtn.setOnClickListener(v -> changeColor(v, "FF9800"));
+        violetBtn.setOnClickListener(v -> changeColor(v, "673AB7"));
+        coolWhiteBtn.setOnClickListener(v -> changeColor(v, "E9F8FF"));
+        whiteBtn.setOnClickListener(v -> changeColor(v, "FFFFFF"));
+        lightGreyBtn.setOnClickListener(v -> changeColor(v, "D8D8D8"));
+        greyBtn.setOnClickListener(v -> changeColor(v, "939393"));
+        darkGreyBtn.setOnClickListener(v -> changeColor(v, "4E4E4E"));
+        blackBtn.setOnClickListener(v -> changeColor(v, "000000"));
 
         colors = new HashMap<>();
 
-        colors.put("#F44336", 0xFFF44336);
-        colors.put("#4CFF00", 0xFF4CFF00);
-        colors.put("#0036FF", 0xFF0036FF);
-        colors.put("#FFDD00", 0xFFFFDD00);
-        colors.put("#FFFADA", 0xFFFFFADA);
-        colors.put("#9C27B0", 0xFF9C27B0);
-        colors.put("#39813C", 0xFF39813C);
-        colors.put("#FF9800", 0xFFFF9800);
-        colors.put("#673AB7", 0xFF673AB7);
-        colors.put("#E9F8FF", 0xFFE9F8FF);
-        colors.put("#FFFFFF", 0xFFFFFFFF);
-        colors.put("#D8D8D8", 0xFFD8D8D8);
-        colors.put("#939393", 0xFF939393);
-        colors.put("#4E4E4E", 0xFF4E4E4E);
-        colors.put("#000000", 0xFF000000);
+        colors.put("F44336", 0xFFF44336);
+        colors.put("4CFF00", 0xFF4CFF00);
+        colors.put("0036FF", 0xFF0036FF);
+        colors.put("FFDD00", 0xFFFFDD00);
+        colors.put("FFFADA", 0xFFFFFADA);
+        colors.put("9C27B0", 0xFF9C27B0);
+        colors.put("39813C", 0xFF39813C);
+        colors.put("FF9800", 0xFFFF9800);
+        colors.put("673AB7", 0xFF673AB7);
+        colors.put("E9F8FF", 0xFFE9F8FF);
+        colors.put("FFFFFF", 0xFFFFFFFF);
+        colors.put("D8D8D8", 0xFFD8D8D8);
+        colors.put("939393", 0xFF939393);
+        colors.put("4E4E4E", 0xFF4E4E4E);
+        colors.put("000000", 0xFF000000);
     }
 
     private void enableOrDisableSwitch(boolean enabled) {
