@@ -2,15 +2,12 @@ package com.example.ultrahome.apiConnection;
 
 import com.example.ultrahome.apiConnection.entities.Routine.Routine;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.Device;
-import com.example.ultrahome.apiConnection.entities.deviceEntities.DeviceState;
-import com.example.ultrahome.apiConnection.entities.deviceEntities.DeviceType;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.DeviceName;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.DeviceTypeComplete;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.blinds.BlindsState;
-import com.example.ultrahome.apiConnection.entities.deviceEntities.door.Door;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.door.DoorState;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.faucet.FaucetState;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.lights.LightState;
-import com.example.ultrahome.apiConnection.entities.deviceEntities.lights.Lights;
 import com.example.ultrahome.apiConnection.entities.Error;
 import com.example.ultrahome.apiConnection.entities.ErrorResult;
 import com.example.ultrahome.apiConnection.entities.Home;
@@ -22,7 +19,6 @@ import com.example.ultrahome.apiConnection.entities.deviceEntities.vacuum.Vacuum
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.ResponseBody;
@@ -126,14 +122,14 @@ public class ApiClient {
         return call;
     }
 
-    public Call<Result<List<Device>>> getDevices(Callback<Result<List<Device>>> callback) {
-        Call<Result<List<Device>>> call = this.service.getDevices();
+    public Call<Result<Boolean>> renameDevice(String deviceId, DeviceName deviceName, Callback<Result<Boolean>> callback) {
+        Call<Result<Boolean>> call = this.service.renameDevice(deviceId, deviceName);
         call.enqueue(callback);
         return call;
     }
 
-    public Call<Result<DeviceState>> getDeviceState(String deviceId, Callback<Result<DeviceState>> callback) {
-        Call<Result<DeviceState>> call = this.service.getDeviceState(deviceId);
+    public Call<Result<List<Device>>> getDevices(Callback<Result<List<Device>>> callback) {
+        Call<Result<List<Device>>> call = this.service.getDevices();
         call.enqueue(callback);
         return call;
     }
@@ -299,7 +295,7 @@ public class ApiClient {
         return call;
     }
 
-    public Call<Result<Boolean>> dispenseExactAmount(String deviceId, Integer amount, String unit, Callback<Result<Boolean>> callback) {    // TODO: FIX THIS WITH HELP OF ENGINEER ALBERTO
+    public Call<Result<Boolean>> dispenseExactAmount(String deviceId, Integer amount, String unit, Callback<Result<Boolean>> callback) {
         Object [] aux = new Object[2];
         aux[0] = amount;
         aux[1] = unit;

@@ -5,8 +5,7 @@ import com.example.ultrahome.apiConnection.entities.Result;
 import com.example.ultrahome.apiConnection.entities.Room;
 import com.example.ultrahome.apiConnection.entities.Routine.Routine;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.Device;
-import com.example.ultrahome.apiConnection.entities.deviceEntities.DeviceState;
-import com.example.ultrahome.apiConnection.entities.deviceEntities.DeviceType;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.DeviceName;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.DeviceTypeComplete;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.blinds.BlindsState;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.door.DoorState;
@@ -16,7 +15,6 @@ import com.example.ultrahome.apiConnection.entities.deviceEntities.refrigerator.
 import com.example.ultrahome.apiConnection.entities.deviceEntities.speaker.SpeakerState;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.vacuum.VacuumState;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -74,16 +72,15 @@ public interface ApiService {
     @Headers("Content-Type: application/json")
     Call<Result<Device>> addDevice(@Body Device device);
 
+    @PUT("devices/{deviceId}")
+    @Headers("Content-Type: application/json")
+    Call<Result<Boolean>> renameDevice(@Path("deviceId") String deviceId, @Body DeviceName deviceName);
+
     @GET("devices")
     Call<Result<List<Device>>> getDevices();
 
     @DELETE("devices/{deviceId}")
     Call<Result<Boolean>> deleteDevice(@Path("deviceId") String deviceId);
-
-    @GET("devices/{deviceId}/state")
-    Call<Result<DeviceState>> getDeviceState(@Path("deviceId") String deviceId);
-
-//    TODO: UNUSED AS IT DIDN'T WORK
 
     ////////////// DEVICE-TYPE CONTROLS ////////////////////
     @GET("devicetypes")
@@ -166,7 +163,7 @@ public interface ApiService {
 
     @PUT("devices/{deviceId}/{actionName}")
     @Headers("Content-Type: application/json")
-    Call<Result<Boolean>> dispenseExactAmount(@Path("deviceId") String deviceId, @Path("actionName") String actionName, @Body Object [] data);    // TODO: FIX THIS WITH HELP OF ENGINEER ALBERTO
+    Call<Result<Boolean>> dispenseExactAmount(@Path("deviceId") String deviceId, @Path("actionName") String actionName, @Body Object [] data);
 
     ////////////// REFRIGERATOR CONTROLS ////////////////////
 

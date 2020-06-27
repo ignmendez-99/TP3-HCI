@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,6 +21,16 @@ import com.example.ultrahome.apiConnection.ApiClient;
 import com.example.ultrahome.apiConnection.ErrorHandler;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.Device;
 import com.example.ultrahome.apiConnection.entities.Result;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.DeviceName;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.DeviceType;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.blinds.Blinds;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.door.Door;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.door.DoorState;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.faucet.Faucet;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.lights.Lights;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.refrigerator.Refrigerator;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.speaker.Speaker;
+import com.example.ultrahome.apiConnection.entities.deviceEntities.vacuum.Vacuum;
 import com.example.ultrahome.ui.devices.controllers.ControllerContainerDialog;
 import com.example.ultrahome.ui.devices.controllers.BlindsControllerFragment;
 import com.example.ultrahome.ui.devices.controllers.DoorControllerFragment;
@@ -51,7 +62,7 @@ public class DevicesListFragment extends Fragment {
     private EditText deviceNameEdited;
     private TextView deviceNameInScreen;
     private boolean editing = false;
-    private String currentDeviceName;
+    private String currentDeviceName, currentDeviceId, currentDeviceTypeId;
 
     // variables for dealing with the RecyclerView
     private RecyclerView recyclerView;
@@ -219,8 +230,32 @@ public class DevicesListFragment extends Fragment {
             deviceNameInScreen.setVisibility(View.VISIBLE);
 
             if (! deviceNameEdited.getText().toString().equals(currentDeviceName)) {
-                currentDeviceName = deviceNameEdited.getText().toString();
-                deviceNameInScreen.setText(currentDeviceName);
+                DeviceName deviceName = new DeviceName();
+                deviceName.setName(deviceNameEdited.getText().toString());
+                api.renameDevice(currentDeviceId, deviceName, new Callback<Result<Boolean>>() {
+                    @Override
+                    public void onResponse(@NonNull Call<Result<Boolean>> call, @NonNull Response<Result<Boolean>> response) {
+                        if(response.isSuccessful()) {
+                            Result<Boolean> result = response.body();
+                            if(result != null) {
+                                deviceNameInScreen.setText(deviceNameEdited.getText().toString());
+                                devicesNames.set(positionOfDeviceDisplayed, deviceNameEdited.getText().toString());
+                                adapter.notifyItemChanged(positionOfDeviceDisplayed);
+                                // todo: hardcoded string
+                                Toast.makeText(getContext(), currentDeviceName + " RENAMED TO " + deviceNameEdited.getText().toString(), Toast.LENGTH_SHORT).show();
+                                currentDeviceName = deviceNameEdited.getText().toString();
+                            } else {
+                                ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
+                            }
+                        } else {
+                            ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
+                        }
+                    }
+                    @Override
+                    public void onFailure(@NonNull Call<Result<Boolean>> call, @NonNull Throwable t) {
+                        ErrorHandler.handleUnexpectedError(t, requireView(), DevicesListFragment.this);
+                    }
+                });
                 // todo: API CALL PARA RENOMBRAR
             }
         } else {
@@ -250,7 +285,6 @@ public class DevicesListFragment extends Fragment {
         showDeleteDeviceDialog();
     }
 
-    // todo: esto quizas se puede llevar a otra Clase, ya que sino esta clase hace demasiado
     private void initDeviceTypeIdMap() {
         supportedDeviceTypeIds = new HashMap<>();
         // SPEAKER
@@ -308,6 +342,7 @@ public class DevicesListFragment extends Fragment {
         adapter.notifyItemInserted(devicesNames.size() - 1);
 
         requireView().findViewById(R.id.zero_devices).setVisibility(View.GONE);
+        // todo: hardcoded string
         Snackbar.make(this.requireView(), "Device Added!", Snackbar.LENGTH_SHORT).show();
     }
 
@@ -358,7 +393,9 @@ public class DevicesListFragment extends Fragment {
     }
 
     void deleteDevice(View v) {
+        // todo: hardcoded string
         deletingDeviceSnackbar = Snackbar.make(v, "Device deleted!", Snackbar.LENGTH_SHORT);
+        // todo: hardcoded string
         deletingDeviceSnackbar.setAction("UNDO", new UndoDeleteDeviceListener());
         deletingDevice = true;
         deletingDeviceSnackbar.addCallback(new DeleteDeviceSnackbarTimeout());
@@ -428,7 +465,9 @@ public class DevicesListFragment extends Fragment {
     }
 
     private void showDeleteDeviceError() {
+        // todo: hardcoded string
         Snackbar s = Snackbar.make(requireView(), "Could not delete Device!", Snackbar.LENGTH_SHORT);
+        // todo: hardcoded string
         s.setAction("CLOSE", DevicesListFragment.this::recoverRemovedDevice);
         s.addCallback(new BaseTransientBottomBar.BaseCallback<Snackbar>() {
             @Override
@@ -496,6 +535,8 @@ public class DevicesListFragment extends Fragment {
                     editButton.setClickable(true);
                     deviceNameInScreen.setVisibility(View.VISIBLE);
                     currentDeviceName = deviceName;
+                    currentDeviceTypeId = deviceTypeId;
+                    currentDeviceId = deviceId;
                     deviceNameInScreen.setText(currentDeviceName);
                     deviceNameEdited.setText(currentDeviceName);
                     childOnScreen = true;
@@ -508,6 +549,7 @@ public class DevicesListFragment extends Fragment {
                 dialog.show(ft, "dialog");
             }
         } else
+            // todo: hardcoded string
             Snackbar.make(requireView(), "Could not load device", Snackbar.LENGTH_SHORT);
     }
 

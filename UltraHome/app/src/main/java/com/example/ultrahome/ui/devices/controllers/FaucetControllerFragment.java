@@ -285,7 +285,7 @@ public class FaucetControllerFragment extends Fragment implements LifecycleObser
         }
     }
 
-    private void dispenseAmount(View view) {    // todo: no funciona
+    private void dispenseAmount(View view) {
         try{
             Integer.parseInt(amount.getText().toString());
         } catch (Exception e) {

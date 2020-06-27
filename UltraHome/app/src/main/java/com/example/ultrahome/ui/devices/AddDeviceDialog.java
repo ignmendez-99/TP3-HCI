@@ -131,8 +131,8 @@ public class AddDeviceDialog extends Dialog {
                         break;
                     case "rnizejqr2di0okho":
                         device = new Refrigerator(deviceName, deviceType);
+                        break;
                 }
-                break;
             }
         }
         if(i == radioButtons.length) {

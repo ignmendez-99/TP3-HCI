@@ -1,10 +1,9 @@
 package com.example.ultrahome.apiConnection.entities.deviceEntities.refrigerator;
 
-import com.example.ultrahome.apiConnection.entities.deviceEntities.DeviceState;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class RefrigeratorState extends DeviceState {
+public class RefrigeratorState {
 
     @SerializedName("freezerTemperature")
     @Expose

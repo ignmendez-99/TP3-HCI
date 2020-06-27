@@ -45,7 +45,7 @@ public class VacuumControllerFragment extends Fragment implements LifecycleObser
     private TextView batteryTextView;
 
     private String status, mode, location;
-    private boolean runThreads = true;
+    private boolean runThreads = true, firstTime = true;
 
     private List<String> roomIds;
     private List<String> roomNames;
@@ -216,7 +216,12 @@ public class VacuumControllerFragment extends Fragment implements LifecycleObser
                 if(response.isSuccessful()) {
                     Result<String> result = response.body();
                     if(result != null) {
-                        Toast.makeText(getContext(), getString(R.string.changed_vacuum_location_string) + " " + roomToCleanSpinner.getSelectedItem().toString(), Toast.LENGTH_LONG).show();
+                        if(firstTime) {
+                            firstTime = false;
+                            return;
+                        } else {
+                            Toast.makeText(getContext(), getString(R.string.changed_vacuum_location_string) + " " + roomToCleanSpinner.getSelectedItem().toString(), Toast.LENGTH_LONG).show();
+                        }
                         location = newLocation;
                     } else {
                         ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
@@ -396,3 +401,5 @@ public class VacuumControllerFragment extends Fragment implements LifecycleObser
         }
     }
 }
+
+// todo: notificacion bateria
