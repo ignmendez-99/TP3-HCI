@@ -107,37 +107,47 @@ public class AddDeviceDialog extends Dialog {
     private void checkRadioButtonSelected() {
         Device device = null;
         String deviceCheckedTypeId = null;
+        boolean found = false;
         int i;
-        for(i = 0; i < radioButtons.length; i++) {
+        for(i = 0; i < radioButtons.length && !found; i++) {
+            System.out.println("i = "+i);
             if(radioButtons[i].isChecked()) {
                 deviceCheckedTypeId = deviceTypeIds[i];
+                System.out.println(i + " + " + deviceCheckedTypeId);
                 DeviceType deviceType = new DeviceType(deviceCheckedTypeId);
                 switch(deviceCheckedTypeId) {
                     case "dbrlsh7o5sn8ur4i":
                         device = new Faucet(deviceName, deviceType);
+                        found = true;
                         break;
                     case "lsf78ly0eqrjbz91":
                         device = new Door(deviceName, deviceType);
+                        found = true;
                         break;
                     case "eu0v2xgprrhhg41g":
                         device = new Blinds(deviceName, deviceType);
+                        found = true;
                         break;
                     case "ofglvd9gqx8yfl3l":
                         device = new Vacuum(deviceName, deviceType);
+                        found = true;
                         break;
                     case "go46xmbqeomjrsjr":
                         device = new Lights(deviceName, deviceType);
+                        found = true;
                         break;
                     case "c89b94e8581855bc":
                         device = new Speaker(deviceName, deviceType);
+                        found = true;
                         break;
                     case "rnizejqr2di0okho":
                         device = new Refrigerator(deviceName, deviceType);
+                        found = true;
                         break;
                 }
             }
         }
-        if(i == radioButtons.length) {
+        if(!found) {
             inputErrorMessage.setVisibility(View.VISIBLE);
             // todo: hardcoded string
             inputErrorMessage.setText("A device type must be selected");
