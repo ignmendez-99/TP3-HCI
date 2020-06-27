@@ -215,6 +215,12 @@
     <string name="blinds_closed_text_string">Your blinds have been closed</string>
     <string name="blinds_opened_title_string">Blinds opened!</string>
     <string name="blinds_opened_text_string">Your blinds have been opened</string>
+
+    <string name="warning_string">Warning!</string>
+
+    <string name="battery_low_text_string">Your vacuum has low battery</string>
+    <string name="battery_critical_text_string">Your vacuum has critically low battery</string>
+
     <string name="notification_channel_name_string" translatable="false">mainChannel</string>
     <string name="notification_channel_description_string" translatable="false">Channel for all the app\'s notifications</string>
     <string name="notification_channel_id_string" translatable="false">jifUltraId</string>

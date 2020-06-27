@@ -194,6 +194,7 @@ public class RoomsFragment extends Fragment {
         roomNames.add(roomName);
         adapter.notifyItemInserted(roomNames.size() - 1);
         requireView().findViewById(R.id.zero_rooms).setVisibility(View.GONE);
+        // todo: hardcoded string
         Snackbar.make(this.requireView(), "Room Added!", Snackbar.LENGTH_SHORT).show();
     }
 
@@ -206,7 +207,9 @@ public class RoomsFragment extends Fragment {
     void deleteRoom(View view) {
         if(inTablet)
             ((TabletFragment)getParentFragment()).roomWasDeleted();
+        // todo: hardcoded string
         deletingRoomSnackbar = Snackbar.make(view, "Room deleted!", Snackbar.LENGTH_SHORT);
+        // todo: hardcoded string
         deletingRoomSnackbar.setAction("UNDO", new UndoDeleteRoomListener());
         deletingRoom = true;
         deletingRoomSnackbar.addCallback(new DeleteRoomSnackbarTimeout());
@@ -330,7 +333,9 @@ public class RoomsFragment extends Fragment {
     }
 
     private void showDeleteRoomError() {
+        // todo: hardcoded string
         Snackbar s = Snackbar.make(requireView(), "Could not delete Room!", Snackbar.LENGTH_SHORT);
+        // todo: hardcoded string
         s.setAction("CLOSE", RoomsFragment.this::recoverRemovedRoom);
         s.addCallback(new BaseTransientBottomBar.BaseCallback<Snackbar>() {
             @Override

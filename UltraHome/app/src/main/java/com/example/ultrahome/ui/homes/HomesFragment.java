@@ -216,6 +216,7 @@ public class HomesFragment extends Fragment{
         homeNames.add(homeName);
         adapter.notifyItemInserted(homeNames.size() - 1);
         requireView().findViewById(R.id.zero_homes).setVisibility(View.GONE);
+        // todo: hardcoded string
         Snackbar.make(this.requireView(), "Home Added!", Snackbar.LENGTH_SHORT).show();
     }
 
@@ -228,7 +229,9 @@ public class HomesFragment extends Fragment{
     void deleteHome(View v) {
         if(inTablet)
             ((TabletFragment)getParentFragment()).homeWasDeleted();
+        // todo: hardcoded string
         deletingHomeSnackbar = Snackbar.make(v, "Home deleted!", Snackbar.LENGTH_SHORT);
+        // todo: hardcoded string
         deletingHomeSnackbar.setAction("UNDO", new UndoDeleteHomeListener());
         deletingHome = true;
         deletingHomeSnackbar.addCallback(new DeleteHomeSnackbarTimeout());
@@ -340,7 +343,9 @@ public class HomesFragment extends Fragment{
     }
 
     private void showDeleteHomeError() {
+        // todo: hardcoded string
         Snackbar s = Snackbar.make(requireView(), "Could not delete Home!", Snackbar.LENGTH_SHORT);
+        // todo: hardcoded string
         s.setAction("CLOSE", HomesFragment.this::recoverRemovedHome);
         s.addCallback(new BaseTransientBottomBar.BaseCallback<Snackbar>() {
             @Override

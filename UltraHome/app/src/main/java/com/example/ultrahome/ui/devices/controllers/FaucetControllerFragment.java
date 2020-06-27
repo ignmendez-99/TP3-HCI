@@ -109,7 +109,7 @@ public class FaucetControllerFragment extends Fragment implements LifecycleObser
                                     dispensingProgressBar.setMax(quantity);
                                     dispensingProgressBar.setProgress(dispensedQuantity.intValue());
                                     dispensingTextView.setVisibility(View.VISIBLE);
-                                    dispensingTextView.setText(getString(R.string.dispensed_string_1) + " " + dispensedQuantity + unit + " " + getString(R.string.dispensed_string_2) + " " + quantity + unit);  // Dispensed Xl of Xl
+                                    dispensingTextView.setText(getString(R.string.dispensed_string_1) + " " + dispensedQuantity + unit + " " + getString(R.string.dispensed_string_2) + " " + quantity + unit);
                                 }
                             } else {
                                 ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
