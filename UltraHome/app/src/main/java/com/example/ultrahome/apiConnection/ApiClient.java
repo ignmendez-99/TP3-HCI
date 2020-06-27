@@ -300,10 +300,10 @@ public class ApiClient {
     }
 
     public Call<Result<Boolean>> dispenseExactAmount(String deviceId, Integer amount, String unit, Callback<Result<Boolean>> callback) {    // TODO: FIX THIS WITH HELP OF ENGINEER ALBERTO
-        ArrayList<Object> aux = new ArrayList<>();
-        aux.add(amount);
-        aux.add(unit);
-        Call<Result<Boolean>> call = this.service.dispenseExactAmount(deviceId, "setLevel", aux);
+        Object [] aux = new Object[2];
+        aux[0] = amount;
+        aux[1] = unit;
+        Call<Result<Boolean>> call = this.service.dispenseExactAmount(deviceId, "dispense", aux);
         call.enqueue(callback);
         return call;
     }
