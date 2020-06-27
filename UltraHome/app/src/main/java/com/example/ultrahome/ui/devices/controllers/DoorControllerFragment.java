@@ -19,7 +19,6 @@ import com.example.ultrahome.R;
 import com.example.ultrahome.apiConnection.ApiClient;
 import com.example.ultrahome.apiConnection.ErrorHandler;
 import com.example.ultrahome.apiConnection.entities.Result;
-import com.example.ultrahome.apiConnection.entities.deviceEntities.blinds.BlindsState;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.door.DoorState;
 
 import retrofit2.Call;

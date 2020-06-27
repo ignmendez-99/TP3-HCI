@@ -143,7 +143,9 @@ public class RoutinesFragment extends Fragment {
     }
 
     void deleteRoutine(View v) {
+        // todo: hardcoded string
         deletingRoutineSnackbar = Snackbar.make(v, "Routine deleted!", Snackbar.LENGTH_SHORT);
+        // todo: hardcoded string
         deletingRoutineSnackbar.setAction("UNDO", new UndoDeleteRoutineListener());
         deletingRoutine = true;
         deletingRoutineSnackbar.addCallback(new DeleteRoutineSnackbarTimeout());
@@ -194,7 +196,9 @@ public class RoutinesFragment extends Fragment {
     }
 
     private void showDeleteRoutineError() {
+        // todo: hardcoded string
         Snackbar s = Snackbar.make(requireView(), "Could not delete Routine!", Snackbar.LENGTH_SHORT);
+        // todo: hardcoded string
         s.setAction("CLOSE", RoutinesFragment.this::recoverRemovedRoutine);
         s.addCallback(new BaseTransientBottomBar.BaseCallback<Snackbar>() {
             @Override
@@ -337,6 +341,7 @@ public class RoutinesFragment extends Fragment {
                         if (result != null) {
                             List<String> aux = new ArrayList<>();
                             List<String> resultRoutine = result.getResult();
+                            // todo: y este codigo?
 //                            for(String b : resultRoutine){
 //                                if(b == null){
 //                                    aux.add("null");
@@ -345,26 +350,26 @@ public class RoutinesFragment extends Fragment {
 //                                }
 //                            }
                             updateDescription(resultRoutine, d);
+                            // todo: hardcoded string
                             Snackbar.make(requireView(), "Routine Executed!", Snackbar.LENGTH_SHORT).show();
                         } else {
-                            ErrorHandler.handleError(response, requireView(), "MENSAJE");
-                            // todo: falta poner mensaje amigable de error y PASARSELO a HandleError
+                            ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                         }
                     } else {
-                        ErrorHandler.handleError(response, requireView(), "MENSAJE");
-                        // todo: falta poner mensaje amigable de error y PASARSELO a HandleError
+                        ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                     }
                 }
 
                 @Override
                 public void onFailure(@NonNull Call<Result<List<String>>> call, @NonNull Throwable t) {
+                    // todo: y este codigo?
 //                  ExecuteRutineFail();
                     ErrorHandler.handleUnexpectedError(t, requireView(), RoutinesFragment.this);
-                    // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
                 }
             });
         }).start();
     }
+    // todo: y este codigo?
 
 //    private void ExecuteRutineFail(){
 //        executeRoutineFail.setVisibility(View.VISIBLE);

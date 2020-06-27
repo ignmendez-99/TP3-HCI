@@ -14,6 +14,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
@@ -45,12 +47,16 @@ public class VacuumControllerFragment extends Fragment implements LifecycleObser
     private TextView batteryTextView;
 
     private String status, mode, location;
-    private boolean runThreads = true, firstTime = true;
+    private boolean runThreads = true, firstTime = true, foreground = true;
 
     private List<String> roomIds;
     private List<String> roomNames;
     
     private String [] roomIdsArray, roomNamesArray;
+
+    private int notificationsId = 002;
+    private NotificationManagerCompat notificationManager;
+    private NotificationCompat.Builder lowBatteryBuilder, criticalBatteryBuilder;
 
     private ApiClient api;
 
@@ -119,6 +125,19 @@ public class VacuumControllerFragment extends Fragment implements LifecycleObser
                                 location = vacuumState.getLocationName();
                                 roomToCleanSpinner.setSelection(getRoomIndex(location));
                                 updateButtons();
+
+                                if(vacuumState.getBatteryLevel() <= 5) {
+                                    if(foreground)
+                                        Toast.makeText(getContext(), getString(R.string.battery_critical_text_string), Toast.LENGTH_SHORT).show();
+                                    else
+                                        notificationManager.notify(notificationsId, criticalBatteryBuilder.build());
+                                } else if(vacuumState.getBatteryLevel() <= 20) {
+                                    if(foreground)
+                                        Toast.makeText(getContext(), getString(R.string.battery_low_text_string), Toast.LENGTH_SHORT).show();
+                                    else
+                                        notificationManager.notify(notificationsId, lowBatteryBuilder.build());
+                                }
+
                                 roomToCleanSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
                                 {
                                     @Override
@@ -156,12 +175,12 @@ public class VacuumControllerFragment extends Fragment implements LifecycleObser
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     public void onAppBackgrounded() {
-        runThreads = false;
+        foreground = false;
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     public void onAppForegrounded() {
-        runThreads = true;
+        foreground = true;
     }
 
     private void init(View view) {
@@ -203,7 +222,19 @@ public class VacuumControllerFragment extends Fragment implements LifecycleObser
 
         ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
 
+        lowBatteryBuilder = new NotificationCompat.Builder(getContext(), getString(R.string.notification_channel_id_string))
+                .setSmallIcon(R.drawable.vacuum_icon_foreground)
+                .setContentTitle(getString(R.string.warning_string))
+                .setContentText(getString(R.string.battery_low_text_string))
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
+        criticalBatteryBuilder = new NotificationCompat.Builder(getContext(), getString(R.string.notification_channel_id_string))
+                .setSmallIcon(R.drawable.vacuum_icon_foreground)
+                .setContentTitle(getString(R.string.warning_string))
+                .setContentText(getString(R.string.battery_critical_text_string))
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+        notificationManager = NotificationManagerCompat.from(getContext());
     }
 
     private void changeLocation(String newLocation) {
@@ -401,5 +432,3 @@ public class VacuumControllerFragment extends Fragment implements LifecycleObser
         }
     }
 }
-
-// todo: notificacion bateria

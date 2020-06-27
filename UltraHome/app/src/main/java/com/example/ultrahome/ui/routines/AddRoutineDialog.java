@@ -176,10 +176,12 @@ public class AddRoutineDialog extends Dialog {
         routineName = routineNameEditText.getText().toString();
         if(routineName.length() > 60 || routineName.length() < 3) {
             errorMessage.setVisibility(View.VISIBLE);
+            // todo: hardcoded string
             errorMessage.setText("Name must be between 3 and 60 characters");
         } else {
             if (!routineName.matches("^[a-zA-Z0-9_ ]{3,60}")) {
                 errorMessage.setVisibility(View.VISIBLE);
+                // todo: hardcoded string
                 errorMessage.setText("Name must only contain numbers, digits, spaces or _");
             } else {
                 addNewRoutine(v);
@@ -223,7 +225,6 @@ public class AddRoutineDialog extends Dialog {
                 @Override
                 public void onFailure(@NonNull Call<Result<List<Device>>> call, @NonNull Throwable t) {
                     ErrorHandler.logUnexpectedError(t);
-                    // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
                 }
             });
     }
@@ -256,12 +257,11 @@ public class AddRoutineDialog extends Dialog {
             @Override
             public void onFailure(@NonNull Call<Result<DeviceTypeComplete>> call, @NonNull Throwable t) {
                 ErrorHandler.logUnexpectedError(t);
-                // todo: aca no va mensaje amigable, ya que la misma funcion ya lanza un Snackbar
             }
         });
     }
 
-
+    // todo: no hay que borrar esto?
     private void addNewRoutine(View v) {
         findViewById(R.id.loadingAddingHome).setVisibility(View.VISIBLE);
         findViewById(R.id.add_home_buttom_pair).setVisibility(View.GONE);

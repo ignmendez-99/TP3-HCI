@@ -91,10 +91,12 @@ public class AddDeviceDialog extends Dialog {
         deviceName = deviceNameEditText.getText().toString();
         if(deviceName.length() > 60 || deviceName.length() < 3) {
             inputErrorMessage.setVisibility(View.VISIBLE);
+            // todo: hardcoded string
             inputErrorMessage.setText("Name must be between 3 and 60 characters");
         } else {
             if (!deviceName.matches("^[a-zA-Z0-9_ ]{3,60}")) {
                 inputErrorMessage.setVisibility(View.VISIBLE);
+                // todo: hardcoded string
                 inputErrorMessage.setText("Name must only contain numbers, digits, spaces or _");
             } else {
                 checkRadioButtonSelected();
@@ -137,6 +139,7 @@ public class AddDeviceDialog extends Dialog {
         }
         if(i == radioButtons.length) {
             inputErrorMessage.setVisibility(View.VISIBLE);
+            // todo: hardcoded string
             inputErrorMessage.setText("A device type must be selected");
         } else {
             addNewDevice(device, deviceCheckedTypeId);
@@ -207,6 +210,7 @@ public class AddDeviceDialog extends Dialog {
 
     private void addDeviceFail() {
         apiErrorMessage.setVisibility(View.VISIBLE);
+        // todo: hardcoded string
         apiErrorMessage.setText("Could not add new Device!");
     }
 }

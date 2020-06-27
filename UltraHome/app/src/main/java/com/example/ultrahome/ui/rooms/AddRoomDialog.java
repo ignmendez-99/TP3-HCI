@@ -57,10 +57,12 @@ public class AddRoomDialog extends Dialog {
         roomName = roomNameEditText.getText().toString();
         if(roomName.length() > 60 || roomName.length() < 3) {
             errorMessage.setVisibility(View.VISIBLE);
+            // todo: hardcoded string
             errorMessage.setText("Name must be between 3 and 60 characters");
         } else {
             if (!roomName.matches("^[a-zA-Z0-9_ ]{3,60}")) {
                 errorMessage.setVisibility(View.VISIBLE);
+                // todo: hardcoded string
                 errorMessage.setText("Name must only contain numbers, digits, spaces or _");
             } else {
                 addNewRoom();
@@ -133,6 +135,7 @@ public class AddRoomDialog extends Dialog {
 
     private void addRoomFail() {
         errorMessage.setVisibility(View.VISIBLE);
+        // todo: hardcoded string
         errorMessage.setText("Could not add new Room!");
     }
 }

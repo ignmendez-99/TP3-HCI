@@ -21,7 +21,9 @@ public class DeleteDeviceConfirmationDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         return new AlertDialog.Builder(getActivity())
+                // todo: hardcoded string
                 .setTitle("Warning!")
+                // todo: hardcoded string
                 .setMessage("Are you sure you want to delete this Device?")
                 .setNegativeButton(android.R.string.no, (dialog, which) -> {
                     dismiss();

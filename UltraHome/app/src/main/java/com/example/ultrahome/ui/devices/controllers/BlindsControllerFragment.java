@@ -35,7 +35,7 @@ public class BlindsControllerFragment extends Fragment implements LifecycleObser
     private String deviceId;
 
     private NotificationManagerCompat notificationManager;
-    NotificationCompat.Builder openedBlindsBuilder, closedBlindsBuilder;
+    private NotificationCompat.Builder openedBlindsBuilder, closedBlindsBuilder;
 
     private boolean foreground = true;
 
@@ -205,13 +205,13 @@ public class BlindsControllerFragment extends Fragment implements LifecycleObser
 
         updateState();
 
-        closedBlindsBuilder = new NotificationCompat.Builder(getContext(), "123")
+        closedBlindsBuilder = new NotificationCompat.Builder(getContext(), getString(R.string.notification_channel_id_string))
                 .setSmallIcon(R.drawable.blinds_icon_foreground)
                 .setContentTitle(getString(R.string.blinds_closed_title_string))
                 .setContentText(getString(R.string.blinds_closed_text_string))
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
-        openedBlindsBuilder = new NotificationCompat.Builder(getContext(), "123")
+        openedBlindsBuilder = new NotificationCompat.Builder(getContext(),  getString(R.string.notification_channel_id_string))
                 .setSmallIcon(R.drawable.blinds_icon_foreground)
                 .setContentTitle(getString(R.string.blinds_opened_title_string))
                 .setContentText(getString(R.string.blinds_opened_text_string))
