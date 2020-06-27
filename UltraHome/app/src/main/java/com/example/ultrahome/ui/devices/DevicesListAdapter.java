@@ -80,9 +80,17 @@ public class DevicesListAdapter extends RecyclerView.Adapter<DevicesListAdapter.
         });
     }
 
+    public void deleteItem(int position) {
+        currentFragment.showDeleteDeviceDialog(position);
+    }
+
     @Override
     public int getItemCount() {
         return devicesNames.size();
+    }
+
+    public Context getContext() {
+        return context;
     }
 
     public static class DevicesListViewHolder extends RecyclerView.ViewHolder {

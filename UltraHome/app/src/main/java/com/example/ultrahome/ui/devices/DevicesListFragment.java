@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -124,6 +125,12 @@ public class DevicesListFragment extends Fragment {
         }
 
         initScreenControllers(view);
+
+        if(inTablet) {
+            // Swipe to delete functionality is assigned here
+            ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteDeviceCallback(adapter));
+            itemTouchHelper.attachToRecyclerView(recyclerView);
+        }
     }
 
     /* will only get something if we are in Tablet mode */
@@ -353,13 +360,20 @@ public class DevicesListFragment extends Fragment {
         addDeviceDialog.show();
     }
 
+    void showDeleteDeviceDialog(int position) {
+        positionOfDeviceDisplayed = position;
+        showDeleteDeviceDialog();
+    }
+
     private void showDeleteDeviceDialog() {
-        // detach the Controller Fragment from screen
-        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-        transaction.detach(childFragment).commit();
-        childFragment.onDestroy();
-        childFragment.onDetach();
-        childFragment = null;
+        if(!inTablet) {
+            // detach the Controller Fragment from screen
+            FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+            transaction.detach(childFragment).commit();
+            childFragment.onDestroy();
+            childFragment.onDetach();
+            childFragment = null;
+        }
 
         // remove the Device Card from screen
         String deviceNameToRemove = devicesNames.get(positionOfDeviceDisplayed);
