@@ -84,11 +84,13 @@
         <item>kl</item>
     </string-array>
 
-    <string name="opening_faucet_string">Faucet opened indefinitely</string>
+    <string name="opening_faucet_string">Faucet opened</string>
     <string name="closing_faucet_string">Faucet closed</string>
     <string name="enter_amount_string">You must enter an amount!</string>
     <string name="cant_be_nothing_string">You can\'t dispense nothing!</string>
     <string name="dispensing_string">Dispensing</string>
+    <string name="dispensed_string_1">Dispensed</string>
+    <string name="dispensed_string_2">of</string>
 
     <!-- ////////////// DOOR STRINGS ////////////// -->
 
@@ -177,8 +179,8 @@
 
     <!-- ////////////// HOME GRID AND ROW STRINGS ////////////// -->
 
-    <string name="no_homes_string">You don\'t have any Homes!\n Press the green button to add one!</string>
-    <string name="failed_to_get_homes_string">Could not recover Homes!</string>
+    <string name="no_homes_string">You don\'t have any homes!  Press the green button to add one!</string>
+    <string name="failed_to_get_homes_string">Could not recover homes</string>
     <string name="home_name_placeholder">Home Name</string>  <!-- PLACEHOLDER, WILL BE EDITED LATER -->
     <string name="multiple_rooms_inside_string">rooms inside</string>
     <string name="one_room_inside_string">room inside</string>
@@ -191,11 +193,11 @@
 
     <!-- ////////////// ROUTINE ROW STRINGS ////////////// -->
 
-    <string name="routine_name_placeholder">Routine Name</string>  <!-- PLACEHOLDER, WILL BE EDITED LATER -->
+    <string name="routine_name_placeholder">Routine name</string>  <!-- PLACEHOLDER, WILL BE EDITED LATER -->
 
     <!-- //////////////  DEVICES LIST STRINGS ////////////// -->
 
-    <string name="device_name_placeholder">Device Name</string>
+    <string name="device_name_placeholder">Device name</string>
     <string name="failed_to_get_devices_string">Could not recover devices!</string>
     <string name="try_again_string">Try again</string>
     <string name="no_devices_string">You don\'t have any devices!\n Press the + button to add one :)</string>
@@ -213,9 +215,9 @@
     <string name="blinds_closed_text_string">Your blinds have been closed</string>
     <string name="blinds_opened_title_string">Blinds opened!</string>
     <string name="blinds_opened_text_string">Your blinds have been opened</string>
-    <string name="notification_channel_name_string">mainChannel</string>
-    <string name="notification_channel_description_string">Channel for all the app\'s notifications</string>
-    <string name="notification_channel_id_string">jifUltraId</string>
+    <string name="notification_channel_name_string" translatable="false">mainChannel</string>
+    <string name="notification_channel_description_string" translatable="false">Channel for all the app\'s notifications</string>
+    <string name="notification_channel_id_string" translatable="false">jifUltraId</string>
 
 
 
