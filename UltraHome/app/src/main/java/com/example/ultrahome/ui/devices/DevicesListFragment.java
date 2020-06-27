@@ -147,9 +147,11 @@ public class DevicesListFragment extends Fragment {
             deviceTypeIds.add(savedInstanceState.getString("deviceTypeId" + i));
             adapter.notifyItemInserted(i);
         }
-        if(numberOfDevicesSaved == 0) {
+        if(numberOfDevicesSaved == 0)
             view.findViewById(R.id.zero_devices).setVisibility(View.VISIBLE);
-        }
+        else
+            view.findViewById(R.id.zero_devices).setVisibility(View.GONE);
+
         requireView().findViewById(R.id.button_show_AddDeviceDialog).setVisibility(View.VISIBLE);
         requireView().findViewById(R.id.loadingDevicesList).setVisibility(View.GONE);
         editing = savedInstanceState.getBoolean("editing");
