@@ -15,7 +15,6 @@
             android:layout_width="fill_parent"
             android:layout_weight="33"
             android:layout_height="match_parent"
-            android:paddingBottom="?attr/actionBarSize"
             app:layout_constraintStart_toStartOf="parent" />
 
         <androidx.fragment.app.FragmentContainerView
@@ -23,7 +22,6 @@
             android:layout_width="fill_parent"
             android:layout_weight="33"
             android:layout_height="match_parent"
-            android:paddingBottom="?attr/actionBarSize"
             app:layout_constraintStart_toEndOf="@+id/fragment_tablet_1"/>
 
         <androidx.fragment.app.FragmentContainerView
@@ -31,7 +29,6 @@
             android:layout_width="fill_parent"
             android:layout_weight="33"
             android:layout_height="match_parent"
-            android:paddingBottom="?attr/actionBarSize"
             app:layout_constraintEnd_toEndOf="parent" />
     </LinearLayout>
 
