@@ -391,6 +391,8 @@ public class DevicesListFragment extends Fragment {
                                 }
                                 if(numberOfDevicesInThisRoom[0] == 0)
                                     view.findViewById(R.id.zero_devices).setVisibility(View.VISIBLE);
+                                else
+                                    view.findViewById(R.id.zero_devices).setVisibility(View.GONE);
                             } else
                                 view.findViewById(R.id.zero_devices).setVisibility(View.VISIBLE);
                             view.findViewById(R.id.button_show_AddDeviceDialog).setVisibility(View.VISIBLE);
