@@ -59,14 +59,11 @@ public class HomesFragment extends Fragment{
     private GridLayoutManager gridLayoutManager;
     private HomesAdapter adapter;
 
-    private List<String> homeNames;
-    private List<String> homeIds;
-    private List<String> homeNamesBackupBeforeDeleting;
+    private List<String> homeNames, homeIds, homeNamesBackupBeforeDeleting;
     private Map<Integer, Integer> roomsInEachHome;
 
     private Snackbar deletingHomeSnackbar;
-    private boolean deletingHome = false;
-    private boolean fragmentOnScreen = true;
+    private boolean deletingHome = false, fragmentOnScreen = true;
     private ApiClient api;
 
     // tablet-specific variables

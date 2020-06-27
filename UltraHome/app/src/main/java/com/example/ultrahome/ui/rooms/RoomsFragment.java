@@ -50,15 +50,12 @@ public class RoomsFragment extends Fragment {
     private GridLayoutManager gridLayoutManager;
     private RoomsAdapter adapter;
 
-    private List<String> roomNames;
-    private List<String> roomIds;
-    private List<String> roomNamesBackupBeforeDeleting;
+    private List<String> roomNames, roomIds, roomNamesBackupBeforeDeleting;
     private Map<Integer, Integer> devicesInEachRoom;
 
     private Snackbar deletingRoomSnackbar;
     private String homeId;   // this is the home that contains all rooms displayed in this screen
-    private boolean fragmentOnScreen = true;
-    private boolean deletingRoom = false;
+    private boolean fragmentOnScreen = true, deletingRoom = false;
     private ApiClient api;
 
     // tablet-specific variables
@@ -133,8 +130,8 @@ public class RoomsFragment extends Fragment {
             roomIds.add(savedInstanceState.getString("roomId" + i));
             adapter.notifyItemInserted(i);
         }
-        if(numberOfRoomsSaved != 0) {
-            view.findViewById(R.id.zero_rooms).setVisibility(View.GONE);
+        if(numberOfRoomsSaved == 0) {
+            view.findViewById(R.id.zero_rooms).setVisibility(View.VISIBLE);
         }
         requireView().findViewById(R.id.button_show_AddRoomDialog).setVisibility(View.VISIBLE);
         requireView().findViewById(R.id.loadingRoomsList).setVisibility(View.GONE);
@@ -241,7 +238,7 @@ public class RoomsFragment extends Fragment {
     }
 
     private void getAllRoomsOfThisHome(View v) {
-        final int[] numberOfRoomsInThisHome = {0};
+        int[] numberOfRoomsInThisHome = {0};
         new Thread(() -> {
             api.getRooms(new Callback<Result<List<Room>>>() {
                 @Override
@@ -264,11 +261,12 @@ public class RoomsFragment extends Fragment {
                                             adapter.notifyItemInserted(roomNames.size() - 1);
                                             numberOfRoomsInThisHome[0]++;
                                         }
-                                        if(numberOfRoomsInThisHome[0] > 0)
-                                            v.findViewById(R.id.zero_rooms).setVisibility(View.GONE);
                                     }
                                 }
-                            }
+                                if(numberOfRoomsInThisHome[0] == 0)
+                                    v.findViewById(R.id.zero_rooms).setVisibility(View.VISIBLE);
+                            } else
+                                v.findViewById(R.id.zero_rooms).setVisibility(View.VISIBLE);
                             v.findViewById(R.id.button_show_AddRoomDialog).setVisibility(View.VISIBLE);
                         } else {
                             ErrorHandler.logError(response);
@@ -401,7 +399,7 @@ public class RoomsFragment extends Fragment {
                                     if (result != null && result.getResult()) {
                                         roomIds.remove(positionToDelete.intValue());
                                         roomNamesBackupBeforeDeleting.remove(0);
-                                        if(roomIds.size() == 0)
+                                        if(roomIds.size() == 0 && fragmentOnScreen)
                                             RoomsFragment.this.requireView().findViewById(R.id.zero_rooms).setVisibility(View.VISIBLE);
                                     } else {
                                         ErrorHandler.logError(response);
