@@ -12,7 +12,13 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.OnLifecycleEvent;
+import androidx.lifecycle.ProcessLifecycleOwner;
 
 import com.example.ultrahome.R;
 import com.example.ultrahome.apiConnection.ApiClient;
@@ -24,9 +30,16 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class BlindsControllerFragment extends Fragment {
+public class BlindsControllerFragment extends Fragment implements LifecycleObserver {
 
     private String deviceId;
+
+    private NotificationManagerCompat notificationManager;
+    NotificationCompat.Builder openedBlindsBuilder, closedBlindsBuilder;
+
+    private boolean foreground = true;
+
+    private int notificationsId = 001;
 
     private Button openButton, closeButton;
     private SeekBar levelSeekBar;
@@ -57,6 +70,16 @@ public class BlindsControllerFragment extends Fragment {
         super.onDestroyView();
 
         runThreads = false;
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+    public void onAppBackgrounded() {
+        foreground = false;
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    public void onAppForegrounded() {
+        foreground = true;
     }
 
     private void updateState() {
@@ -90,7 +113,10 @@ public class BlindsControllerFragment extends Fragment {
                                         levelSeekBar.setEnabled(true);
                                         if(shouldShowFinished) {
                                             shouldShowFinished = false;
-                                            Toast.makeText(getContext(), getString(R.string.finished_opening_string), Toast.LENGTH_SHORT).show();
+                                            if(foreground)
+                                                Toast.makeText(getContext(), getString(R.string.finished_opening_string), Toast.LENGTH_SHORT).show();
+                                            else
+                                                notificationManager.notify(notificationsId, openedBlindsBuilder.build());
                                         }
                                         break;
                                     case "closing":
@@ -110,7 +136,10 @@ public class BlindsControllerFragment extends Fragment {
                                         levelSeekBar.setEnabled(true);
                                         if(shouldShowFinished) {
                                             shouldShowFinished = false;
-                                            Toast.makeText(getContext(), getString(R.string.finished_closing_string), Toast.LENGTH_SHORT).show();
+                                            if(foreground)
+                                                Toast.makeText(getContext(), getString(R.string.finished_closing_string), Toast.LENGTH_SHORT).show();
+                                            else
+                                                notificationManager.notify(notificationsId, closedBlindsBuilder.build());
                                         }
                                         break;
 
@@ -175,6 +204,22 @@ public class BlindsControllerFragment extends Fragment {
         api = ApiClient.getInstance();
 
         updateState();
+
+        closedBlindsBuilder = new NotificationCompat.Builder(getContext(), "123")
+                .setSmallIcon(R.drawable.blinds_icon_foreground)
+                .setContentTitle(getString(R.string.blinds_closed_title_string))
+                .setContentText(getString(R.string.blinds_closed_text_string))
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+        openedBlindsBuilder = new NotificationCompat.Builder(getContext(), "123")
+                .setSmallIcon(R.drawable.blinds_icon_foreground)
+                .setContentTitle(getString(R.string.blinds_opened_title_string))
+                .setContentText(getString(R.string.blinds_opened_text_string))
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+        notificationManager = NotificationManagerCompat.from(getContext());
+
+        ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
     }
 
     private void readBundle(Bundle bundle) {
@@ -291,86 +336,6 @@ public class BlindsControllerFragment extends Fragment {
                 ErrorHandler.handleUnexpectedError(t, requireView(), BlindsControllerFragment.this);
             }
         });
-    }
-
-    private void updateProgressBar() {
-        new Thread(() -> {
-            while (runThreads) {
-                api.getBlindsState(deviceId, new Callback<Result<BlindsState>>() {
-                    @Override
-                    public void onResponse(@NonNull Call<Result<BlindsState>> call, @NonNull Response<Result<BlindsState>> response) {
-                        if (response.isSuccessful()) {
-                            Result<BlindsState> result = response.body();
-                            if (result != null && runThreads) {
-                                BlindsState blindsState = result.getResult();
-                                currentLevel = blindsState.getCurrentLevel();
-                                status = blindsState.getStatus();
-                                switch (status) {
-                                    case "opening":
-                                        closeButton.setEnabled(true);
-                                        openButton.setEnabled(false);
-                                        statusTextView.setText(getString(R.string.opening_string));
-                                        statusTextView.setVisibility(View.VISIBLE);
-                                        loadingProgressBar.setVisibility(View.VISIBLE);
-                                        levelSeekBar.setEnabled(false);
-                                        shouldShowFinished = true;
-                                        break;
-                                    case "opened":
-                                        closeButton.setEnabled(true);
-                                        openButton.setEnabled(false);
-                                        statusTextView.setVisibility(View.INVISIBLE);
-                                        loadingProgressBar.setVisibility(View.INVISIBLE);
-                                        levelSeekBar.setEnabled(true);
-                                        if(shouldShowFinished) {
-                                            shouldShowFinished = false;
-                                            Toast.makeText(getContext(), getString(R.string.finished_opening_string), Toast.LENGTH_SHORT).show();
-                                        }
-                                        runThreads = false;
-                                        break;
-                                    case "closing":
-                                        closeButton.setEnabled(false);
-                                        openButton.setEnabled(true);
-                                        statusTextView.setText(getString(R.string.closing_string));
-                                        statusTextView.setVisibility(View.VISIBLE);
-                                        loadingProgressBar.setVisibility(View.VISIBLE);
-                                        levelSeekBar.setEnabled(false);
-                                        shouldShowFinished = true;
-                                        break;
-                                    case "closed":
-                                        closeButton.setEnabled(false);
-                                        openButton.setEnabled(true);
-                                        statusTextView.setVisibility(View.INVISIBLE);
-                                        loadingProgressBar.setVisibility(View.INVISIBLE);
-                                        levelSeekBar.setEnabled(true);
-                                        if(shouldShowFinished) {
-                                            shouldShowFinished = false;
-                                            Toast.makeText(getContext(), getString(R.string.finished_closing_string), Toast.LENGTH_SHORT).show();
-                                        }
-                                        runThreads = false;
-                                        break;
-
-                                }
-                                currentLevelProgressBar.setProgress(currentLevel);
-                            } else {
-                                ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
-                            }
-                        } else {
-                            ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(@NonNull Call<Result<BlindsState>> call, @NonNull Throwable t) {
-                        ErrorHandler.handleUnexpectedError(t, requireView(), BlindsControllerFragment.this);
-                    }
-                });
-                try {
-                    Thread.sleep(2000);
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
-                }
-            }
-        }).start();
     }
 }
 

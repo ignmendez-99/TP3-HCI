@@ -101,4 +101,11 @@
     <string name="intensity_set_to_string">"Intensidad configurada en "</string>
     <string name="turned_on_string">¡Encendido!</string>
     <string name="turned_off_string">¡Apagado!</string>
+    <string name="changed_vacuum_location_string">Ubicación cambiada a</string>
+    <string name="routine_description">Descripción de la rutina:</string>
+    <string name="execute_button">Ejecutar</string>
+    <string name="routine_fail_execute">¡Esta rutina trata de acceder a un dispositivo eliminado, imposible ejecutar! Hay que eliminarla</string>
+    <string name="click_to_open">Click para abrir</string>
+    <string name="could_not_recover_routines">No se pudieron obtener las rutinas</string>
+    <string name="zero_routines">¡No tienes ninguna rutina!</string>
 </resources>

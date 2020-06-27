@@ -12,6 +12,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.OnLifecycleEvent;
+import androidx.lifecycle.ProcessLifecycleOwner;
 
 import com.example.ultrahome.R;
 import com.example.ultrahome.apiConnection.ApiClient;
@@ -25,7 +29,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class RefrigeratorControllerFragment extends Fragment {
+public class RefrigeratorControllerFragment extends Fragment implements LifecycleObserver {
 
     private String deviceId;
 
@@ -94,7 +98,19 @@ public class RefrigeratorControllerFragment extends Fragment {
             }
         });
 
+        ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
+
         updateState();
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+    public void onAppBackgrounded() {
+        runThreads = false;
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    public void onAppForegrounded() {
+        runThreads = true;
     }
 
     private void readBundle(Bundle bundle) {
