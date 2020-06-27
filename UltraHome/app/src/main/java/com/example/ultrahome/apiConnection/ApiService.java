@@ -166,7 +166,7 @@ public interface ApiService {
 
     @PUT("devices/{deviceId}/{actionName}")
     @Headers("Content-Type: application/json")
-    Call<Result<Boolean>> dispenseExactAmount(@Path("deviceId") String deviceId, @Path("actionName") String actionName, @Body ArrayList<Object> data);    // TODO: FIX THIS WITH HELP OF ENGINEER ALBERTO
+    Call<Result<Boolean>> dispenseExactAmount(@Path("deviceId") String deviceId, @Path("actionName") String actionName, @Body Object [] data);    // TODO: FIX THIS WITH HELP OF ENGINEER ALBERTO
 
     ////////////// REFRIGERATOR CONTROLS ////////////////////
 

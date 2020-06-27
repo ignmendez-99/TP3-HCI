@@ -6,8 +6,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -33,15 +35,20 @@ public class FaucetControllerFragment extends Fragment implements LifecycleObser
     private String deviceId;
 
     private Switch openCloseSwitch;
-    private Button dispenseExactAmountButton, stopButton, startButton, cancelButton;
+    private Button dispenseExactAmountButton, startButton, cancelButton;
     private EditText amount;
     private Spinner unitSpinner;
+    private TextView dispensingTextView;
+    private ProgressBar dispensingProgressBar, dispensingRotatingProgressBar;
 
-    private boolean runThreads = true;
+    private boolean runThreads = true, shouldShowText = true;
 
     private ApiClient api;
 
     private boolean isOpen;
+    private String unit;
+    private Integer quantity;
+    private Double dispensedQuantity;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_faucet_controller, container, false);
@@ -55,64 +62,104 @@ public class FaucetControllerFragment extends Fragment implements LifecycleObser
         init(view);
     }
 
+    private void updateState() {
+        new Thread(() -> {
+            while(runThreads) {
+                api.getFaucetState(deviceId, new Callback<Result<FaucetState>>() {
+                    @Override
+                    public void onResponse(@NonNull Call<Result<FaucetState>> call, @NonNull Response<Result<FaucetState>> response) {
+                        if(response.isSuccessful()) {
+                            Result<FaucetState> result = response.body();
+                            if(result != null && runThreads) {
+                                FaucetState faucetState = result.getResult();
+                                isOpen = faucetState.isOpen();
+                                openCloseSwitch.setChecked(isOpen);
+                                quantity = faucetState.getQuantity();
+                                dispensedQuantity = faucetState.getDispensedQuantity();
+                                unit = faucetState.getUnit();
+
+                                if(quantity == null) {
+                                    if(isOpen) {
+                                        dispenseExactAmountButton.setVisibility(View.INVISIBLE);
+                                        startButton.setVisibility(View.INVISIBLE);
+                                        cancelButton.setVisibility(View.INVISIBLE);
+                                        amount.setVisibility(View.INVISIBLE);
+                                        unitSpinner.setVisibility(View.INVISIBLE);
+                                        dispensingProgressBar.setVisibility(View.INVISIBLE);
+                                        dispensingRotatingProgressBar.setVisibility(View.INVISIBLE);
+                                        dispensingTextView.setVisibility(View.INVISIBLE);
+                                    } else {
+                                        dispenseExactAmountButton.setVisibility(View.VISIBLE);
+                                        startButton.setVisibility(View.INVISIBLE);
+                                        cancelButton.setVisibility(View.INVISIBLE);
+                                        amount.setVisibility(View.INVISIBLE);
+                                        unitSpinner.setVisibility(View.INVISIBLE);
+                                        dispensingProgressBar.setVisibility(View.INVISIBLE);
+                                        dispensingRotatingProgressBar.setVisibility(View.INVISIBLE);
+                                        dispensingTextView.setVisibility(View.INVISIBLE);
+                                    }
+                                } else {
+                                    dispenseExactAmountButton.setVisibility(View.INVISIBLE);
+                                    startButton.setVisibility(View.INVISIBLE);
+                                    cancelButton.setVisibility(View.INVISIBLE);
+                                    amount.setVisibility(View.INVISIBLE);
+                                    unitSpinner.setVisibility(View.INVISIBLE);
+                                    dispensingProgressBar.setVisibility(View.VISIBLE);
+                                    dispensingRotatingProgressBar.setVisibility(View.VISIBLE);
+                                    dispensingProgressBar.setMax(quantity);
+                                    dispensingProgressBar.setProgress(dispensedQuantity.intValue());
+                                    dispensingTextView.setVisibility(View.VISIBLE);
+                                    dispensingTextView.setText(getString(R.string.dispensed_string_1) + " " + dispensedQuantity + unit + " " + getString(R.string.dispensed_string_2) + " " + quantity + unit);  // Dispensed Xl of Xl
+                                }
+                            } else {
+                                ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
+                            }
+                        } else {
+                            ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<Result<FaucetState>> call, @NonNull Throwable t) {
+                        ErrorHandler.handleUnexpectedError(t, requireView(), FaucetControllerFragment.this);
+                    }
+                });
+                try {
+                    Thread.sleep(2000);
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        }).start();
+    }
+
     private void init(View view) {
         openCloseSwitch = view.findViewById(R.id.faucet_switch);
         dispenseExactAmountButton = view.findViewById(R.id.dispense_exact_amount_button);
-        stopButton = view.findViewById(R.id.stop_button);
         startButton = view.findViewById(R.id.start_button);
         cancelButton = view.findViewById(R.id.cancel_button);
         amount = view.findViewById(R.id.amount);
         unitSpinner = view.findViewById(R.id.unit_spinner);
+        dispensingProgressBar = view.findViewById(R.id.dispensing_progressBar);
+        dispensingRotatingProgressBar = view.findViewById(R.id.dispensing_rotating_progressBar);
+        dispensingTextView = view.findViewById(R.id.dispensing_textView);
 
         api = ApiClient.getInstance();
 
-        api.getFaucetState(deviceId, new Callback<Result<FaucetState>>() {
-            @Override
-            public void onResponse(@NonNull Call<Result<FaucetState>> call, @NonNull Response<Result<FaucetState>> response) {
-                if(response.isSuccessful()) {
-                    Result<FaucetState> result = response.body();
-                    if(result != null) {
-                        FaucetState faucetState = result.getResult();
-                        isOpen = faucetState.isOpen();
-                        openCloseSwitch.setChecked(isOpen);
-                    } else {
-                        ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
-                    }
-                } else {
-                    ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
-                }
-            }
+        updateState();
 
-            @Override
-            public void onFailure(@NonNull Call<Result<FaucetState>> call, @NonNull Throwable t) {
-                ErrorHandler.handleUnexpectedError(t, requireView(), FaucetControllerFragment.this);
-            }
-        });
-
-        if(isOpen)
-            dispenseExactAmountButton.setVisibility(View.INVISIBLE);
-
-        stopButton.setVisibility(View.INVISIBLE);
-        startButton.setVisibility(View.INVISIBLE);
-        cancelButton.setVisibility(View.INVISIBLE);
-        amount.setVisibility(View.INVISIBLE);
-        unitSpinner.setVisibility(View.INVISIBLE);
-
-        stopButton.setOnClickListener(this::stopDispensing);
         startButton.setOnClickListener(this::dispenseAmount);
         dispenseExactAmountButton.setOnClickListener(this::dispenseExactAmountButtonPressed);
         cancelButton.setOnClickListener(this::cancelButtonPressed);
 
 
-        if(openCloseSwitch != null) {
-            openCloseSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                if (isChecked) {
-                    openFaucet();
-                } else {
-                    closeFaucet();
-                }
-            });
-        }
+        openCloseSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                openFaucet();
+            } else {
+                closeFaucet();
+            }
+        });
 
         ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
 
@@ -152,14 +199,20 @@ public class FaucetControllerFragment extends Fragment implements LifecycleObser
                 if(response.isSuccessful()) {
                     Result<Boolean> result = response.body();
                     if(result != null) {
-                        Toast.makeText(getContext(), getString(R.string.opening_faucet_string), Toast.LENGTH_LONG).show();
+                        if(shouldShowText)
+                            Toast.makeText(getContext(), getString(R.string.opening_faucet_string), Toast.LENGTH_LONG).show();
+                        else
+                            shouldShowText = true;
                         isOpen = true;
                         dispenseExactAmountButton.setVisibility(View.INVISIBLE);
-                        stopButton.setVisibility(View.INVISIBLE);
                         startButton.setVisibility(View.INVISIBLE);
                         cancelButton.setVisibility(View.INVISIBLE);
                         amount.setVisibility(View.INVISIBLE);
                         unitSpinner.setVisibility(View.INVISIBLE);
+                        if(!runThreads) {
+                            runThreads = true;
+                            updateState();
+                        }
                     } else {
                         ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                     }
@@ -185,11 +238,17 @@ public class FaucetControllerFragment extends Fragment implements LifecycleObser
                         Toast.makeText(getContext(), getString(R.string.closing_faucet_string), Toast.LENGTH_LONG).show();
                         isOpen = false;
                         dispenseExactAmountButton.setVisibility(View.VISIBLE);
-                        stopButton.setVisibility(View.INVISIBLE);
                         startButton.setVisibility(View.INVISIBLE);
                         cancelButton.setVisibility(View.INVISIBLE);
                         amount.setVisibility(View.INVISIBLE);
                         unitSpinner.setVisibility(View.INVISIBLE);
+                        dispensingProgressBar.setVisibility(View.INVISIBLE);
+                        dispensingRotatingProgressBar.setVisibility(View.INVISIBLE);
+                        dispensingTextView.setVisibility(View.INVISIBLE);
+                        if(!runThreads) {
+                            runThreads = true;
+                            updateState();
+                        }
                     } else {
                         ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                     }
@@ -211,6 +270,7 @@ public class FaucetControllerFragment extends Fragment implements LifecycleObser
         cancelButton.setVisibility(View.VISIBLE);
         amount.setVisibility(View.VISIBLE);
         unitSpinner.setVisibility(View.VISIBLE);
+        runThreads = false;
     }
 
     private void cancelButtonPressed(View view) {
@@ -219,10 +279,10 @@ public class FaucetControllerFragment extends Fragment implements LifecycleObser
         cancelButton.setVisibility(View.INVISIBLE);
         amount.setVisibility(View.INVISIBLE);
         unitSpinner.setVisibility(View.INVISIBLE);
-    }
-
-    private void stopDispensing(View view) {
-        closeFaucet();
+        if(!runThreads) {
+            runThreads = true;
+            updateState();
+        }
     }
 
     private void dispenseAmount(View view) {    // todo: no funciona
@@ -252,6 +312,11 @@ public class FaucetControllerFragment extends Fragment implements LifecycleObser
                     if(result != null) {
                         Toast.makeText(getContext(), getString(R.string.dispensing_string) + " " + amountToDispense + unit, Toast.LENGTH_LONG).show();
                         openCloseSwitch.setChecked(true);
+                        shouldShowText = false;
+                        if(!runThreads) {
+                            runThreads = true;
+                            updateState();
+                        }
                     } else {
                         ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                     }
