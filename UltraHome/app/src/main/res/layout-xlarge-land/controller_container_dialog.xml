@@ -8,9 +8,10 @@
     <TextView
         android:id="@+id/device_name_in_dialog"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:textSize="25dp"
         android:text="@string/device_name_placeholder"
-        android:textSize="20sp"
+        android:layout_height="wrap_content"
+        android:paddingTop="10dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -19,7 +20,6 @@
         android:id="@+id/controller_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
         android:paddingStart="30dp"
         android:paddingEnd="30dp"
         android:paddingBottom="30dp"
@@ -30,6 +30,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/close_string"
+        android:layout_marginBottom="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/controller_container" />
