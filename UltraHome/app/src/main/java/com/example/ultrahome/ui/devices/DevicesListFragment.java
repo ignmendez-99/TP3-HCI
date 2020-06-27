@@ -1,6 +1,5 @@
 package com.example.ultrahome.ui.devices;
 
-import android.app.Dialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +20,7 @@ import com.example.ultrahome.apiConnection.ApiClient;
 import com.example.ultrahome.apiConnection.ErrorHandler;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.Device;
 import com.example.ultrahome.apiConnection.entities.Result;
+import com.example.ultrahome.ui.devices.controllers.ControllerContainerDialog;
 import com.example.ultrahome.ui.devices.controllers.BlindsControllerFragment;
 import com.example.ultrahome.ui.devices.controllers.DoorControllerFragment;
 import com.example.ultrahome.ui.devices.controllers.FaucetControllerFragment;
@@ -34,7 +34,6 @@ import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -477,10 +476,10 @@ public class DevicesListFragment extends Fragment {
        On tablet: opens a Dialog with the Controller fragment */
     void insertNestedFragment(String deviceTypeId, String deviceId, String deviceName, @NonNull Integer positionInRecyclerView) {
         Integer layoutToChoose = supportedDeviceTypeIds.get(deviceTypeId);
-        if(!inTablet) {
-            if (!positionInRecyclerView.equals(positionOfDeviceDisplayed)) {
-                positionOfDeviceDisplayed = positionInRecyclerView;
-                if (layoutToChoose != null) {
+        if(layoutToChoose != null) {
+            if (!inTablet) {
+                if (!positionInRecyclerView.equals(positionOfDeviceDisplayed)) {
+                    positionOfDeviceDisplayed = positionInRecyclerView;
                     if (childFragment != null) {
                         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
                         transaction.detach(childFragment).commit();
@@ -488,31 +487,9 @@ public class DevicesListFragment extends Fragment {
                         childFragment.onDetach();
                         childFragment = null;
                     }
-                    switch (layoutToChoose) {
-                        case R.layout.fragment_lights_controller:
-                            childFragment = LightsControllerFragment.newInstance(deviceId);
-                            break;
-                        case R.layout.fragment_blinds_controller:
-                            childFragment = BlindsControllerFragment.newInstance(deviceId);
-                            break;
-                        case R.layout.fragment_door_controller:
-                            childFragment = DoorControllerFragment.newInstance(deviceId);
-                            break;
-                        case R.layout.fragment_faucet_controller:
-                            childFragment = FaucetControllerFragment.newInstance(deviceId);
-                            break;
-                        case R.layout.fragment_refrigerator_controller:
-                            childFragment = RefrigeratorControllerFragment.newInstance(deviceId);
-                            break;
-                        case R.layout.fragment_speaker_controller:
-                            childFragment = SpeakerControllerFragment.newInstance(deviceId);
-                            break;
-                        case R.layout.fragment_vacuum_controller:
-                            childFragment = VacuumControllerFragment.newInstance(deviceId, roomIds, roomNames);
-                            break;
-                        default:
-                            throw new IllegalStateException("Unexpected value: " + layoutToChoose);
-                    }
+
+                    childFragment = chooseLayout(layoutToChoose, deviceId);
+
                     FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
                     transaction.replace(R.id.device_control_container, childFragment).commit();
                     editButton.setVisibility(View.VISIBLE);
@@ -522,19 +499,45 @@ public class DevicesListFragment extends Fragment {
                     deviceNameInScreen.setText(currentDeviceName);
                     deviceNameEdited.setText(currentDeviceName);
                     childOnScreen = true;
-                } else {
-                    Snackbar.make(requireView(), "Could not load device", Snackbar.LENGTH_SHORT);
                 }
+            } else {
+                // Open a Dialog with the Device Controls
+                childFragment = chooseLayout(layoutToChoose, deviceId);
+                FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+                ControllerContainerDialog dialog = new ControllerContainerDialog(childFragment);
+                dialog.show(ft, "dialog");
             }
-        } else {
-            // Open a Dialog with the Device Controls
-            //First create the dialog
-            final Dialog dialog = new Dialog(requireContext());
-            dialog.setContentView(layoutToChoose);
-            switch(layoutToChoose){
+        } else
+            Snackbar.make(requireView(), "Could not load device", Snackbar.LENGTH_SHORT);
+    }
 
-            }
+    private Fragment chooseLayout(@NonNull Integer layoutToChoose, String deviceId) {
+        switch (layoutToChoose) {
+            case R.layout.fragment_lights_controller:
+                childFragment = LightsControllerFragment.newInstance(deviceId);
+                break;
+            case R.layout.fragment_blinds_controller:
+                childFragment = BlindsControllerFragment.newInstance(deviceId);
+                break;
+            case R.layout.fragment_door_controller:
+                childFragment = DoorControllerFragment.newInstance(deviceId);
+                break;
+            case R.layout.fragment_faucet_controller:
+                childFragment = FaucetControllerFragment.newInstance(deviceId);
+                break;
+            case R.layout.fragment_refrigerator_controller:
+                childFragment = RefrigeratorControllerFragment.newInstance(deviceId);
+                break;
+            case R.layout.fragment_speaker_controller:
+                childFragment = SpeakerControllerFragment.newInstance(deviceId);
+                break;
+            case R.layout.fragment_vacuum_controller:
+                childFragment = VacuumControllerFragment.newInstance(deviceId, roomIds, roomNames);
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + layoutToChoose);
         }
+        return childFragment;
     }
 
     /* The only thing that the UNDO action does, is closing the Snackbar and putting the
