@@ -256,8 +256,6 @@ public class HomesFragment extends Fragment{
                             }
                             if(homeList.size() == 0)
                                 v.findViewById(R.id.zero_homes).setVisibility(View.VISIBLE);
-                            else
-                                v.findViewById(R.id.zero_homes).setVisibility(View.GONE);
                             v.findViewById(R.id.button_show_AddHomeDialog).setVisibility(View.VISIBLE);
                         } else {
                             ErrorHandler.logError(response);

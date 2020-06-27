@@ -1,5 +1,6 @@
 package com.example.ultrahome.ui.devices;
 
+import android.app.Dialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -79,6 +80,10 @@ public class DevicesListFragment extends Fragment {
     private Fragment childFragment;
     private Integer positionOfDeviceDisplayed;
     private Integer positionOfDeviceDisplayedBackup; // useful when the User UNDO the Deletion
+
+    // tablet-specific variables
+    private boolean inTablet = false;
+
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_devices_list, container, false);

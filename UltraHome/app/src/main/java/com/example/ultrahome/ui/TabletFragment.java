@@ -39,10 +39,6 @@ public class TabletFragment extends Fragment {
         fragment_left.setArguments(bundle);
         transaction = getChildFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_tablet_1, fragment_left).commit();
-
-//        fragment_right = new DevicesListFragment();
-//        transaction = getChildFragmentManager().beginTransaction();
-//        transaction.replace(R.id.fragment_tablet_3, fragment_right).commit();
     }
 
     public void initRoomsFragment() {
@@ -87,5 +83,34 @@ public class TabletFragment extends Fragment {
             fragment_middle.onDetach();
             fragment_middle = null;
         }
+    }
+
+    public void roomWasDeleted() {
+        if(fragment_right != null) {
+            FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+            ft.detach(fragment_right).commit();
+            fragment_right.onDestroy();
+            fragment_right.onDetach();
+            fragment_right = null;
+        }
+    }
+
+    public void initDevicesFragment() {
+        Bundle bundle = new Bundle();
+        bundle.putBoolean("inTablet", true);
+
+        if(fragment_right != null) {
+            FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+            ft.detach(fragment_right).commit();
+            fragment_right.onDestroy();
+            fragment_right.onDetach();
+            fragment_right = null;
+        }
+
+        FragmentTransaction transaction;
+        fragment_right = new DevicesListFragment();
+        fragment_right.setArguments(bundle);
+        transaction = getChildFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_tablet_3, fragment_right).commit();
     }
 }

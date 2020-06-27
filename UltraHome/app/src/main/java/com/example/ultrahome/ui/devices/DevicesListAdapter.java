@@ -33,7 +33,7 @@ public class DevicesListAdapter extends RecyclerView.Adapter<DevicesListAdapter.
     @Override
     public DevicesListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
-        View v = inflater.inflate(R.layout.device_horizontal_layout, parent, false);
+        View v = inflater.inflate(R.layout.device_item_layout, parent, false);
         return new DevicesListAdapter.DevicesListViewHolder(v);
     }
 
@@ -93,7 +93,7 @@ public class DevicesListAdapter extends RecyclerView.Adapter<DevicesListAdapter.
         public DevicesListViewHolder(View v) {
             super(v);
             deviceName = v.findViewById(R.id.device_name);
-            devicesConstraintLayout = v.findViewById(R.id.horizontal_devices_row_layout);
+            devicesConstraintLayout = v.findViewById(R.id.device_item_layout);
             deviceImage = v.findViewById(R.id.device_image);
         }
     }

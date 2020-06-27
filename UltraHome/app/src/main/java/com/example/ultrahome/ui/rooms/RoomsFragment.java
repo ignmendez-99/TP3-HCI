@@ -23,6 +23,7 @@ import com.example.ultrahome.apiConnection.ErrorHandler;
 import com.example.ultrahome.apiConnection.entities.Result;
 import com.example.ultrahome.apiConnection.entities.Room;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.Device;
+import com.example.ultrahome.ui.TabletFragment;
 import com.example.ultrahome.ui.homes.HomeToRoomViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
@@ -62,6 +63,7 @@ public class RoomsFragment extends Fragment {
 
     // tablet-specific variables
     private boolean inTablet = false;
+    private Integer positionOfRoomOpened;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -177,8 +179,16 @@ public class RoomsFragment extends Fragment {
         model.storeRoomId(idOfRoomClicked);
         model.storeRoomIds(roomIds);
         model.storeRoomNames(roomNames);
-        final NavController navController =  Navigation.findNavController(view);
-        navController.navigate(R.id.action_RoomsFragment_to_DevicesListFragment);
+        if(inTablet) {
+            if(positionOfRoomOpened == null || positionOfRoomOpened != position) {
+                positionOfRoomOpened = position;
+                TabletFragment parentFragment = (TabletFragment) getParentFragment();
+                parentFragment.initDevicesFragment();
+            }
+        } else {
+            final NavController navController = Navigation.findNavController(view);
+            navController.navigate(R.id.action_RoomsFragment_to_DevicesListFragment);
+        }
     }
 
     /* Called by the AddRoomDialog, when the Room has been successfully added */
@@ -197,6 +207,8 @@ public class RoomsFragment extends Fragment {
     }
 
     void deleteRoom(View view) {
+        if(inTablet)
+            ((TabletFragment)getParentFragment()).roomWasDeleted();
         deletingRoomSnackbar = Snackbar.make(view, "Room deleted!", Snackbar.LENGTH_SHORT);
         deletingRoomSnackbar.setAction("UNDO", new UndoDeleteRoomListener());
         deletingRoom = true;
