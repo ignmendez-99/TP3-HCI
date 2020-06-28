@@ -86,18 +86,15 @@ public class AddDeviceDialog extends Dialog {
         radioButtons = new RadioButton[]{faucetRadioButton, doorRadioButton, blindsRadioButton,
                 vacuumRadioButton, lightsRadioButton, speakerRadioButton, refrigeratorRadioButton};
     }
-
     private void checkCorrectInput(View v) {
         deviceName = deviceNameEditText.getText().toString();
-        if(deviceName.length() > 60 || deviceName.length() < 3) {
+        if(deviceName.length() > 25 || deviceName.length() < 3) {
             inputErrorMessage.setVisibility(View.VISIBLE);
-            // todo: hardcoded string
-            inputErrorMessage.setText("Name must be between 3 and 60 characters");
+            inputErrorMessage.setText(getContext().getString(R.string.name_lenght_string));
         } else {
-            if (!deviceName.matches("^[a-zA-Z0-9_ ]{3,60}")) {
+            if (!deviceName.matches("^[a-zA-Z0-9_ ]{3,25}")) {
                 inputErrorMessage.setVisibility(View.VISIBLE);
-                // todo: hardcoded string
-                inputErrorMessage.setText("Name must only contain numbers, digits, spaces or _");
+                inputErrorMessage.setText(getContext().getString(R.string.name_characters_string));
             } else {
                 checkRadioButtonSelected();
             }
@@ -149,8 +146,7 @@ public class AddDeviceDialog extends Dialog {
         }
         if(!found) {
             inputErrorMessage.setVisibility(View.VISIBLE);
-            // todo: hardcoded string
-            inputErrorMessage.setText("A device type must be selected");
+            inputErrorMessage.setText(getContext().getString(R.string.device_type_not_selected_string));
         } else {
             addNewDevice(device, deviceCheckedTypeId);
         }
@@ -220,7 +216,6 @@ public class AddDeviceDialog extends Dialog {
 
     private void addDeviceFail() {
         apiErrorMessage.setVisibility(View.VISIBLE);
-        // todo: hardcoded string
-        apiErrorMessage.setText("Could not add new Device!");
+        apiErrorMessage.setText(getContext().getString(R.string.couldnt_add_device_string));
     }
 }

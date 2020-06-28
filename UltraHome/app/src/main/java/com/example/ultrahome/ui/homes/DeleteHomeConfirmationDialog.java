@@ -8,6 +8,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
+import com.example.ultrahome.R;
+
 public class DeleteHomeConfirmationDialog extends DialogFragment {
 
     private HomesFragment containerFragment;
@@ -21,10 +23,8 @@ public class DeleteHomeConfirmationDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         return new AlertDialog.Builder(getActivity())
-                // todo: hardcoded string
-                .setTitle("Warning!")
-                // todo: hardcoded string
-                .setMessage("Are you sure you want to delete this Home?")
+                .setTitle(getContext().getString(R.string.warning_string))
+                .setMessage(getContext().getString(R.string.delete_home_confirmation_string))
                 .setNegativeButton(android.R.string.no, (dialog, which) -> {
                     dismiss();
                 })

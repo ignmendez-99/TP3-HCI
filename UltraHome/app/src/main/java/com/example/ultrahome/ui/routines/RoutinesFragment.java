@@ -143,10 +143,8 @@ public class RoutinesFragment extends Fragment {
     }
 
     void deleteRoutine(View v) {
-        // todo: hardcoded string
-        deletingRoutineSnackbar = Snackbar.make(v, "Routine deleted!", Snackbar.LENGTH_SHORT);
-        // todo: hardcoded string
-        deletingRoutineSnackbar.setAction("UNDO", new UndoDeleteRoutineListener());
+        deletingRoutineSnackbar = Snackbar.make(v, getContext().getString(R.string.routine_deleted_string), Snackbar.LENGTH_SHORT);
+        deletingRoutineSnackbar.setAction(getContext().getString(R.string.undo_string), new UndoDeleteRoutineListener());
         deletingRoutine = true;
         deletingRoutineSnackbar.addCallback(new DeleteRoutineSnackbarTimeout());
         deletingRoutineSnackbar.show();
@@ -196,10 +194,8 @@ public class RoutinesFragment extends Fragment {
     }
 
     private void showDeleteRoutineError() {
-        // todo: hardcoded string
-        Snackbar s = Snackbar.make(requireView(), "Could not delete Routine!", Snackbar.LENGTH_SHORT);
-        // todo: hardcoded string
-        s.setAction("CLOSE", RoutinesFragment.this::recoverRemovedRoutine);
+        Snackbar s = Snackbar.make(requireView(), getContext().getString(R.string.couldnt_delete_routine_string), Snackbar.LENGTH_SHORT);
+        s.setAction(getContext().getString(R.string.close_lowercase_string), RoutinesFragment.this::recoverRemovedRoutine);
         s.addCallback(new BaseTransientBottomBar.BaseCallback<Snackbar>() {
             @Override
             public void onDismissed(Snackbar transientBottomBar, int event) {
@@ -350,8 +346,7 @@ public class RoutinesFragment extends Fragment {
 //                                }
 //                            }
                             updateDescription(resultRoutine, d);
-                            // todo: hardcoded string
-                            Snackbar.make(requireView(), "Routine Executed!", Snackbar.LENGTH_SHORT).show();
+                            Snackbar.make(requireView(), getContext().getString(R.string.routine_executed_string), Snackbar.LENGTH_SHORT).show();
                         } else {
                             ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                         }

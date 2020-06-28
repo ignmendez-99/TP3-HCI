@@ -174,15 +174,13 @@ public class AddRoutineDialog extends Dialog {
 
     private void checkCorrectInput(View v) {
         routineName = routineNameEditText.getText().toString();
-        if(routineName.length() > 60 || routineName.length() < 3) {
+        if(routineName.length() > 25 || routineName.length() < 3) {
             errorMessage.setVisibility(View.VISIBLE);
-            // todo: hardcoded string
-            errorMessage.setText("Name must be between 3 and 60 characters");
+            errorMessage.setText(getContext().getString(R.string.name_lenght_string));
         } else {
-            if (!routineName.matches("^[a-zA-Z0-9_ ]{3,60}")) {
+            if (!routineName.matches("^[a-zA-Z0-9_ ]{3,25}")) {
                 errorMessage.setVisibility(View.VISIBLE);
-                // todo: hardcoded string
-                errorMessage.setText("Name must only contain numbers, digits, spaces or _");
+                errorMessage.setText(getContext().getString(R.string.name_characters_string));
             } else {
                 addNewRoutine(v);
             }

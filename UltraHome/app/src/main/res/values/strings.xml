@@ -225,6 +225,65 @@
     <string name="notification_channel_description_string" translatable="false">Channel for all the app\'s notifications</string>
     <string name="notification_channel_id_string" translatable="false">jifUltraId</string>
 
+    <!-- //////////////  VALIDATION STRINGS ////////////// -->
+
+    <string name="name_lenght_string">The name must be between 3 and 25 characters long</string>
+    <string name="name_characters_string">Only numbers, letters, spaces or _</string>
+
+    <!-- //////////////  ADD DEVICE STRINGS ////////////// -->
+
+    <string name="device_type_not_selected_string">You must select a type</string>
+    <string name="couldnt_add_device_string">We couldn\'t add the device :(</string>
+
+    <!-- //////////////  DEVICES LIST FRAGMENT STRINGS ////////////// -->
+
+    <string name="renamed_to_string">renamed to</string>
+    <string name="device_added_string">Device added!</string>
+    <string name="device_deleted_string">Device deleted!</string>
+    <string name="couldnt_delete_device_string">We couldn\'t delete the device :(</string>
+    <string name="couldnt_load_device_string">We couldn\'t load the device :(</string>
+
+    <!-- //////////////  ADD HOME DIALOG STRINGS ////////////// -->
+
+    <string name="couldnt_add_home_string">We couldn\'t add the home :(</string>
+
+    <!-- //////////////  DELETE HOME DIALOG STRINGS ////////////// -->
+
+    <string name="delete_home_confirmation_string">Are you sure you want to delete this home?</string>
+
+    <!-- //////////////  HOMES FRAGMENT STRINGS ////////////// -->
+
+    <string name="home_added_string">Home added!</string>
+    <string name="home_deleted_string">Home deleted!</string>
+    <string name="couldnt_delete_home_string">We couldn\'t delete the home :(</string>
+
+    <!-- //////////////  ADD ROOM DIALOG STRINGS ////////////// -->
+
+    <string name="couldnt_add_room_string">We couldn\'t add the room :(</string>
+
+    <!-- //////////////  DELETE ROOM DIALOG STRINGS ////////////// -->
+
+    <string name="delete_room_confirmation_string">Are you sure you want to delete this room?</string>
+
+    <!-- //////////////  ROOMS FRAGMENT STRINGS ////////////// -->
+
+    <string name="room_added_string">Room added!</string>
+    <string name="room_deleted_string">Room deleted!</string>
+    <string name="couldnt_delete_room_string">We couldn\'t delete the room :(</string>
+
+    <!-- //////////////  DELETE ROUTINE DIALOG STRINGS ////////////// -->
+
+    <string name="delete_routine_confirmation_string">Are you sure you want to delete this routine?</string>
+
+    <!-- //////////////  ROUTINES FRAGMENT STRINGS ////////////// -->
+
+    <string name="routine_added_string">Routine added!</string>
+    <string name="routine_deleted_string">Routine deleted!</string>
+    <string name="couldnt_delete_routine_string">We couldn\'t delete the routine :(</string>
+    <string name="routine_executed_string">Routine executed!</string>
+
+
+
 
 
 
@@ -241,7 +300,10 @@
 
     <string name="start_string">START</string>
 
+    <!-- ////////////// GENERAL STRINGS ////////////// -->
 
+    <string name="undo_string">Undo</string>
+    <string name="close_lowercase_string">Close</string>
 
 
 
@@ -269,9 +331,9 @@
     <string name="routine_fail_execute">This routine wants to access a deleted device\nImposible to execute! Needs to be removed.</string>
     <string name="click_to_open">Click to open</string>
     <string name="could_not_recover_routines">Could not recover routines!</string>
-    <string name="zero_routines">You don\'t have any Routines!</string>
+    <string name="zero_routines">You don\'t have any routines!</string>
 
     <string name="handle_unexpected_error">Oops! There\'s a problem on our side :(</string>
 
-    <string name="delete_device_confirmation">Are you sure you want to delete the device?</string>
+    <string name="delete_device_confirmation_string">Are you sure you want to delete this device?</string>
 </resources>

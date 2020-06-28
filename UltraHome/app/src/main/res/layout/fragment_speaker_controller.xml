@@ -175,4 +175,13 @@
         app:layout_constraintStart_toEndOf="@+id/album_textView"
         app:layout_constraintTop_toTopOf="@+id/album_textView" />
 
+    <ProgressBar
+        android:id="@+id/loading_progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/progress_progressBar" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -249,8 +249,7 @@ public class DevicesListFragment extends Fragment {
                                 deviceNameInScreen.setText(deviceNameEdited.getText().toString());
                                 devicesNames.set(positionOfDeviceDisplayed, deviceNameEdited.getText().toString());
                                 adapter.notifyItemChanged(positionOfDeviceDisplayed);
-                                // todo: hardcoded string
-                                Toast.makeText(getContext(), currentDeviceName + " RENAMED TO " + deviceNameEdited.getText().toString(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), currentDeviceName + " " + getContext().getString(R.string.renamed_to_string) + " " + deviceNameEdited.getText().toString(), Toast.LENGTH_SHORT).show();
                                 currentDeviceName = deviceNameEdited.getText().toString();
                             } else {
                                 ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
@@ -264,7 +263,6 @@ public class DevicesListFragment extends Fragment {
                         ErrorHandler.handleUnexpectedError(t, requireView(), DevicesListFragment.this);
                     }
                 });
-                // todo: API CALL PARA RENOMBRAR
             }
         } else {
             editButton.setVisibility(View.INVISIBLE);
@@ -350,8 +348,7 @@ public class DevicesListFragment extends Fragment {
         adapter.notifyItemInserted(devicesNames.size() - 1);
 
         requireView().findViewById(R.id.zero_devices).setVisibility(View.GONE);
-        // todo: hardcoded string
-        Snackbar.make(this.requireView(), "Device Added!", Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(this.requireView(), getContext().getString(R.string.device_added_string), Snackbar.LENGTH_SHORT).show();
     }
 
     private void showAddDeviceDialog(View v) {
@@ -408,10 +405,8 @@ public class DevicesListFragment extends Fragment {
     }
 
     void deleteDevice(View v) {
-        // todo: hardcoded string
-        deletingDeviceSnackbar = Snackbar.make(v, "Device deleted!", Snackbar.LENGTH_SHORT);
-        // todo: hardcoded string
-        deletingDeviceSnackbar.setAction("UNDO", new UndoDeleteDeviceListener());
+        deletingDeviceSnackbar = Snackbar.make(v, getContext().getString(R.string.device_deleted_string), Snackbar.LENGTH_SHORT);
+        deletingDeviceSnackbar.setAction(getContext().getString(R.string.undo_string), new UndoDeleteDeviceListener());
         deletingDevice = true;
         deletingDeviceSnackbar.addCallback(new DeleteDeviceSnackbarTimeout());
         deletingDeviceSnackbar.show();
@@ -480,10 +475,8 @@ public class DevicesListFragment extends Fragment {
     }
 
     private void showDeleteDeviceError() {
-        // todo: hardcoded string
-        Snackbar s = Snackbar.make(requireView(), "Could not delete Device!", Snackbar.LENGTH_SHORT);
-        // todo: hardcoded string
-        s.setAction("CLOSE", DevicesListFragment.this::recoverRemovedDevice);
+        Snackbar s = Snackbar.make(requireView(), getContext().getString(R.string.couldnt_delete_device_string), Snackbar.LENGTH_SHORT);
+        s.setAction(getContext().getString(R.string.close_lowercase_string), DevicesListFragment.this::recoverRemovedDevice);
         s.addCallback(new BaseTransientBottomBar.BaseCallback<Snackbar>() {
             @Override
             public void onDismissed(Snackbar transientBottomBar, int event) {
@@ -564,8 +557,7 @@ public class DevicesListFragment extends Fragment {
                 dialog.show(ft, "dialog");
             }
         } else
-            // todo: hardcoded string
-            Snackbar.make(requireView(), "Could not load device", Snackbar.LENGTH_SHORT);
+            Snackbar.make(requireView(), getContext().getString(R.string.couldnt_load_device_string), Snackbar.LENGTH_SHORT);
     }
 
     private Fragment chooseLayout(@NonNull Integer layoutToChoose, String deviceId) {

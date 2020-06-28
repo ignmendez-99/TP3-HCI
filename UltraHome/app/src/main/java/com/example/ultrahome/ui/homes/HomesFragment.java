@@ -216,8 +216,7 @@ public class HomesFragment extends Fragment{
         homeNames.add(homeName);
         adapter.notifyItemInserted(homeNames.size() - 1);
         requireView().findViewById(R.id.zero_homes).setVisibility(View.GONE);
-        // todo: hardcoded string
-        Snackbar.make(this.requireView(), "Home Added!", Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(this.requireView(), getContext().getString(R.string.home_added_string), Snackbar.LENGTH_SHORT).show();
     }
 
     private void showAddHomeDialog(View v) {
@@ -229,10 +228,8 @@ public class HomesFragment extends Fragment{
     void deleteHome(View v) {
         if(inTablet)
             ((TabletFragment)getParentFragment()).homeWasDeleted();
-        // todo: hardcoded string
-        deletingHomeSnackbar = Snackbar.make(v, "Home deleted!", Snackbar.LENGTH_SHORT);
-        // todo: hardcoded string
-        deletingHomeSnackbar.setAction("UNDO", new UndoDeleteHomeListener());
+        deletingHomeSnackbar = Snackbar.make(v, getContext().getString(R.string.home_deleted_string), Snackbar.LENGTH_SHORT);
+        deletingHomeSnackbar.setAction(getContext().getString(R.string.undo_string), new UndoDeleteHomeListener());
         deletingHome = true;
         deletingHomeSnackbar.addCallback(new DeleteHomeSnackbarTimeout());
         deletingHomeSnackbar.show();
@@ -343,10 +340,8 @@ public class HomesFragment extends Fragment{
     }
 
     private void showDeleteHomeError() {
-        // todo: hardcoded string
-        Snackbar s = Snackbar.make(requireView(), "Could not delete Home!", Snackbar.LENGTH_SHORT);
-        // todo: hardcoded string
-        s.setAction("CLOSE", HomesFragment.this::recoverRemovedHome);
+        Snackbar s = Snackbar.make(requireView(), getContext().getString(R.string.couldnt_delete_home_string), Snackbar.LENGTH_SHORT);
+        s.setAction(getContext().getString(R.string.close_lowercase_string), HomesFragment.this::recoverRemovedHome);
         s.addCallback(new BaseTransientBottomBar.BaseCallback<Snackbar>() {
             @Override
             public void onDismissed(Snackbar transientBottomBar, int event) {

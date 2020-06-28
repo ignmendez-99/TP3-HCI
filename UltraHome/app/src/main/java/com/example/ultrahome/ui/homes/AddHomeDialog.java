@@ -54,15 +54,13 @@ public class AddHomeDialog extends Dialog {
 
     private void checkCorrectInput(View v) {
         homeName = homeNameEditText.getText().toString();
-        if(homeName.length() > 60 || homeName.length() < 3) {
+        if(homeName.length() > 25 || homeName.length() < 3) {
             errorMessage.setVisibility(View.VISIBLE);
-            // todo: hardcoded string
-            errorMessage.setText("Name must be between 3 and 60 characters");
+            errorMessage.setText(getContext().getString(R.string.name_lenght_string));
         } else {
-            if (!homeName.matches("^[a-zA-Z0-9_ ]{3,60}")) {
+            if (!homeName.matches("^[a-zA-Z0-9_ ]{3,25}")) {
                 errorMessage.setVisibility(View.VISIBLE);
-                // todo: hardcoded string
-                errorMessage.setText("Name must only contain numbers, digits, spaces or _");
+                errorMessage.setText(getContext().getString(R.string.name_characters_string));
             } else {
                 addNewHome();
             }
@@ -108,7 +106,6 @@ public class AddHomeDialog extends Dialog {
 
     private void addHomeFail() {
         errorMessage.setVisibility(View.VISIBLE);
-        // todo: hardcoded string
-        errorMessage.setText("Could not add new Home!");
+        errorMessage.setText(getContext().getString(R.string.couldnt_add_home_string));
     }
 }

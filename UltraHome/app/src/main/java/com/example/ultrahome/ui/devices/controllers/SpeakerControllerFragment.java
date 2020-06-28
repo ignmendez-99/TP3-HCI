@@ -44,7 +44,7 @@ public class SpeakerControllerFragment extends Fragment implements LifecycleObse
 
     private ImageButton prevButton, nextButton, pauseButton, playButton, stopButton, volDownButton, volUpButton;
     private Button nextGenreButton;
-    private ProgressBar progressProgressBar;
+    private ProgressBar progressProgressBar, loadingProgressBar;
     private TextView genreTextView, titleTextView, durationTextView, progressTextView, artistTextView, albumTextView;
     private SeekBar volumeSeekBar;
 
@@ -93,15 +93,16 @@ public class SpeakerControllerFragment extends Fragment implements LifecycleObse
         volUpButton = view.findViewById(R.id.vol_up_button);
         volumeSeekBar = view.findViewById(R.id.volume_seekBar);
         nextGenreButton = view.findViewById(R.id.next_genre_button);
-
         titleTextView = view.findViewById(R.id.title_textView);
         artistTextView = view.findViewById(R.id.artist_textView);
         albumTextView = view.findViewById(R.id.album_textView);
         durationTextView = view.findViewById(R.id.duration_textView);
         progressTextView = view.findViewById(R.id.progress_textView);
         genreTextView = view.findViewById(R.id.genre_textView);
-
         progressProgressBar = view.findViewById(R.id.progress_progressBar);
+        loadingProgressBar = view.findViewById(R.id.loading_progressBar);
+
+        loadingProgressBar.setVisibility(View.INVISIBLE);
 
         prevButton.setOnClickListener(this::prevSong);
         nextButton.setOnClickListener(this::nextSong);
@@ -163,7 +164,7 @@ public class SpeakerControllerFragment extends Fragment implements LifecycleObse
                     if (response.isSuccessful()) {
                         Result<Boolean> result = response.body();
                         if (result != null) {
-                            // todo: icono de cargando hasta que se ejecuta el updateState
+                            loadingProgressBar.setVisibility(View.VISIBLE);
                         } else {
                             ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                         }
@@ -184,8 +185,7 @@ public class SpeakerControllerFragment extends Fragment implements LifecycleObse
                     if (response.isSuccessful()) {
                         Result<Boolean> result = response.body();
                         if (result != null) {
-                            // todo: icono de cargando hasta que se ejecuta el updateState
-
+                            loadingProgressBar.setVisibility(View.VISIBLE);
                         } else {
                             ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                         }
@@ -209,7 +209,7 @@ public class SpeakerControllerFragment extends Fragment implements LifecycleObse
                 if (response.isSuccessful()) {
                     Result<Boolean> result = response.body();
                     if (result != null) {
-                        // todo: icono de cargando hasta que se ejecuta el updateState
+                        loadingProgressBar.setVisibility(View.VISIBLE);
                     } else {
                         ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                     }
@@ -232,7 +232,7 @@ public class SpeakerControllerFragment extends Fragment implements LifecycleObse
                 if (response.isSuccessful()) {
                     Result<Boolean> result = response.body();
                     if (result != null) {
-                        // todo: icono de cargando hasta que se ejecuta el updateState
+                        loadingProgressBar.setVisibility(View.VISIBLE);
                     } else {
                         ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                     }
@@ -255,7 +255,7 @@ public class SpeakerControllerFragment extends Fragment implements LifecycleObse
                 if (response.isSuccessful()) {
                     Result<Boolean> result = response.body();
                     if (result != null) {
-                        // todo: icono de cargando hasta que se ejecuta el updateState
+                        loadingProgressBar.setVisibility(View.VISIBLE);
                     } else {
                         ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                     }
@@ -278,7 +278,7 @@ public class SpeakerControllerFragment extends Fragment implements LifecycleObse
                 if (response.isSuccessful()) {
                     Result<Boolean> result = response.body();
                     if (result != null) {
-                        // todo: icono de cargando hasta que se ejecuta el updateState
+                        loadingProgressBar.setVisibility(View.VISIBLE);
                     } else {
                         ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                     }
@@ -368,6 +368,7 @@ public class SpeakerControllerFragment extends Fragment implements LifecycleObse
                         if (response.isSuccessful()) {
                             Result<SpeakerState> result = response.body();
                             if (result != null && runThreads) {
+                                loadingProgressBar.setVisibility(View.INVISIBLE);
                                 SpeakerState speakerState = result.getResult();
                                 status = speakerState.getStatus();
                                 volume = speakerState.getVolume();
