@@ -117,12 +117,12 @@
         android:id="@+id/delete_device_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="#C6FF5353"
-        android:text="@string/delete_button"
-        android:src="@mipmap/delete_icon_round"
         android:layout_marginBottom="24dp"
+        android:backgroundTint="#C6FF5353"
+        android:src="@drawable/delete_icon_foreground"
+        android:text="@string/delete_button"
         app:layout_constraintBottom_toTopOf="@id/done_editing_device_button"
-        app:layout_constraintEnd_toEndOf="@id/button_show_AddDeviceDialog"/>
+        app:layout_constraintEnd_toEndOf="@id/button_show_AddDeviceDialog" />
 
     <!-- Will appear when a device is displayed -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton

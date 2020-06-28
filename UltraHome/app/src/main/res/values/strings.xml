@@ -282,6 +282,8 @@
     <string name="routine_deleted_string">Routine deleted!</string>
     <string name="couldnt_delete_routine_string">We couldn\'t delete the routine :(</string>
     <string name="routine_executed_string">Routine executed!</string>
+    <string name="failed_string">-> Failed!</string>
+    <string name="success_string">-> Success!</string>
 
 
 

@@ -264,10 +264,10 @@ public class RoutinesFragment extends Fragment {
         String resultString="";
         for(int i=0; i < list.size(); i++){
             if(list.get(i)==null || list.get(i)=="false"){
-                resultString = auxList.get(i) + " => Failed!" + "\n";
+                resultString = auxList.get(i) + " " + getContext().getString(R.string.failed_string) + "\n";
             }
             else {
-                resultString = auxList.get(i) + " => Success!" + "\n";
+                resultString = auxList.get(i) + " " + getContext().getString(R.string.success_string) + "\n";
             }
             newDescription = newDescription + resultString;
         }
