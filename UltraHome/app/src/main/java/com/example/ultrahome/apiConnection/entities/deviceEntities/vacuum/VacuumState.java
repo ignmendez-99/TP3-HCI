@@ -58,6 +58,8 @@ public class VacuumState {
     }
 
     public String getLocationName() {
+        if(location == null)
+            return null;
         return location.name;
     }
 

@@ -146,4 +146,5 @@
     <string name="undo_string">Deshacer</string>
     <string name="close_lowercase_string">Cerrar</string>
     <string name="delete_device_confirmation_string">¿Seguro que quieres eliminar el dispositivo?</string>
+    <string name="charging_string">Cargando…</string>
 </resources>

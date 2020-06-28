@@ -112,6 +112,7 @@
     <string name="battery_placeholder">BATTERY: 100%</string>  <!-- PLACEHOLDER, WILL BE EDITED LATER -->
 
     <string name="battery_string">Battery:</string>
+    <string name="charging_string">Charging…</string>
     <string name="mode_changed_string">Mode changed!</string>
     <string name="status_changed_string">Status changed!</string>
     <string name="battery_too_low_to_start_string">Can\'t start, battery is too low :(</string>

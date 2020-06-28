@@ -44,10 +44,10 @@ public class VacuumControllerFragment extends Fragment implements LifecycleObser
     private Button startButton, pauseButton, dockButton;
     private Switch modeSwitch;
     private Spinner roomToCleanSpinner;
-    private TextView batteryTextView;
+    private TextView batteryTextView, chargingTextView;
 
     private String status, mode, location;
-    private boolean runThreads = true, firstTime = true, foreground = true;
+    private boolean runThreads = true, firstTime = true, foreground = true, mustShowLowBatteryAlert = true, mustShowCriticalBatteryAlert = true;
 
     private List<String> roomIds;
     private List<String> roomNames;
@@ -115,27 +115,39 @@ public class VacuumControllerFragment extends Fragment implements LifecycleObser
                             Result<VacuumState> result = response.body();
                             if(result != null && runThreads) {
                                 VacuumState vacuumState = result.getResult();
-                                batteryTextView.setText(getString(R.string.battery_string) + " " + vacuumState.getBatteryLevel() + "%");
                                 status = vacuumState.getStatus();
+                                if(status.equals("docked"))
+                                    chargingTextView.setVisibility(View.VISIBLE);
+                                else
+                                    chargingTextView.setVisibility(View.INVISIBLE);
+
+
+                                batteryTextView.setText(getString(R.string.battery_string) + " " + vacuumState.getBatteryLevel() + "%");
                                 mode = vacuumState.getMode();
                                 if(mode.equals("vacuum"))
                                     modeSwitch.setChecked(false);
                                 else
                                     modeSwitch.setChecked(true);
                                 location = vacuumState.getLocationName();
+                                if(location == null)
+                                    changeState(getView(), "dock");
                                 roomToCleanSpinner.setSelection(getRoomIndex(location));
                                 updateButtons();
 
-                                if(vacuumState.getBatteryLevel() <= 5) {
-                                    if(foreground)
-                                        Toast.makeText(getContext(), getString(R.string.battery_critical_text_string), Toast.LENGTH_SHORT).show();
-                                    else
-                                        notificationManager.notify(notificationsId, criticalBatteryBuilder.build());
-                                } else if(vacuumState.getBatteryLevel() <= 20) {
-                                    if(foreground)
-                                        Toast.makeText(getContext(), getString(R.string.battery_low_text_string), Toast.LENGTH_SHORT).show();
-                                    else
-                                        notificationManager.notify(notificationsId, lowBatteryBuilder.build());
+                                if(mustShowLowBatteryAlert || mustShowCriticalBatteryAlert) {
+                                    if(vacuumState.getBatteryLevel() <= 5 && mustShowCriticalBatteryAlert) {
+                                        mustShowCriticalBatteryAlert = false;
+                                        if(foreground)
+                                            Toast.makeText(getContext(), getString(R.string.battery_critical_text_string), Toast.LENGTH_SHORT).show();
+                                        else
+                                            notificationManager.notify(notificationsId, criticalBatteryBuilder.build());
+                                    } else if(vacuumState.getBatteryLevel() <= 20 && mustShowLowBatteryAlert && vacuumState.getBatteryLevel() > 5) {
+                                        mustShowLowBatteryAlert = false;
+                                        if(foreground)
+                                            Toast.makeText(getContext(), getString(R.string.battery_low_text_string), Toast.LENGTH_SHORT).show();
+                                        else
+                                            notificationManager.notify(notificationsId, lowBatteryBuilder.build());
+                                    }
                                 }
 
                                 roomToCleanSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
@@ -190,6 +202,7 @@ public class VacuumControllerFragment extends Fragment implements LifecycleObser
         modeSwitch = view.findViewById(R.id.vacuumMop_switch);
         roomToCleanSpinner = view.findViewById(R.id.room_to_clean_spinner);
         batteryTextView = view.findViewById(R.id.battery_level);
+        chargingTextView = view.findViewById(R.id.charging_textView);
 
         roomNamesArray = new String[roomNames.size()];
         roomNames.toArray(roomNamesArray);
@@ -320,6 +333,7 @@ public class VacuumControllerFragment extends Fragment implements LifecycleObser
                                                 status = "active";
                                                 Toast.makeText(getContext(), getString(R.string.status_changed_string), Toast.LENGTH_LONG).show();
                                                 updateButtons();
+                                                chargingTextView.setVisibility(View.INVISIBLE);
                                             } else {
                                                 ErrorHandler.handleError(response, requireView(), getString(R.string.error_1_string));
                                             }
@@ -356,9 +370,11 @@ public class VacuumControllerFragment extends Fragment implements LifecycleObser
                             switch (newState) {
                                 case "pause":
                                     status = "inactive";
+                                    chargingTextView.setVisibility(View.INVISIBLE);
                                     break;
                                 case "dock":
                                     status = "docked";
+                                    chargingTextView.setVisibility(View.VISIBLE);
                                     break;
                             }
                             Toast.makeText(getContext(), getString(R.string.status_changed_string), Toast.LENGTH_LONG).show();
