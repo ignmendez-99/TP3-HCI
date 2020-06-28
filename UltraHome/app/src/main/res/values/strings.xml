@@ -179,7 +179,7 @@
 
     <!-- ////////////// HOME GRID AND ROW STRINGS ////////////// -->
 
-    <string name="no_homes_string">You don\'t have any homes!  Press the green button to add one!</string>
+    <string name="no_homes_string">You don\'t have any homes!\n Press the + button to add one :)</string>
     <string name="failed_to_get_homes_string">Could not recover homes</string>
     <string name="home_name_placeholder">Home Name</string>  <!-- PLACEHOLDER, WILL BE EDITED LATER -->
     <string name="multiple_rooms_inside_string">rooms inside</string>

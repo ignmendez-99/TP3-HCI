@@ -56,11 +56,11 @@
     <string name="multiple_devices_inside_string">dispositivos dentro</string>
     <string name="one_device_inside_string">dispositivo dentro</string>
     <string name="routine_name_placeholder">Nombre de la rutina</string>
-    <string name="failed_to_get_devices_string">No se pudieron cargar los dispositivos!</string>
+    <string name="failed_to_get_devices_string">¡No se pudieron cargar los dispositivos!</string>
     <string name="try_again_string">Reintentar</string>
-    <string name="no_devices_string">No tienes ningún dispositivo! \\nPresiona el + para agregar uno :)</string>
-    <string name="no_rooms_string">No tienes ninguna habitación! \\nPresiona el + para agregar una :)</string>
-    <string name="failed_to_get_rooms_string">No se pudieron cargar las habitaciones!</string>
+    <string name="no_devices_string">¡No tienes ningún dispositivo! \\nPresiona el + para agregar uno :)</string>
+    <string name="no_rooms_string">¡No tienes ninguna habitación! \\nPresiona el + para agregar una :)</string>
+    <string name="failed_to_get_rooms_string">¡No se pudieron cargar las habitaciones!</string>
     <string name="close_string">CERRAR</string>
     <string name="open_string">ABRIR</string>
     <string name="start_string">INICIAR</string>
@@ -72,9 +72,9 @@
     <string name="edit_button">Editar</string>
     <string name="delete_button">Eliminar</string>
     <string name="done_button">Listo</string>
-    <string name="handle_unexpected_error">Ups! Hay un problema en nuestro lado :(</string>
+    <string name="handle_unexpected_error">¡Ups! Hay un problema en nuestro lado :(</string>
     <string name="delete_device_confirmation">¿Estás seguro que quieres borrar el dispositivo?</string>
-    <string name="error_1_string">Ups! Algo salió mal :(</string>
+    <string name="error_1_string">¡Ups! Algo salió mal :(</string>
     <string name="error_2_string">Por ahora sin usar</string>
     <string name="already_fully_open_string">¡Ya está abierto!</string>
     <string name="already_fully_closed_string">¡Ya está cerrado!</string>
@@ -112,7 +112,7 @@
     <string name="blinds_closed_text_string">Tu cortina ha sido cerrada</string>
     <string name="blinds_opened_title_string">¡Cortina abierta!</string>
     <string name="blinds_opened_text_string">Tu cortina ha sido abierta</string>
-    <string name="no_homes_string">¡No tienes ninguna casa! Presiona el botón verde para agregar una</string>
+    <string name="no_homes_string">¡No tienes ningún dispositivo! \\nPresiona el + para agregar una :)</string>
     <string name="failed_to_get_homes_string">No se pudieron obtener las casas</string>
     <string name="device_name_placeholder">Nombre del dispositivo</string>
     <string name="dispensed_string_1">Dispensado</string>
