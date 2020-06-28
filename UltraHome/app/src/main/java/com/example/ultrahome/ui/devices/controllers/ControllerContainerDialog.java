@@ -42,7 +42,6 @@ public class ControllerContainerDialog extends DialogFragment {
 
         closeDialog = view.findViewById(R.id.button_close_device_controller_dialog);
         closeDialog.setOnClickListener(v -> getDialog().dismiss());
-//        closeDialog = view.findViewById(R.id.button_close_device_controller_dialog);
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         transaction.add(R.id.controller_container, controllerFragment).commit();
     }

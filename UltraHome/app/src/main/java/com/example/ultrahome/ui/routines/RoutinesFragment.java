@@ -2,15 +2,12 @@ package com.example.ultrahome.ui.routines;
 
 import android.app.Dialog;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
@@ -26,22 +23,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.ultrahome.R;
 import com.example.ultrahome.apiConnection.ApiClient;
 import com.example.ultrahome.apiConnection.ErrorHandler;
-import com.example.ultrahome.apiConnection.entities.Error;
 import com.example.ultrahome.apiConnection.entities.Result;
 import com.example.ultrahome.apiConnection.entities.Routine.ActionsItem;
 import com.example.ultrahome.apiConnection.entities.Routine.Routine;
-import com.example.ultrahome.apiConnection.entities.deviceEntities.Device;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.Serializable;
-import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -337,14 +327,6 @@ public class RoutinesFragment extends Fragment {
                         if (result != null) {
                             List<String> aux = new ArrayList<>();
                             List<String> resultRoutine = result.getResult();
-                            // todo: y este codigo?
-//                            for(String b : resultRoutine){
-//                                if(b == null){
-//                                    aux.add("null");
-//                                }else{
-//                                    aux.add(b.toString());
-//                                }
-//                            }
                             updateDescription(resultRoutine, d);
                             Snackbar.make(requireView(), getContext().getString(R.string.routine_executed_string), Snackbar.LENGTH_SHORT).show();
                         } else {
@@ -357,19 +339,12 @@ public class RoutinesFragment extends Fragment {
 
                 @Override
                 public void onFailure(@NonNull Call<Result<List<String>>> call, @NonNull Throwable t) {
-                    // todo: y este codigo?
-//                  ExecuteRutineFail();
                     ErrorHandler.handleUnexpectedError(t, requireView(), RoutinesFragment.this);
                 }
             });
         }).start();
     }
-    // todo: y este codigo?
 
-//    private void ExecuteRutineFail(){
-//        executeRoutineFail.setVisibility(View.VISIBLE);
-//        executeRoutineFail.setText("Failed to execute routine!");
-//    }
     private class DeleteRoutineSnackbarTimeout extends BaseTransientBottomBar.BaseCallback<Snackbar> {
 
         @Override

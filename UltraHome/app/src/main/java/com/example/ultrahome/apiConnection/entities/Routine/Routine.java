@@ -2,12 +2,9 @@ package com.example.ultrahome.apiConnection.entities.Routine;
 
 import androidx.annotation.NonNull;
 
-import com.example.ultrahome.apiConnection.entities.Home;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Routine {

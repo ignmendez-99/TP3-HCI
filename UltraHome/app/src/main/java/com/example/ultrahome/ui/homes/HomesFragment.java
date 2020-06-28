@@ -27,25 +27,20 @@ import com.example.ultrahome.apiConnection.entities.Home;
 import com.example.ultrahome.apiConnection.entities.Result;
 import com.example.ultrahome.apiConnection.entities.Room;
 import com.example.ultrahome.ui.TabletFragment;
-import com.example.ultrahome.ui.devices.DevicesListFragment;
-import com.example.ultrahome.ui.rooms.RoomsFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 import static androidx.core.content.ContextCompat.getSystemService;
-import static java.security.AccessController.getContext;
 
 public class HomesFragment extends Fragment{
 

@@ -6,7 +6,6 @@ import com.example.ultrahome.apiConnection.entities.Room;
 import com.example.ultrahome.apiConnection.entities.Routine.Routine;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.Device;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.DeviceName;
-import com.example.ultrahome.apiConnection.entities.deviceEntities.DeviceTypeComplete;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.blinds.BlindsState;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.door.DoorState;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.faucet.FaucetState;
@@ -34,15 +33,8 @@ public interface ApiService {
     @Headers("Content-Type: application/json")
     Call<Result<Home>> addHome(@Body Home home);
 
-    @PUT("homes/{homeId}")
-    @Headers("Content-Type: application/json")
-    Call<Result<Boolean>> modifyHome(@Path("homeId") String homeId, @Body Home home);
-
     @DELETE("homes/{homeId}")
     Call<Result<Boolean>> deleteHome(@Path("homeId") String homeId);
-
-    @GET("homes/{homeId}")
-    Call<Result<Home>> getHome(@Path("homeId") String homeId);
 
     @GET("homes")
     Call<Result<List<Home>>> getHomes();
@@ -53,15 +45,8 @@ public interface ApiService {
     @Headers("Content-Type: application/json")
     Call<Result<Room>> addRoom(@Body Room room);
 
-    @PUT("rooms/{roomId}")
-    @Headers("Content-Type: application/json")
-    Call<Result<Boolean>> modifyRoom(@Path("roomId") String roomId, @Body Room room);
-
     @DELETE("rooms/{roomId}")
     Call<Result<Boolean>> deleteRoom(@Path("roomId") String roomId);
-
-    @GET("rooms/{roomId}")
-    Call<Result<Room>> getRoom(@Path("roomId") String roomId);
 
     @GET("rooms")
     Call<Result<List<Room>>> getRooms();
@@ -81,13 +66,6 @@ public interface ApiService {
 
     @DELETE("devices/{deviceId}")
     Call<Result<Boolean>> deleteDevice(@Path("deviceId") String deviceId);
-
-    ////////////// DEVICE-TYPE CONTROLS ////////////////////
-    @GET("devicetypes")
-    Call<Result<List<DeviceTypeComplete>>> getAllDeviceTypes();
-
-    @GET("devicetypes/{deviceTypeId}")
-    Call<Result<DeviceTypeComplete>> getDeviceType(@Path("deviceTypeId") String deviceTypeId);
 
     ////////////// HOME-ROOM CONTROLS ////////////////////
 
@@ -112,19 +90,8 @@ public interface ApiService {
     @GET("routines")
     Call<Result<List<Routine>>> getRoutines();
 
-    @POST("routines")
-    @Headers("Content-Type: application/json")
-    Call<Result<Routine>> addRoutine(@Body Routine routine);
-
     @DELETE("routines/{routineId}")
     Call<Result<Boolean>> deleteRoutine(@Path("routineId") String routineId);
-
-    @GET("routines/{routineId}")
-    Call<Result<Routine>> getRoutine(@Path("routineId") String routineId);
-
-    @PUT("routines/{routineId}")
-    @Headers("Content-Type: application/json")
-    Call<Result<Boolean>> modifyRoutine(@Path("routineId") String routineId, @Body Routine routine);
 
     @PUT("routines/{routineId}/execute")
     @Headers("Content-Type: application/json")
@@ -203,10 +170,6 @@ public interface ApiService {
 
     @GET("devices/{deviceId}/state")
     Call<Result<VacuumState>> getVacuumState(@Path("deviceId") String deviceId);
-
-    @PUT("devices/{deviceId}/{actionName}")
-    @Headers("Content-Type: application/json")
-    Call<Result<Boolean>> startPauseOrDockVacuum(@Path("deviceId") String deviceId, @Path("actionName") String actionName);
 
     @PUT("devices/{deviceId}/{actionName}")
     @Headers("Content-Type: application/json")

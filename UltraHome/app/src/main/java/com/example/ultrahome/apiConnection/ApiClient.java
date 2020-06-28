@@ -3,7 +3,6 @@ package com.example.ultrahome.apiConnection;
 import com.example.ultrahome.apiConnection.entities.Routine.Routine;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.Device;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.DeviceName;
-import com.example.ultrahome.apiConnection.entities.deviceEntities.DeviceTypeComplete;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.blinds.BlindsState;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.door.DoorState;
 import com.example.ultrahome.apiConnection.entities.deviceEntities.faucet.FaucetState;
@@ -90,20 +89,8 @@ public class ApiClient {
         return call;
     }
 
-    public Call<Result<Boolean>> modifyRoom(Room room, Callback<Result<Boolean>> callback) {
-        Call<Result<Boolean>> call = this.service.modifyRoom(room.getId(), room);
-        call.enqueue(callback);
-        return call;
-    }
-
     public Call<Result<Boolean>> deleteRoom(String roomId, Callback<Result<Boolean>> callback) {
         Call<Result<Boolean>> call = this.service.deleteRoom(roomId);
-        call.enqueue(callback);
-        return call;
-    }
-
-    public Call<Result<Room>> getRoom(String roomId, Callback<Result<Room>> callback) {
-        Call<Result<Room>> call = this.service.getRoom(roomId);
         call.enqueue(callback);
         return call;
     }
@@ -140,13 +127,6 @@ public class ApiClient {
         return call;
     }
 
-    ////////////// DEVICE-TYPE CALLS ////////////////////
-
-    public Call<Result<DeviceTypeComplete>> getDeviceType(String deviceTypeId, Callback<Result<DeviceTypeComplete>> callback){
-        Call<Result<DeviceTypeComplete>> call = this.service.getDeviceType(deviceTypeId);
-        call.enqueue(callback);
-        return call;
-    }
 
     ////////////// HOME-ROOM CALLS ////////////////////
 
@@ -184,26 +164,8 @@ public class ApiClient {
         return call;
     }
 
-    public Call<Result<Routine>> addRoutine(Routine routine, Callback<Result<Routine>> callback){
-        Call<Result<Routine>> call = this.service.addRoutine(routine);
-        call.enqueue(callback);
-        return call;
-    }
-
     public Call<Result<Boolean>> deleteRoutine(String routineId, Callback<Result<Boolean>> callback){
         Call<Result<Boolean>> call = this.service.deleteRoutine(routineId);
-        call.enqueue(callback);
-        return call;
-    }
-
-    public Call<Result<Boolean>> getRoutine(String routineId, Callback<Result<Boolean>> callback){
-        Call<Result<Boolean>> call = this.service.deleteRoutine(routineId);
-        call.enqueue(callback);
-        return call;
-    }
-
-    public Call<Result<Boolean>> modifyRoutine(String routineId, Routine routine, Callback<Result<Boolean>> callback){
-        Call<Result<Boolean>> call = this.service.modifyRoutine(routineId, routine);
         call.enqueue(callback);
         return call;
     }
@@ -409,7 +371,6 @@ public class ApiClient {
             default:
                 call = this.service.setVacuumMode(deviceId, "start");
                 break;
-
         }
         call.enqueue(callback);
         return call;
@@ -419,7 +380,7 @@ public class ApiClient {
         String [] aux = new String[1];
         aux[0] = newLocation;
 
-        Call<Result<String>> call = this.service.setLightColor(deviceId, "setLocation", aux);
+        Call<Result<String>> call = this.service.setVacuumLocation(deviceId, "setLocation", aux);
         call.enqueue(callback);
         return call;
     }

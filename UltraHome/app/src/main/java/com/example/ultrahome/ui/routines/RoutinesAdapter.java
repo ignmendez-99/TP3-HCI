@@ -2,12 +2,9 @@ package com.example.ultrahome.ui.routines;
 
 import android.content.Context;
 import android.view.View;
-import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -38,12 +35,7 @@ public abstract class RoutinesAdapter extends RecyclerView.Adapter<RoutinesAdapt
     @Override
     public void onBindViewHolder(@NonNull RoutinesViewHolder holder, final int position) {
         holder.routineName.setText(routinesNames.get(position));
-        holder.routineItem.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                currentFragment.setDialogRoutine(v, position);
-            }
-        });
+        holder.routineItem.setOnClickListener(v -> currentFragment.setDialogRoutine(v, position));
     }
 
     @Override
@@ -53,13 +45,11 @@ public abstract class RoutinesAdapter extends RecyclerView.Adapter<RoutinesAdapt
 
     public static class RoutinesViewHolder extends RecyclerView.ViewHolder {
         TextView routineName;
-        ConstraintLayout routinesConstraintLayout;
         ConstraintLayout routineItem;
 
         public RoutinesViewHolder(View v) {
             super(v);
             routineName = v.findViewById(R.id.routine_name);
-            routinesConstraintLayout = v.findViewById(R.id.routine_item);
             routineItem = v.findViewById(R.id.routine_item);
         }
     }

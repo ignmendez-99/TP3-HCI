@@ -10,7 +10,6 @@ public class ProfileViewModel extends ViewModel {
 
     public ProfileViewModel() {
         mText = new MutableLiveData<>();
-        // todo: hardcoded string
         mText.setValue("This is profile fragment");
     }
 

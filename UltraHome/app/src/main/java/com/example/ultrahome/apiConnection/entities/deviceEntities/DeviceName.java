@@ -1,6 +1,5 @@
 package com.example.ultrahome.apiConnection.entities.deviceEntities;
 
-import com.example.ultrahome.apiConnection.entities.Room;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
