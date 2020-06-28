@@ -267,7 +267,7 @@ public class RoutinesFragment extends Fragment {
                 resultString = auxList.get(i) + " => Failed!" + "\n";
             }
             else {
-                resultString = auxList.get(i) + " :: Success!" + "\n";
+                resultString = auxList.get(i) + " => Success!" + "\n";
             }
             newDescription = newDescription + resultString;
         }
